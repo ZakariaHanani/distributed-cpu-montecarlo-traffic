@@ -82,7 +82,8 @@ Each PR must:
 * Link the issue (example PR title):
 
 ```
-Fix #4.1 - Implement master registry connection
+Fix #4.1(not exaclty 4.1 but the reel number of the issue : like for example the number of the issue 4.1 is #23 ) - Implement master registry connection
+
 ```
 
 * Provide a short description of what was done
