@@ -1,5 +1,6 @@
 package com.grid.master;
 
+
 import com.grid.common.IMaster;
 import com.grid.common.Result;
 import com.grid.common.Task;
