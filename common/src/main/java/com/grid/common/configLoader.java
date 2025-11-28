@@ -8,7 +8,7 @@ public class configLoader {
     private static final Properties PROPERTIES = new Properties();
 
     static {
-        try (InputStream input = configLoader.class.getClassLoader().getResourceAsStream("config/config.properties")) {
+        try (InputStream input = configLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
                 throw new RuntimeException("FATAL: config/config.properties not found! Ensure it's in the resources path.");
             }
