@@ -1,5 +1,7 @@
 package com.grid.master;
 
+
+import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
 public class MasterNode {
@@ -13,7 +15,13 @@ public class MasterNode {
         MasterImpl masterImpl = new MasterImpl();
 
         // Bind master to registry
+
+        try{
+
         registry.rebind("MasterService", masterImpl);
+        }catch (Exception e){
+            System.err.println("Error "+e);
+        }
 
         System.out.println("[Master] MasterService bound to registry and ready.");
     }
