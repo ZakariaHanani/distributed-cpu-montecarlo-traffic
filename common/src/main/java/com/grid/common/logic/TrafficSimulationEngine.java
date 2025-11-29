@@ -4,6 +4,7 @@ import com.grid.common.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -13,127 +14,163 @@ public class TrafficSimulationEngine {
     private List<Road> roads;
     private List<Car> cars;
     private Random random;
-
-    // 👇 1. AJOUT IMPORTANT : On doit garder les paramètres en mémoire pour connaître la météo plus tard
     private SimulationParams currentParams;
+
+    // --- Statistiques cumulées pour le résultat final ---
+    private int totalJamsDetected;
+    private double sumOfAverageSpeeds;
+    private int iterationsExecuted;
 
     /**
      * Initialise la simulation en créant la ville et les voitures.
-     * Correspond à l'Issue 7.2
+     * Reset des compteurs statistiques.
      */
     public void initializeSimulation(SimulationParams params) {
-        // 👇 2. AJOUT : On sauvegarde les params
         this.currentParams = params;
-
         this.random = new Random(params.getSeed());
         this.roads = createSimpleGrid();
         this.cars = generateCars(params.getNumberOfCars());
 
-        System.out.println("✅ Simulation initialisée : " + cars.size() + " voitures sur " + roads.size() + " routes.");
+        // Reset des stats
+        this.totalJamsDetected = 0;
+        this.sumOfAverageSpeeds = 0;
+        this.iterationsExecuted = 0;
+
+        System.out.println("✅ Simulation initialisée : " + cars.size() + " voitures.");
     }
 
     /**
-     * 🟢 ISSUE 7.3 : Fait avancer la simulation d'un pas (1 seconde)
+     * 🟢 ISSUE 7.6 : Exécute UNE itération complète (Mouvement + Collision + Stats)
      */
-    public void runOneStep() {
-        // Pour chaque voiture, on calcule son nouveau déplacement
+    public void updateIteration() {
+        double totalSpeedInThisTick = 0;
+        int carsStuckCount = 0;
+
+        // 1. Mouvement & Collision (Pour chaque voiture)
         for (Car car : cars) {
             moveCar(car);
-        }
-    }
 
-    // --- 👇 NOUVELLES MÉTHODES POUR L'ISSUE 7.3 (Copie tout ça) ---
-
-    private void moveCar(Car car) {
-        // A. Trouver la route actuelle
-        Road road = findRoadById(car.getCurrentRoadId());
-        if (road == null) return;
-
-        // B. Calculer la vitesse théorique (Météo/Conducteur)
-        double desiredSpeed = calculateSpeed(car, road);
-
-        // --- 🟢 DEBUT CODE ISSUE 7.4 (COLLISION) ---
-
-        // 1. Regarder s'il y a quelqu'un devant
-        Car carInFront = findCarInFront(car);
-
-        if (carInFront != null) {
-            double distanceToNextCar = carInFront.getPosition() - car.getPosition();
-            double safetyDistance = 10.0; // On veut garder 10 mètres de sécurité
-
-            // 2. Si on est trop près, on freine !
-            if (distanceToNextCar < safetyDistance) {
-                // On adapte notre vitesse pour ne pas la percuter
-                // On prend la vitesse de l'autre voiture, ou 0 si on est collé
-                double speedOfFrontCar = carInFront.getSpeed();
-                desiredSpeed = Math.min(desiredSpeed, speedOfFrontCar);
-
-                // Si on est vraiment collé (< 5m), arrêt total
-                if (distanceToNextCar < 5.0) {
-                    desiredSpeed = 0;
-                }
+            // Collecte de données instantanée
+            totalSpeedInThisTick += car.getSpeed();
+            if (car.getSpeed() < 5.0) { // Si vitesse < 5 km/h, on considère qu'elle est bloquée
+                carsStuckCount++;
             }
         }
 
+        // 2. Calcul des Statistiques Globales de ce tour
+        double avgSpeedThisTick = cars.isEmpty() ? 0 : totalSpeedInThisTick / cars.size();
 
-        // C. Appliquer la vitesse calculée (freinage inclus)
+        // Détection d'embouteillage global (si > 50% des voitures sont bloquées)
+        boolean isJam = !cars.isEmpty() && ((double) carsStuckCount / cars.size()) > 0.5;
+
+        // 3. Mise à jour des cumuls
+        sumOfAverageSpeeds += avgSpeedThisTick;
+        if (isJam) {
+            totalJamsDetected++;
+        }
+        iterationsExecuted++;
+    }
+
+    /**
+     * Méthode pour récupérer le rapport final (Sera utilisée par le Worker à la fin)
+     */
+    public SimulationResult getFinalResult() {
+        double globalAverageSpeed = iterationsExecuted == 0 ? 0 : sumOfAverageSpeeds / iterationsExecuted;
+
+        // Note: La congestionMap sera implémentée plus finement plus tard,
+        // ici on met une map vide ou basique pour l'instant.
+        return new SimulationResult(totalJamsDetected, globalAverageSpeed, new HashMap<>());
+    }
+
+    // --- Logique de Mouvement (Issue 7.3 & 7.4) ---
+    private void moveCar(Car car) {
+        Road road = findRoadById(car.getCurrentRoadId());
+        if (road == null) return;
+
+        double desiredSpeed = calculateSpeed(car, road);
+
+        // Collision logic (Issue 7.4)
+        Car carInFront = findCarInFront(car);
+        if (carInFront != null) {
+            double distance = carInFront.getPosition() - car.getPosition();
+            if (distance < 10.0) {
+                double speedOfFrontCar = carInFront.getSpeed();
+                desiredSpeed = Math.min(desiredSpeed, speedOfFrontCar);
+                if (distance < 5.0) desiredSpeed = 0;
+            }
+        }
+
+        // Random fluctuation (Issue 7.5)
+        if (randomEvent(0.1)) { // 10% de chance de variation
+            double fluctuation = 0.9 + (random.nextDouble() * 0.2); // 0.9 à 1.1
+            desiredSpeed *= fluctuation;
+        }
+
         car.setSpeed(desiredSpeed);
 
-        // D. Calculer la nouvelle position
         double distanceParcourue = (car.getSpeed() / 3.6);
         double newPosition = car.getPosition() + distanceParcourue;
 
-        // E. Vérifier si on dépasse la fin de la route
         if (newPosition >= road.getLength()) {
             newPosition = road.getLength();
             car.setSpeed(0);
         }
 
-        // F. Correction physique (Anti-Overlap) : Ne jamais dépasser la voiture de devant
+        // Anti-overlap correction
         if (carInFront != null && newPosition > carInFront.getPosition() - 2.0) {
-            newPosition = carInFront.getPosition() - 2.0; // On reste 2m derrière
+            newPosition = carInFront.getPosition() - 2.0;
             car.setSpeed(0);
         }
 
-        // G. Mise à jour finale
         car.setPosition(newPosition);
     }
 
+    // --- Utilitaires ---
+
     private double calculateSpeed(Car car, Road road) {
         double baseSpeed = road.getSpeedLimit();
-
-        // Règle 1 : Impact de la Météo
         if (currentParams != null) {
             switch (currentParams.getWeather()) {
-                case RAINY -> baseSpeed *= 0.8; // -20%
-                case FOGGY -> baseSpeed *= 0.6; // -40%
-                case NIGHT -> baseSpeed *= 0.9; // -10%
-                case SUNNY -> {} // Rien ne change
+                case RAINY -> baseSpeed *= 0.8;
+                case FOGGY -> baseSpeed *= 0.6;
+                case NIGHT -> baseSpeed *= 0.9;
+                case SUNNY -> {}
             }
         }
-        double fluctuation = 0.95 + (random.nextDouble() * 0.10); // entre 0.95 et 1.05
-        baseSpeed *= fluctuation;
-
-        // Règle 2 : Impact du Conducteur
         switch (car.getDriverType()) {
-            case AGGRESSIVE -> baseSpeed *= 1.1; // +10%
-            case CAREFUL -> baseSpeed *= 0.8;    // -20%
+            case AGGRESSIVE -> baseSpeed *= 1.1;
+            case CAREFUL -> baseSpeed *= 0.8;
             case NORMAL -> {}
         }
-
         return baseSpeed;
     }
 
-    private Road findRoadById(String id) {
-        return roads.stream()
-                .filter(r -> r.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+    private Car findCarInFront(Car currentCar) {
+        double minDistance = Double.MAX_VALUE;
+        Car closestCar = null;
+        for (Car otherCar : cars) {
+            if (otherCar.getCurrentRoadId().equals(currentCar.getCurrentRoadId())) {
+                if (otherCar.getPosition() > currentCar.getPosition()) {
+                    double distance = otherCar.getPosition() - currentCar.getPosition();
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestCar = otherCar;
+                    }
+                }
+            }
+        }
+        return closestCar;
     }
 
-    // --- FIN DES NOUVELLES MÉTHODES ---
+    private boolean randomEvent(double probability) {
+        return random.nextDouble() < probability;
+    }
 
-    // --- Logique de Création (Issue 7.2 - Inchangé) ---
+    private Road findRoadById(String id) {
+        return roads.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    // --- Création (Issue 7.2) ---
     private List<Car> generateCars(int count) {
         List<Car> generatedCars = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -147,40 +184,6 @@ public class TrafficSimulationEngine {
         return generatedCars;
     }
 
-    /**
-     * Trouve la voiture la plus proche devant nous sur la même route.
-     * @param currentCar La voiture qui cherche
-     * @return La voiture de devant (ou null s'il n'y a personne)
-     */
-    private Car findCarInFront(Car currentCar) {
-        double minDistance = Double.MAX_VALUE;
-        Car closestCar = null;
-
-        for (Car otherCar : cars) {
-            // On cherche seulement sur la MEME route
-            if (otherCar.getCurrentRoadId().equals(currentCar.getCurrentRoadId())) {
-                // Et seulement si elle est DEVANT (position plus grande)
-                if (otherCar.getPosition() > currentCar.getPosition()) {
-                    double distance = otherCar.getPosition() - currentCar.getPosition();
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestCar = otherCar;
-                    }
-                }
-            }
-        }
-        return closestCar;
-    }
-
-    /**
-     * Méthode utilitaire pour générer un événement aléatoire.
-     * @param probability Probabilité entre 0.0 et 1.0 (ex: 0.1 pour 10%)
-     * @return true si l'événement se produit
-     */
-    private boolean randomEvent(double probability) {
-        return random.nextDouble() < probability;
-    }
-
     private List<Road> createSimpleGrid() {
         List<Road> cityRoads = new ArrayList<>();
         cityRoads.add(new Road("R01", "I00", "I01", 500, 50));
@@ -189,7 +192,4 @@ public class TrafficSimulationEngine {
         cityRoads.add(new Road("R04", "I00", "I10", 300, 30));
         return cityRoads;
     }
-
-    public List<Car> getCars() { return cars; }
-    public List<Road> getRoads() { return roads; }
 }
