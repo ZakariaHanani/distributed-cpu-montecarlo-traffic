@@ -47,25 +47,55 @@ public class TrafficSimulationEngine {
     private void moveCar(Car car) {
         // A. Trouver la route actuelle
         Road road = findRoadById(car.getCurrentRoadId());
-        if (road == null) return; // Sécurité si la route n'existe pas
+        if (road == null) return;
 
-        // B. Calculer la vitesse théorique selon météo/conducteur
-        double maxSpeed = calculateSpeed(car, road);
-        car.setSpeed(maxSpeed);
+        // B. Calculer la vitesse théorique (Météo/Conducteur)
+        double desiredSpeed = calculateSpeed(car, road);
 
-        // C. Calculer la distance parcourue en 1 seconde (km/h divisé par 3.6 = m/s)
+        // --- 🟢 DEBUT CODE ISSUE 7.4 (COLLISION) ---
+
+        // 1. Regarder s'il y a quelqu'un devant
+        Car carInFront = findCarInFront(car);
+
+        if (carInFront != null) {
+            double distanceToNextCar = carInFront.getPosition() - car.getPosition();
+            double safetyDistance = 10.0; // On veut garder 10 mètres de sécurité
+
+            // 2. Si on est trop près, on freine !
+            if (distanceToNextCar < safetyDistance) {
+                // On adapte notre vitesse pour ne pas la percuter
+                // On prend la vitesse de l'autre voiture, ou 0 si on est collé
+                double speedOfFrontCar = carInFront.getSpeed();
+                desiredSpeed = Math.min(desiredSpeed, speedOfFrontCar);
+
+                // Si on est vraiment collé (< 5m), arrêt total
+                if (distanceToNextCar < 5.0) {
+                    desiredSpeed = 0;
+                }
+            }
+        }
+
+
+        // C. Appliquer la vitesse calculée (freinage inclus)
+        car.setSpeed(desiredSpeed);
+
+        // D. Calculer la nouvelle position
         double distanceParcourue = (car.getSpeed() / 3.6);
         double newPosition = car.getPosition() + distanceParcourue;
 
-        // D. Vérifier si on dépasse la fin de la route
+        // E. Vérifier si on dépasse la fin de la route
         if (newPosition >= road.getLength()) {
-            // STOP ! On est au bout.
-            // Pour l'instant on s'arrête (Collision detection viendra en 7.4)
             newPosition = road.getLength();
             car.setSpeed(0);
         }
 
-        // E. Mettre à jour la position
+        // F. Correction physique (Anti-Overlap) : Ne jamais dépasser la voiture de devant
+        if (carInFront != null && newPosition > carInFront.getPosition() - 2.0) {
+            newPosition = carInFront.getPosition() - 2.0; // On reste 2m derrière
+            car.setSpeed(0);
+        }
+
+        // G. Mise à jour finale
         car.setPosition(newPosition);
     }
 
@@ -113,6 +143,31 @@ public class TrafficSimulationEngine {
             generatedCars.add(car);
         }
         return generatedCars;
+    }
+
+    /**
+     * Trouve la voiture la plus proche devant nous sur la même route.
+     * @param currentCar La voiture qui cherche
+     * @return La voiture de devant (ou null s'il n'y a personne)
+     */
+    private Car findCarInFront(Car currentCar) {
+        double minDistance = Double.MAX_VALUE;
+        Car closestCar = null;
+
+        for (Car otherCar : cars) {
+            // On cherche seulement sur la MEME route
+            if (otherCar.getCurrentRoadId().equals(currentCar.getCurrentRoadId())) {
+                // Et seulement si elle est DEVANT (position plus grande)
+                if (otherCar.getPosition() > currentCar.getPosition()) {
+                    double distance = otherCar.getPosition() - currentCar.getPosition();
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestCar = otherCar;
+                    }
+                }
+            }
+        }
+        return closestCar;
     }
 
     private List<Road> createSimpleGrid() {
