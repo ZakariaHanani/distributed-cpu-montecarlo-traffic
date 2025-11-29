@@ -7,7 +7,7 @@ public class SimulationParams implements Serializable {
     private int iterations;
     private Weather weather;
     private boolean trafficLightsEnabled;
-    private long seed; // <--- LE CHAMP MANQUANT
+    private long seed;
 
     // Constructeur mis à jour
     public SimulationParams(int numberOfCars, int iterations, Weather weather, boolean trafficLightsEnabled, long seed) {
