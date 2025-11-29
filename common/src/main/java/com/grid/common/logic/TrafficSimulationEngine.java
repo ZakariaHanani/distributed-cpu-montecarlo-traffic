@@ -111,6 +111,8 @@ public class TrafficSimulationEngine {
                 case SUNNY -> {} // Rien ne change
             }
         }
+        double fluctuation = 0.95 + (random.nextDouble() * 0.10); // entre 0.95 et 1.05
+        baseSpeed *= fluctuation;
 
         // Règle 2 : Impact du Conducteur
         switch (car.getDriverType()) {
@@ -168,6 +170,15 @@ public class TrafficSimulationEngine {
             }
         }
         return closestCar;
+    }
+
+    /**
+     * Méthode utilitaire pour générer un événement aléatoire.
+     * @param probability Probabilité entre 0.0 et 1.0 (ex: 0.1 pour 10%)
+     * @return true si l'événement se produit
+     */
+    private boolean randomEvent(double probability) {
+        return random.nextDouble() < probability;
     }
 
     private List<Road> createSimpleGrid() {
