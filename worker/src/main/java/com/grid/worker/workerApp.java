@@ -3,6 +3,8 @@ package com.grid.worker;
 import com.grid.common.configLoader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import com.grid.common.Worker;
+import java.rmi.RemoteException;
 
 public class workerApp {
 
@@ -19,6 +21,18 @@ public class workerApp {
 
         if (registry != null) {
             System.out.println("✅ Successfully connected to RMI Registry.");
+            try {
+                Worker workerService = new WorkerImpl();
+                String workerId = workerService.getId();
+
+                registry.rebind(workerId, workerService);
+
+                System.out.printf("✅ Worker registered successfully with ID: %s. Ready to receive tasks.\n", workerId);
+
+            } catch (RemoteException e) {
+                System.err.println("❌ Critical error during RMI registration or binding: " + e.getMessage());
+                System.exit(1);
+            }
         } else {
             System.err.println("❌ Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
             System.exit(1);
