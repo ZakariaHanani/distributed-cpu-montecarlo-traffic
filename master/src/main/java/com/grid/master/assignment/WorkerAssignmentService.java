@@ -34,11 +34,22 @@ public class WorkerAssignmentService {
 
             IWorker workerStub = chosen.getStub();
 
-            // here is the **RMI call**
-            Result result = workerStub.execute(task);
-
-            results.add(result);
+            try {
+                Result result = workerStub.execute(task);   // RMI call
+                results.add(result);
+            } catch (RemoteException e) {
+                System.err.printf(
+                        "[Master] RMI error when executing task %s on worker %s: %s%n",
+                        task.getTaskId(),
+                        chosen.getWorkerId(),
+                        e.getMessage()
+                );
+                // TODO: re-queue task or try another worker
+                // keep behaviour the same: let the caller handle it
+                throw e;
+            }
         }
+
 
         return results;
     }
