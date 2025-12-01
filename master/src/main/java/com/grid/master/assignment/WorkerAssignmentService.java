@@ -44,8 +44,10 @@ public class WorkerAssignmentService {
                         chosen.getId(),
                         e.getMessage()
                 );
-                // TODO: re-queue task or try another worker
-                // keep behaviour the same: let the caller handle it
+                /*
+                 TODO: re-queue task or try another worker
+                 keep behaviour the same: let the caller handle it
+                */
                 throw e;
             }
         }
