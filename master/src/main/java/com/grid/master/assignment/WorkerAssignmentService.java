@@ -41,7 +41,7 @@ public class WorkerAssignmentService {
                 System.err.printf(
                         "[Master] RMI error when executing task %s on worker %s: %s%n",
                         task.getTaskId(),
-                        chosen.getWorkerId(),
+                        chosen.getId(),
                         e.getMessage()
                 );
                 // TODO: re-queue task or try another worker
