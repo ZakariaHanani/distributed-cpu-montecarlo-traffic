@@ -17,11 +17,11 @@ public class MasterNode {
         // Bind master to registry
 
         try{
-
         registry.rebind("MasterService", masterImpl);
-        }catch (Exception e){
+
+        } catch (Exception e){
             System.err.println("Error "+e);
-        }
+         }
 
         System.out.println("[Master] MasterService bound to registry and ready.");
     }

@@ -1,8 +1,10 @@
 package com.grid.master.results;
 
 import com.grid.common.Result;
+import com.grid.common.model.SimulationResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +22,22 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ResultCollector {
 
+
+    private final ConcurrentMap<UUID, Result> finalResults = new ConcurrentHashMap<>();
+    public void storeFinalResult(UUID jobId, Result finalResult) {
+        if (finalResult == null) {
+            throw new IllegalArgumentException("finalResult cannot be null");
+        }
+        finalResults.put(jobId, finalResult);
+    }
+    public Result getFinalResult(UUID jobId) {
+        Result res = finalResults.get(jobId);
+        if (res == null) {
+            throw new IllegalStateException("Final result not yet available for job: " + jobId);
+        }
+        return res;
+    }
+
     /**
      * Internal mutable state for one job.
      * Not exposed directly outside this class.
@@ -27,7 +45,7 @@ public class ResultCollector {
     private static class JobState {
         final UUID jobId;
         final int expectedChunks;
-        final List<Result> results = new ArrayList<>();
+        final List<SimulationResult> results = new ArrayList<>();
         int receivedChunks = 0;
         JobStatus status = JobStatus.PENDING;
         String errorMessage = null;
@@ -103,7 +121,7 @@ public class ResultCollector {
                 state.status = JobStatus.RUNNING;
             }
 
-            state.results.addAll(partialResults);
+            state.results.addAll((Collection<? extends SimulationResult>) partialResults);
             state.receivedChunks += partialResults.size();
 
             if (state.receivedChunks >= state.expectedChunks) {
@@ -153,7 +171,7 @@ public class ResultCollector {
      * Get all partial Results for this job.
      * Used later in 4.7 to merge them into a final aggregated Result.
      */
-    public List<Result> getResults(UUID jobId) {
+    public List<SimulationResult> getResults(UUID jobId) {
         JobState state = getStateOrThrow(jobId);
         synchronized (state) {
             return List.copyOf(state.results); // defensive copy

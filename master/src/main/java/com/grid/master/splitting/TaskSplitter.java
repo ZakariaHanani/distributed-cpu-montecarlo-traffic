@@ -15,7 +15,8 @@ import java.util.UUID;
 
  * Each chunk will be executed by ONE worker.
  */
-public class TaskSplitter {
+public class
+TaskSplitter {
 
     /**
      * Split a global simulation into chunks for each worker.

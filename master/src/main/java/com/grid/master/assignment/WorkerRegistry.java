@@ -43,6 +43,9 @@ public class WorkerRegistry {
 
         return Optional.empty(); // all workers OFFLINE/BUSY
     }
+    public int size(){
+        return workers.size() ;
+    }
 
     /** For debugging / monitoring later if needed. */
     public synchronized List<WorkerInfo> snapshot() {

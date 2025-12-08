@@ -1,9 +1,11 @@
 package com.grid.common.model;
 
+import com.grid.common.Result;
+
 import java.io.Serializable;
 import java.util.Map;
 
-public class SimulationResult implements Serializable {
+public class SimulationResult implements Result {
     private int totalJamsDetected;
     private double averageSpeed;
     private double averageTravelTime;
