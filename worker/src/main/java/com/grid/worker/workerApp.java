@@ -19,15 +19,37 @@ public class workerApp {
 
         Registry registry = connectToRegistry(registryHost, registryPort, maxRetries, waitTimeMs);
 
+        WorkerImpl workerImpl = null;
+        Thread workerThread = null;
+
         if (registry != null) {
             System.out.println("✅ Successfully connected to RMI Registry.");
             try {
-                Worker workerService = new WorkerImpl();
-                String workerId = workerService.getId();
+                workerImpl = new WorkerImpl();
+                String workerId = workerImpl.getId();
 
-                registry.rebind(workerId, workerService);
+                registry.rebind(workerId, workerImpl);
 
-                System.out.printf("✅ Worker registered successfully with ID: %s. Ready to receive tasks.\n", workerId);
+                System.out.printf("✅ Worker registered successfully with ID: %s.\n", workerId);
+
+                workerThread = new Thread(workerImpl, "Worker-Task-Processor");
+                workerThread.start();
+                System.out.println("LOG: Worker is now running and waiting for tasks...");
+
+                final WorkerImpl finalWorkerImpl = workerImpl;
+                final Thread finalWorkerThread = workerThread;
+
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    System.out.println("\nLOG: Received shutdown signal. Initiating graceful stop...");
+                    finalWorkerImpl.stopWorker();
+
+                    try {
+                        finalWorkerThread.join(5000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    System.out.println("LOG: Worker shutdown complete.");
+                }));
 
             } catch (RemoteException e) {
                 System.err.println("❌ Critical error during RMI registration or binding: " + e.getMessage());

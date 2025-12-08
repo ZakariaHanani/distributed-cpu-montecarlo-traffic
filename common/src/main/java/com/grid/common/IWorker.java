@@ -10,5 +10,6 @@ public interface IWorker extends Remote {
     /**
      * Execute a task chunk and return the Result.
      */
-    Result execute(Task task) throws RemoteException;
+    //Result execute(Task task) throws RemoteException;
+    void execute(Task task) throws RemoteException;
 }
