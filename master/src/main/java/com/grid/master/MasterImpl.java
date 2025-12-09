@@ -18,12 +18,19 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
 
     @Override
     public UUID submitTask(Task task) throws RemoteException {
-        System.out.println("[Master] Received task: " + task.getTaskId());
+        UUID jobId = task.getTaskId();
+
+        System.out.printf(
+                "[Master] Received task %s of type %s%n",
+                jobId,
+                task.getClass().getSimpleName()
+        );
+
         // 1. Split task
         // 2. Assign to workers
         // 3. Collect results
         // 4. Merge
-        return null;
+        return jobId;
     }
 
     @Override
