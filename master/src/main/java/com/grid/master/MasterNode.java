@@ -20,7 +20,7 @@ public class MasterNode {
             registry.rebind("MasterService", masterImpl);
             System.out.println("[Master] MasterService bound to registry and ready.");
         } catch (Exception e) {
-            System.err.println("[Master] ❌ Failed to bind MasterService: " + e);
+            System.err.println("[Master] Failed to bind MasterService: " + e);
             e.printStackTrace();
         }
 
