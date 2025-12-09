@@ -16,10 +16,14 @@ import java.util.UUID;
 
 public class ClientApp {
 
+    // 6.3 – polling configuration
+    private static final long MAX_WAIT_MS = 60_000L;   // 1 minute max
+    private static final long POLL_INTERVAL_MS = 1_000L; // check every 1 second
+
     public static void main(String[] args) {
         final String registryHost = configLoader.get("registry.host");
         final int registryPort = configLoader.getInt("registry.port");
-        final String serviceName = "MasterService"; // same as MasterNode binds
+        final String serviceName  = "MasterService"; // same as MasterNode binds
 
         System.out.printf("[Client] Connecting to RMI registry at %s:%d...%n",
                 registryHost, registryPort);
@@ -29,8 +33,14 @@ public class ClientApp {
             IMaster master = (IMaster) registry.lookup(serviceName);
             System.out.println("The [Client] Successfully obtained IMaster stub from RMI registry.");
 
-            // 6.2 – submit simulation parameters
-            submitSimulation(master);
+            // 6.2 – submit simulation parameters and get jobId
+            UUID jobId = submitSimulation(master);
+
+            // 6.3 – wait for aggregated result (polling)
+            Result finalResult = waitForFinalResult(master, jobId, MAX_WAIT_MS, POLL_INTERVAL_MS);
+
+            // 6.4 – display final result in CLI
+            displayFinalResult(jobId, finalResult);
 
         } catch (NotBoundException e) {
             System.err.printf("The [Client] Failed to connect to Master service:%n" +
@@ -40,22 +50,25 @@ public class ClientApp {
             System.err.printf("The [Client] RemoteException when connecting to registry: %s%n",
                     e.getMessage());
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("[Client] Interrupted while waiting for final results.");
         }
     }
 
     /**
-     * Ask user for parameters, validate them, build SimulationJobTask
+     * 6.2 – Ask user for parameters, validate them, build SimulationJobTask
      * and send it to the Master using submitTask(Task t).
-     * Then wait for the final aggregated result (6.3).
+     * Returns the jobId so we can wait on it in 6.3.
      */
-    private static void submitSimulation(IMaster master) throws RemoteException {
+    private static UUID submitSimulation(IMaster master) throws RemoteException {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println();
         System.out.println("=== New Monte Carlo Traffic Simulation ===");
 
         int iterations = readPositiveInt(scanner, "Iterations (e.g. 10_000): ");
-        int cars = readPositiveInt(scanner, "Cars count (e.g. 150): ");
+        int cars       = readPositiveInt(scanner, "Cars count (e.g. 150): ");
 
         System.out.print("Use random seed? (y/n): ");
         String randomAnswer = scanner.nextLine().trim();
@@ -70,12 +83,18 @@ public class ClientApp {
             seed = readLong(scanner, "Seed (integer): ");
         }
 
+        // ---- VALIDATION summary ----
+        // iterations > 0, cars > 0 (checked below)
+        // randomness: we know if we used random seed or not
+        // seed: we either generated it or validated user input
+        // ---------------------------------------
+
         // For now we fix weather + traffic lights. Later you can ask user too.
         SimulationParams params = new SimulationParams(
                 cars,
                 iterations,
-                Weather.SUNNY,  // default SUNNY for now
-                true,           // trafficLightsEnabled
+                Weather.SUNNY, // maybe default SUNNY for now
+                true,          // trafficLightsEnabled
                 seed
         );
 
@@ -85,71 +104,79 @@ public class ClientApp {
         UUID jobId = master.submitTask(task);
 
         System.out.printf("[Client] Simulation submitted successfully. jobId = %s%n", jobId);
+        return jobId;
+    }
 
-        // 6.3 – wait (polling) for aggregated result
-        Result finalResult = waitForFinalResult(master, jobId);
+    /**
+     * 6.3 – Poll Master for the final result with timeout.
+     * Handles delays and temporary RemoteExceptions.
+     */
+    private static Result waitForFinalResult(
+            IMaster master,
+            UUID jobId,
+            long maxWaitMs,
+            long pollIntervalMs
+    ) throws InterruptedException {
 
-        if (finalResult == null) {
-            System.err.println("[Client] Did not receive final result (timeout or error).");
-        } else {
-            System.out.println("[Client] Final result received from Master.");
-            System.out.println("        (Details will be formatted in issue 6.4)");
+        long start = System.currentTimeMillis();
+
+        while (true) {
+            long elapsed = System.currentTimeMillis() - start;
+            if (elapsed >= maxWaitMs) {
+                System.err.printf(
+                        "[Client] Timeout (%d ms) waiting for final result of job %s.%n",
+                        elapsed, jobId
+                );
+                return null;
+            }
+
+            try {
+                Result result = master.getFinalResult(jobId);
+                if (result != null) {
+                    System.out.printf(
+                            "[Client] Final result is ready after %d ms for job %s.%n",
+                            elapsed, jobId
+                    );
+                    return result;
+                }
+
+                System.out.printf(
+                        "[Client] Result not ready yet for job %s (elapsed=%d ms). Waiting...%n",
+                        jobId, elapsed
+                );
+            } catch (RemoteException e) {
+                System.err.printf(
+                        "[Client] RemoteException while polling result for job %s: %s%n",
+                        jobId, e.getMessage()
+                );
+                // We keep waiting until timeout – Master might come back.
+            }
+
+            Thread.sleep(pollIntervalMs);
         }
     }
 
     /**
-     * 6.3 – Poll Master.getFinalResult(jobId) until:
-     *  - result is non-null  -> success
-     *  - timeout is reached  -> give up
-     *  - RemoteException     -> treat as failure
+     * 6.4 – Display final result (high level).
+     * For now we print jobId + result.toString().
+     * Later, when Result has richer fields, you can pretty-print metrics.
      */
-    private static Result waitForFinalResult(IMaster master, UUID jobId) {
-        // timeout.value is defined in config/config.properties (in ms)
-        long timeoutMs;
-        try {
-            timeoutMs = configLoader.getLong("timeout.value");
-        } catch (Exception e) {
-            // fallback if property is missing or invalid
-            timeoutMs = 300_000L; // 5 minutes default
-            System.err.println("[Client] Could not read timeout.value from config, using default 300000 ms.");
+    private static void displayFinalResult(UUID jobId, Result result) {
+        System.out.println();
+        System.out.println("=== Final Monte Carlo Traffic Result ===");
+        System.out.printf("Job id: %s%n", jobId);
+
+        if (result == null) {
+            System.out.println("[Client] No final result available (timeout or Master returned null).");
+            System.out.println("         Check Master / Worker logs or try again later.");
+            return;
         }
 
-        final long pollIntervalMs = 2_000L; // 2 seconds between polls
-        long start = System.currentTimeMillis();
-        int attempts = 0;
-
-        System.out.printf("[Client] Waiting for final result of job %s (timeout = %d ms)...%n",
-                jobId, timeoutMs);
-
-        while (System.currentTimeMillis() - start < timeoutMs) {
-            attempts++;
-            try {
-                Result result = master.getFinalResult(jobId);
-                if (result != null) {
-                    System.out.printf("[Client] Final result is ready after %d polls.%n", attempts);
-                    return result;
-                } else {
-                    System.out.printf("[Client] Job %s not finished yet (attempt %d).%n",
-                            jobId, attempts);
-                }
-            } catch (RemoteException e) {
-                System.err.printf("[Client] RemoteException while polling for result (attempt %d): %s%n",
-                        attempts, e.getMessage());
-                // Simple strategy: stop waiting, consider master unavailable
-                return null;
-            }
-
-            try {
-                Thread.sleep(pollIntervalMs);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                System.err.println("[Client] Polling interrupted; stopping wait.");
-                return null;
-            }
-        }
-
-        System.err.printf("[Client] Timeout reached while waiting for job %s final result.%n", jobId);
-        return null;
+        // Generic display – relies on Result.toString().
+        // When Result has getters like getExecutionTimeMs(), getMetrics(), etc.,
+        // you can replace this block by a detailed pretty-print.
+        System.out.println("[Client] Raw result object:");
+        System.out.println(result.toString());
     }
 
     private static int readPositiveInt(Scanner scanner, String label) {
