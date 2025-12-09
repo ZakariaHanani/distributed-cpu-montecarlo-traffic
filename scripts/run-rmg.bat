@@ -1,32 +1,50 @@
 @echo off
-REM Usage: run-rmiregistry.bat [port]
+setlocal enabledelayedexpansion
 
-SET PORT=%1
-IF "%PORT%"=="" SET PORT=1099
+rem --------------------------------------------------------
+rem Resolve project root (one level above /scripts)
+rem --------------------------------------------------------
+set "SCRIPT_DIR=%~dp0"
+set "ROOT_DIR=%SCRIPT_DIR%\.."
 
-echo Checking if RMI registry is already running on port %PORT%...
+rem --------------------------------------------------------
+rem Resolve Java: prefer JAVA_HOME, then PATH
+rem --------------------------------------------------------
+set "JAVA_CMD="
 
-netstat -ano | findstr ":%PORT%" | findstr "LISTENING" > nul
-
-if %ERRORLEVEL% EQU 0 (
-    echo RMI registry is already running on port %PORT%.
-    echo Nothing to do.
-    exit /b 0
+rem 1) JAVA_HOME\bin\java.exe
+if defined JAVA_HOME if exist "%JAVA_HOME%\bin\java.exe" (
+    set "JAVA_CMD=%JAVA_HOME%\bin\java.exe"
 )
 
-echo Starting RMI registry on port %PORT%...
-start /B rmiregistry -J-Djava.class.path=common\target\classes
+rem 2) Fallback: java from PATH
+if not defined JAVA_CMD (
+    for /f "delims=" %%i in ('where java 2^>nul') do (
+        set "JAVA_CMD=%%i"
+        goto :have_java
+    )
+)
 
-
-timeout /t 2 > nul
-
-echo Checking if startup failed...
-
-netstat -ano | findstr ":%PORT%" | findstr "LISTENING" > nul
-
-if %ERRORLEVEL% NE 0 (
-    echo  ERROR: Failed to start RMI registry.
+:have_java
+if not defined JAVA_CMD (
+    echo [ERROR] Java (JDK 17) not found.
+    echo         Please either:
+    echo           - install Java and add ^"java^" to your PATH
+    echo           - or set JAVA_HOME to your JDK folder.
     exit /b 1
 )
 
-echo RMI registry is now running on port %PORT%.
+echo [client.bat] Using Java: %JAVA_CMD%
+
+rem --------------------------------------------------------
+rem Classpath and main class
+rem --------------------------------------------------------
+set "CP=%ROOT_DIR%\common\target\classes;%ROOT_DIR%\client\target\classes"
+
+echo [client.bat] Using classpath:
+echo   %CP%
+echo.
+
+"%JAVA_CMD%" -cp "%CP%" com.grid.client.ClientApp
+
+endlocal

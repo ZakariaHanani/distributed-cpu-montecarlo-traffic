@@ -1,32 +1,52 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-# Resolve project root (one level up from scripts/)
+# -----------------------------
+# Resolve project root
+# -----------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="${SCRIPT_DIR}/.."
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo "[run-master.sh] Project root: ${ROOT_DIR}"
+# -----------------------------
+# Function to find Java
+# -----------------------------
+resolve_java() {
+  # 1) If JAVA_HOME is set and java exists there, use it
+  if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    echo "$JAVA_HOME/bin/java"
+    return 0
+  fi
 
-# 1) Check that Java exists
-if ! command -v java >/dev/null 2>&1; then
-  echo "[ERROR] Java (java) not found in PATH. Please install JDK 17 and retry."
+  # 2) Try java from PATH
+  if command -v java >/dev/null 2>&1; then
+    command -v java
+    return 0
+  fi
+
+  # 3) Not found
+  echo ""
+  return 1
+}
+
+JAVA_CMD="$(resolve_java)"
+
+if [ -z "$JAVA_CMD" ]; then
+  echo "[ERROR] Java (JDK 17) not found."
+  echo "        Please either:"
+  echo "          - install Java and add 'java' to your PATH, or"
+  echo "          - set JAVA_HOME to your JDK folder."
   exit 1
 fi
 
-# 2) Check that compiled classes exist (user must run 'mvn clean install' before)
-if [ ! -d "${ROOT_DIR}/master/target/classes" ] || [ ! -d "${ROOT_DIR}/common/target/classes" ]; then
-  echo "[ERROR] Compiled classes not found."
-  echo "        Please run: mvn clean install  (from project root) and retry."
-  exit 1
-fi
+echo "[run-master.sh] Using Java: $JAVA_CMD"
 
-# 3) Build classpath (only project modules for now)
-CP="${ROOT_DIR}/common/target/classes:${ROOT_DIR}/master/target/classes"
+# -----------------------------
+# Classpath & run
+# -----------------------------
+CP="$ROOT_DIR/common/target/classes:$ROOT_DIR/master/target/classes"
 
 echo "[run-master.sh] Using classpath:"
-echo "  ${CP}"
+echo "  $CP"
 echo
 
-# 4) Start MasterNode
-echo "[run-master.sh] Starting Master node..."
-java -cp "${CP}" com.grid.master.MasterNode
+exec "$JAVA_CMD" -cp "$CP" com.grid.master.MasterNode
