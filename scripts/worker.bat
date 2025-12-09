@@ -34,17 +34,19 @@ if not defined JAVA_CMD (
     exit /b 1
 )
 
-echo [client.bat] Using Java: %JAVA_CMD%
+echo [worker.bat] Using Java: %JAVA_CMD%
 
 rem --------------------------------------------------------
 rem Classpath and main class
 rem --------------------------------------------------------
-set "CP=%ROOT_DIR%\common\target\classes;%ROOT_DIR%\client\target\classes"
+set "CP=%ROOT_DIR%\common\target\classes;%ROOT_DIR%\worker\target\classes"
 
-echo [client.bat] Using classpath:
+echo [worker.bat] Using classpath:
 echo   %CP%
 echo.
 
-"%JAVA_CMD%" -cp "%CP%" com.grid.client.ClientApp
+rem NOTE: if your main class is com.grid.worker.workerApp (lowercase w),
+rem change the next line accordingly.
+"%JAVA_CMD%" -cp "%CP%" com.grid.worker.workerApp
 
 endlocal
