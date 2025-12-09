@@ -32,7 +32,7 @@ public class ResultCollector {
         }
         finalResults.put(jobId, finalResult);
     }
-
+/*
     public SimulationResult getFinalResult(UUID jobId) {
         SimulationResult res = finalResults.get(jobId);
         if (res == null) {
@@ -41,6 +41,19 @@ public class ResultCollector {
         }
         return res;
     }
+    */
+
+    public JobResult getFinalResult(UUID jobId) {
+        SimulationResult res = finalResults.get(jobId);
+
+        if (res == null) {
+            return new JobResult(JobStatus.RUNNING, null);
+        }
+        return new JobResult(JobStatus.COMPLETED, res);
+    }
+
+
+
 
     /**
      * Internal mutable state for one job.
@@ -197,5 +210,9 @@ public class ResultCollector {
         return state;
     }
 
+    public record JobResult(
+            JobStatus status,
+            SimulationResult result
+    ) {}
 
 }

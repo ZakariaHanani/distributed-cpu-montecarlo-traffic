@@ -19,5 +19,5 @@ public interface IMaster extends Remote {
     /**
      * Return the final aggregated result for a task.
      */
-    Result getFinalResult(UUID taskId) throws RemoteException;
+     Record getFinalResult(UUID taskId) throws RemoteException;
 }

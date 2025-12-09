@@ -74,7 +74,7 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
      * Master returns it if ready, or null if still running.
      */
     @Override
-    public SimulationResult getFinalResult(UUID jobId) throws RemoteException {
+    public ResultCollector.JobResult getFinalResult(UUID jobId) throws RemoteException {
         return collector.getFinalResult(jobId);
     }
 

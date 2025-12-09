@@ -8,12 +8,16 @@ import com.grid.common.model.SimulationResult;
 import com.grid.common.model.Weather;
 import com.grid.master.assignment.WorkerAssignmentService;
 import com.grid.master.assignment.WorkerRegistry;
+import com.grid.master.results.JobStatus;
 import com.grid.master.results.ResultAggregator;
 import com.grid.master.results.ResultCollector;
 import com.grid.master.splitting.TaskSplitter;
 
 import java.rmi.RemoteException;
 import java.util.*;
+
+import static com.grid.master.results.JobStatus.COMPLETED;
+import static com.grid.master.results.JobStatus.RUNNING;
 
 public class MasterAsyncTest {
 
@@ -79,14 +83,19 @@ public class MasterAsyncTest {
         master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-3"));
         master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-4"));
         master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-5"));
-        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-3"));
-        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-4"));
-        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-5"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-6"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-7"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-8"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-9"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-10"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-11"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-12"));
+        master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-13"));
 
         // prepare simulation parameters
         SimulationParams params = new SimulationParams(
                 10,       // number of cars
-                10000,      // iterations
+                1000000000,      // iterations
                 Weather.SUNNY,
                 true,     // traffic lights
                 42L       // seed
@@ -98,15 +107,23 @@ public class MasterAsyncTest {
 
 
         // wait for completion (polling for testing)
-        while (master.getFinalResult(jobId) == null) {
+        ResultCollector.JobResult jr;
+
+        while (true) {
+            jr = master.getFinalResult(jobId);
+
+            if (jr.status() == JobStatus.COMPLETED) break;
+
+            System.out.println("Job still running...");
             Thread.sleep(100);
         }
-
-        SimulationResult res = master.getFinalResult(jobId);
+        SimulationResult res = jr.result();
         System.out.println("[Test] Final result: ");
         System.out.println("Total jams: " + res.getTotalJamsDetected());
         System.out.println("Average speed: " + res.getAverageSpeed());
         System.out.println("Congestion map: " + res.getCongestionMap());
+
+
 
     }
 }
