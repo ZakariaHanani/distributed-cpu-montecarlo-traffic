@@ -23,17 +23,21 @@ import java.util.concurrent.ConcurrentMap;
 public class ResultCollector {
 
 
-    private final ConcurrentMap<UUID, Result> finalResults = new ConcurrentHashMap<>();
-    public void storeFinalResult(UUID jobId, Result finalResult) {
+    private final ConcurrentMap<UUID, SimulationResult> finalResults = new ConcurrentHashMap<>();
+
+
+    public void storeFinalResult(UUID jobId, SimulationResult finalResult) {
         if (finalResult == null) {
             throw new IllegalArgumentException("finalResult cannot be null");
         }
         finalResults.put(jobId, finalResult);
     }
-    public Result getFinalResult(UUID jobId) {
-        Result res = finalResults.get(jobId);
+
+    public SimulationResult getFinalResult(UUID jobId) {
+        SimulationResult res = finalResults.get(jobId);
         if (res == null) {
-            throw new IllegalStateException("Final result not yet available for job: " + jobId);
+            System.out.println("job still running");
+            //throw new IllegalStateException("Final result not yet available for job: " + jobId);
         }
         return res;
     }
@@ -126,6 +130,10 @@ public class ResultCollector {
 
             if (state.receivedChunks >= state.expectedChunks) {
                 state.status = JobStatus.COMPLETED;
+                // Merge results once
+                SimulationResult finalResult = new ResultAggregator().merge(state.results);
+                finalResults.put(state.jobId, finalResult);
+                System.out.println("[Master] Job " + state.jobId + " completed.");
             }
         }
     }
@@ -188,4 +196,6 @@ public class ResultCollector {
         }
         return state;
     }
+
+
 }

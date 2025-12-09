@@ -1,9 +1,6 @@
 package com.grid.master;
 
-
-import com.grid.common.IMaster;
-import com.grid.common.Result;
-import com.grid.common.Task;
+import com.grid.common.*;
 import com.grid.common.model.SimulationChunkTask;
 import com.grid.common.model.SimulationParams;
 import com.grid.common.model.SimulationResult;
@@ -14,10 +11,12 @@ import com.grid.master.results.ResultCollector;
 import com.grid.master.splitting.TaskSplitter;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
 
 public class MasterImpl extends UnicastRemoteObject implements IMaster {
 
@@ -27,80 +26,140 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
     private final ResultCollector collector;
     private final ResultAggregator aggregator;
 
-    protected MasterImpl() throws RemoteException {
-        super();
+    // Callback that workers will use in async mode
+    private final MasterCallback callback;
+
+    public MasterImpl() throws RemoteException {
         this.workerRegistry = new WorkerRegistry();
         this.splitter = new TaskSplitter();
         this.assignmentService = new WorkerAssignmentService(workerRegistry);
         this.collector = new ResultCollector();
         this.aggregator = new ResultAggregator();
+
+        // Callback implementation for async tasks
+        this.callback = new MasterCallbackImpl(collector);
+
+        //discoverWorkers();
     }
 
-
+    /**
+     * Submit a task asynchronously.
+     * Master returns immediately with jobId.
+     * Workers will call callback when they finish.
+     */
     @Override
-    public Result submitTask(SimulationParams params) throws RemoteException {
-        System.out.println("[Master] Received simulation request.");
-       return submitSimulationSync(params) ;
-    }
+    public UUID submitTaskAsync(SimulationParams params) throws RemoteException {
 
-    @Override
-    public Result getFinalResult(UUID taskId) throws RemoteException {
-        return null;
-    }
-
-    private Result submitSimulationSync(SimulationParams params) throws  RemoteException{
-
-        // ------------------------- STEP 1: Prepare job --------------------------------
         UUID jobId = UUID.randomUUID();
 
-        // Get number of available workers
+        int workers = workerRegistry.size();
+        if (workers == 0) throw new IllegalStateException("No workers registered!");
+
+        //------------------------ Split the simulation into chunks --------------------------------
+        List<SimulationChunkTask> chunks = splitter.splitForWorkers(params, workers);
+
+        // -----------------------Register the job in collector (count how many chunks) -------------------------------
+        collector.registerJob(jobId, chunks.size());
+        collector.markJobRunning(jobId);
+
+        //---------------------- Async dispatch — Master does !!!!****not*****!!!!!! wait --------------------------------
+        assignmentService.dispatchAsync(jobId, chunks, callback);
+
+        //----------------------------- Master returns immediately -------------------------------------
+        return jobId;
+    }
+
+    /**
+     * Client asks for the final result (async mode)
+     * Master returns it if ready, or null if still running.
+     */
+    @Override
+    public SimulationResult getFinalResult(UUID jobId) throws RemoteException {
+        return collector.getFinalResult(jobId);
+    }
+
+    /**
+     * Synchronous version:
+     * Master waits until *all* workers finish, then merges and returns.
+     */
+    @Override
+    public Result submitTaskSync(SimulationParams params) throws RemoteException {
+
+        System.out.println("[Master] Received simulation request. <<<<Synchronized Mode>>>>");
+
+        UUID jobId = UUID.randomUUID();
+
         int workerCount = workerRegistry.size();
         if (workerCount == 0) {
             throw new IllegalStateException("[Master] No workers registered!");
         }
 
-        // ------------------------- STEP 2: Split task -----------------------------------
+        //------------------------ Step 1: Split simulation into chunks --------------------------------
         List<SimulationChunkTask> chunks =
                 splitter.splitForWorkers(params, workerCount);
 
         System.out.printf("[Master] Created %d chunks.\n", chunks.size());
 
-        // ------------------------- STEP 3: Register job ---------------------------------
         collector.registerJob(jobId, chunks.size());
         collector.markJobRunning(jobId);
 
-        // ------------------------- STEP 4: Dispatch tasks to workers --------------------
+        //------------------------ Step 2: Dispatch tasks (blocking) ------------------------------
         List<Result> partialResults;
         try {
             partialResults = assignmentService.dispatchTasksRoundRobin(chunks);
+
         } catch (RemoteException e) {
             collector.markJobFailed(jobId, "[Master] Worker communication error.");
             throw e;
         }
 
-        // ------------------------- STEP 5: Collect results ------------------------------
-        collector.addResults(jobId, partialResults);
+        // --------------------------- Step 3: Store partial  -----------------------------------
+        collector.addResults(jobId, partialResults); //What is the purpos of the collector if will add the results at once(Fhamtini assat)
 
-        // ------------------------- STEP 6: Check completeness ---------------------------
+        // -----------------------Step 4: Validate everything is received --------------------------
         if (!collector.isCompleted(jobId)) {
-            // This should not happen in a synchronous design
             System.err.println("[Master] ERROR: Not all results were received!");
             collector.markJobFailed(jobId, "Incomplete results.");
             return null;
         }
 
-        // ------------------------- STEP 7: Merge results (4.7) --------------------------
+        // ---------------------------- Step 5: Merge (aggregation 4.7) -------------------------------------------
         List<SimulationResult> allParts = collector.getResults(jobId);
         Result finalResult = aggregator.merge(allParts);
 
-        System.out.println("[Master] Aggregation complete. Sending final result.");
+        System.out.println("[Master] Aggregation complete. Returning final result.");
+
         return finalResult;
     }
 
 
+    public WorkerRegistry getWorkerRegistry() {
+        return workerRegistry;
+    }
+
+    private void discoverWorkers() {
+        try {
+            String host = configLoader.get("registry.host");
+            int port = configLoader.getInt("registry.port");
+            Registry registry = LocateRegistry.getRegistry(host, port);
+
+            String[] names = registry.list();
+            System.out.println("[Master] RMI registry contains: " + Arrays.toString(names));
+
+            for (String name : names) {
+                if (name.startsWith("worker-")) {
+
+                    IWorker workerStub = (IWorker) registry.lookup(name);
+
+                    workerRegistry.registerWorker(name, workerStub);
+
+                    System.out.println("[Master] Registered worker: " + name);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
-
-
-
-
-

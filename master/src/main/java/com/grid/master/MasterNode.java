@@ -13,7 +13,6 @@ public class MasterNode {
 
         // Step 4.2: Create master implementation
         MasterImpl masterImpl = new MasterImpl();
-
         // Bind master to registry
 
         try{

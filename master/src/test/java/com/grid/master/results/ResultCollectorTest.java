@@ -25,10 +25,10 @@ class ResultCollectorTest {
             this.execTimeMs = 0L;
         }
 
-        @Override public UUID getTaskId() { return taskId; }
-        @Override public String getWorkerId() { return workerId; }
-        @Override public Map<String, Object> getMetrics() { return metrics; }
-        @Override public long getExecutionTimeMs() { return execTimeMs; }
+         public UUID getTaskId() { return taskId; }
+         public String getWorkerId() { return workerId; }
+         public Map<String, Object> getMetrics() { return metrics; }
+         public long getExecutionTimeMs() { return execTimeMs; }
     }
 
     @Test

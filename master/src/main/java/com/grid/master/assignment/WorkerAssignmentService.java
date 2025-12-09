@@ -1,12 +1,14 @@
 package com.grid.master.assignment;
 
 import com.grid.common.IWorker;
+import com.grid.common.MasterCallback;
 import com.grid.common.Result;
 import com.grid.common.Task;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class WorkerAssignmentService {
 
@@ -17,8 +19,10 @@ public class WorkerAssignmentService {
     }
 
     /**
-     * Dispatch tasks to workers using round-robin.
-     * One task -> one worker.execute(task) RMI call.
+     * Dispatch tasks synchronously using round-robin.
+     * Each task is executed immediately (blocking) by calling worker.execute(task).
+     *
+     * This is the "simple" synchronous flow.
      */
     public List<Result> dispatchTasksRoundRobin(List<? extends Task> tasks) throws RemoteException {
         if (!workerRegistry.hasWorkers()) {
@@ -31,12 +35,14 @@ public class WorkerAssignmentService {
             WorkerInfo chosen = workerRegistry
                     .nextAvailableWorkerRoundRobin()
                     .orElseThrow(() -> new IllegalStateException("No AVAILABLE workers to assign task."));
-
             IWorker workerStub = chosen.getStub();
 
             try {
-                Result result = workerStub.execute(task);   // RMI call
+                // This is a blocking RMI call
+                // Master waits for worker to finish
+                Result result = workerStub.execute(task);
                 results.add(result);
+
             } catch (RemoteException e) {
                 System.err.printf(
                         "[Master] RMI error when executing task %s on worker %s: %s%n",
@@ -44,15 +50,42 @@ public class WorkerAssignmentService {
                         chosen.getId(),
                         e.getMessage()
                 );
+
                 /*
-                 TODO: re-queue task or try another worker
-                 keep behaviour the same: let the caller handle it
-                */
+                 TODO: re-try logic or requeue the task
+                 For now, we rethrow so the caller (MasterImpl) handles it.
+                 */
                 throw e;
             }
         }
 
-
         return results;
+    }
+
+    /**
+     * Asynchronous dispatch:
+     * Master sends jobs to workers and finishes immediately.
+     * Workers will later call back MasterCallback.receivePartialResult(...)
+     *
+     * This is the "pro" distributed async workflow.
+     */
+    public void dispatchAsync(UUID jobId, List<? extends Task> tasks, MasterCallback callback)
+            throws RemoteException {
+
+        if (!workerRegistry.hasWorkers()) {
+            throw new IllegalStateException("No workers are registered in the Master.");
+        }
+
+        for (Task task : tasks) {
+
+            // Pick next worker
+            WorkerInfo worker = workerRegistry
+                    .nextAvailableWorkerRoundRobin()
+                    .orElseThrow(() -> new IllegalStateException("No workers available"));
+
+            // Call the async method in the worker
+            // Worker will compute, then call callback.receivePartialResult(jobId, result)
+            worker.getStub().executeAsync(jobId, task, callback);
+        }
     }
 }

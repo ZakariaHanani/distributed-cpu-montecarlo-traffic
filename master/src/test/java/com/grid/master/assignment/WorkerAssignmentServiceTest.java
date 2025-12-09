@@ -1,6 +1,7 @@
 package com.grid.master.assignment;
 
 import com.grid.common.IWorker;
+import com.grid.common.MasterCallback;
 import com.grid.common.Result;
 import com.grid.common.Task;
 import com.grid.common.model.SimulationChunkTask;
@@ -29,10 +30,10 @@ class WorkerAssignmentServiceTest {
             this.execTimeMs = 0L;
         }
 
-        @Override public UUID getTaskId() { return taskId; }
-        @Override public String getWorkerId() { return workerId; }
-        @Override public Map<String, Object> getMetrics() { return metrics; }
-        @Override public long getExecutionTimeMs() { return execTimeMs; }
+         public UUID getTaskId() { return taskId; }
+         public String getWorkerId() { return workerId; }
+         public Map<String, Object> getMetrics() { return metrics; }
+         public long getExecutionTimeMs() { return execTimeMs; }
     }
 
     // Fake worker that just remembers which tasks it executed
@@ -48,6 +49,11 @@ class WorkerAssignmentServiceTest {
         public Result execute(Task task) throws RemoteException {
             receivedTasks.add(task);
             return new TestResult(task.getTaskId(), id);
+        }
+
+        @Override
+        public void executeAsync(UUID jobId, Task task, MasterCallback callback) throws RemoteException {
+
         }
 
         public List<Task> getReceivedTasks() {
