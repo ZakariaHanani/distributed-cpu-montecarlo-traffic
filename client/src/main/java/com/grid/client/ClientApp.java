@@ -1,6 +1,7 @@
 package com.grid.client;
 
 import com.grid.common.IMaster;
+import com.grid.common.Result;
 import com.grid.common.configLoader;
 import com.grid.common.model.SimulationJobTask;
 import com.grid.common.model.SimulationParams;
@@ -18,7 +19,7 @@ public class ClientApp {
     public static void main(String[] args) {
         final String registryHost = configLoader.get("registry.host");
         final int registryPort = configLoader.getInt("registry.port");
-        final String serviceName  = "MasterService"; // same as MasterNode binds
+        final String serviceName = "MasterService"; // same as MasterNode binds
 
         System.out.printf("[Client] Connecting to RMI registry at %s:%d...%n",
                 registryHost, registryPort);
@@ -45,6 +46,7 @@ public class ClientApp {
     /**
      * Ask user for parameters, validate them, build SimulationJobTask
      * and send it to the Master using submitTask(Task t).
+     * Then wait for the final aggregated result (6.3).
      */
     private static void submitSimulation(IMaster master) throws RemoteException {
         Scanner scanner = new Scanner(System.in);
@@ -53,7 +55,7 @@ public class ClientApp {
         System.out.println("=== New Monte Carlo Traffic Simulation ===");
 
         int iterations = readPositiveInt(scanner, "Iterations (e.g. 10_000): ");
-        int cars       = readPositiveInt(scanner, "Cars count (e.g. 150): ");
+        int cars = readPositiveInt(scanner, "Cars count (e.g. 150): ");
 
         System.out.print("Use random seed? (y/n): ");
         String randomAnswer = scanner.nextLine().trim();
@@ -68,18 +70,12 @@ public class ClientApp {
             seed = readLong(scanner, "Seed (integer): ");
         }
 
-        // ---- VALIDATION summary ----
-        // iterations > 0, cars > 0 (checked above)
-        // randomness: we know if we used random seed or not
-        // seed: we either generated it or validated user input
-        // ---------------------------------------
-
         // For now we fix weather + traffic lights. Later you can ask user too.
         SimulationParams params = new SimulationParams(
                 cars,
                 iterations,
-                Weather.SUNNY, // maybe default SUNNY for now
-                true,     // trafficLightsEnabled
+                Weather.SUNNY,  // default SUNNY for now
+                true,           // trafficLightsEnabled
                 seed
         );
 
@@ -89,6 +85,71 @@ public class ClientApp {
         UUID jobId = master.submitTask(task);
 
         System.out.printf("[Client] Simulation submitted successfully. jobId = %s%n", jobId);
+
+        // 6.3 – wait (polling) for aggregated result
+        Result finalResult = waitForFinalResult(master, jobId);
+
+        if (finalResult == null) {
+            System.err.println("[Client] Did not receive final result (timeout or error).");
+        } else {
+            System.out.println("[Client] Final result received from Master.");
+            System.out.println("        (Details will be formatted in issue 6.4)");
+        }
+    }
+
+    /**
+     * 6.3 – Poll Master.getFinalResult(jobId) until:
+     *  - result is non-null  -> success
+     *  - timeout is reached  -> give up
+     *  - RemoteException     -> treat as failure
+     */
+    private static Result waitForFinalResult(IMaster master, UUID jobId) {
+        // timeout.value is defined in config/config.properties (in ms)
+        long timeoutMs;
+        try {
+            timeoutMs = configLoader.getLong("timeout.value");
+        } catch (Exception e) {
+            // fallback if property is missing or invalid
+            timeoutMs = 300_000L; // 5 minutes default
+            System.err.println("[Client] Could not read timeout.value from config, using default 300000 ms.");
+        }
+
+        final long pollIntervalMs = 2_000L; // 2 seconds between polls
+        long start = System.currentTimeMillis();
+        int attempts = 0;
+
+        System.out.printf("[Client] Waiting for final result of job %s (timeout = %d ms)...%n",
+                jobId, timeoutMs);
+
+        while (System.currentTimeMillis() - start < timeoutMs) {
+            attempts++;
+            try {
+                Result result = master.getFinalResult(jobId);
+                if (result != null) {
+                    System.out.printf("[Client] Final result is ready after %d polls.%n", attempts);
+                    return result;
+                } else {
+                    System.out.printf("[Client] Job %s not finished yet (attempt %d).%n",
+                            jobId, attempts);
+                }
+            } catch (RemoteException e) {
+                System.err.printf("[Client] RemoteException while polling for result (attempt %d): %s%n",
+                        attempts, e.getMessage());
+                // Simple strategy: stop waiting, consider master unavailable
+                return null;
+            }
+
+            try {
+                Thread.sleep(pollIntervalMs);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                System.err.println("[Client] Polling interrupted; stopping wait.");
+                return null;
+            }
+        }
+
+        System.err.printf("[Client] Timeout reached while waiting for job %s final result.%n", jobId);
+        return null;
     }
 
     private static int readPositiveInt(Scanner scanner, String label) {
