@@ -1,5 +1,7 @@
 package com.grid.common;
 
+import com.grid.common.model.SimulationParams;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.UUID;
@@ -11,10 +13,11 @@ public interface IMaster extends Remote {
     /**
      * Accept a task from a Client, split it, and assign chunks to Workers.
      */
-    UUID submitTask(Task task) throws RemoteException;
 
+    UUID submitTaskAsync(SimulationParams params) throws RemoteException;
+    Result submitTaskSync(SimulationParams params) throws RemoteException;
     /**
      * Return the final aggregated result for a task.
      */
-    Result getFinalResult(UUID taskId) throws RemoteException;
+     Record getFinalResult(UUID taskId) throws RemoteException;
 }
