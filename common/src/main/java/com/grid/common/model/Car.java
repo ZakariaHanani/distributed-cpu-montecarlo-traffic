@@ -7,7 +7,8 @@ public class Car implements Serializable {
     private String currentRoadId;
     private double position;      // Position en mètres sur la route (0 -> length)
     private double speed;         // Vitesse actuelle
-    private DriverType driverType; // Comportement
+    private DriverType driverType;// Comportement
+    private boolean isCrashed = false; // Par défaut, tout va bien
 
     public Car(int id, String currentRoadId, DriverType driverType) {
         this.id = id;
@@ -18,6 +19,8 @@ public class Car implements Serializable {
     }
 
     // Getters et Setters nécessaires pour la simulation
+    public boolean isCrashed() { return isCrashed; }
+    public void setCrashed(boolean crashed) { this.isCrashed = crashed; }
     public int getId() { return id; }
     public String getCurrentRoadId() { return currentRoadId; }
     public void setCurrentRoadId(String currentRoadId) { this.currentRoadId = currentRoadId; }
