@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -22,14 +21,6 @@ public class TrafficSimulationEngine {
     private double sumOfAverageSpeeds;
     private int iterationsExecuted;
 
-    // Stats avancées (Monte Carlo)
-    private double minGlobalSpeed;
-    private double maxGlobalSpeed;
-    private int totalAccidents;
-
-    // Compteur pour la Heatmap (Combien de fois chaque route a été bouchée)
-    private Map<String, Integer> roadCongestionCounter;
-
     /**
      * Initialise la simulation en créant la ville et les voitures.
      * Reset des compteurs statistiques.
@@ -37,10 +28,7 @@ public class TrafficSimulationEngine {
     public void initializeSimulation(SimulationParams params) {
         this.currentParams = params;
         this.random = new Random(params.getSeed());
-
-        // Création dynamique de la grille
-        int size = (params.getGridSize() > 0) ? params.getGridSize() : 5;
-        this.roads = generateDynamicGrid(size);
+        this.roads = createSimpleGrid();
         this.cars = generateCars(params.getNumberOfCars());
 
         // Reset des stats
@@ -48,20 +36,11 @@ public class TrafficSimulationEngine {
         this.sumOfAverageSpeeds = 0;
         this.iterationsExecuted = 0;
 
-        this.minGlobalSpeed = Double.MAX_VALUE;
-        this.maxGlobalSpeed = 0.0;
-        this.totalAccidents = 0;
-
-        this.roadCongestionCounter = new HashMap<>();
-        for(Road r : roads) {
-            roadCongestionCounter.put(r.getId(), 0);
-        }
-
-        System.out.println("✅ Simulation initialisée : " + cars.size() + " voitures sur une grille " + size + "x" + size);
+        System.out.println("✅ Simulation initialisée : " + cars.size() + " voitures.");
     }
 
     /**
-     * Exécute UNE itération complète (Mouvement + Collision + Stats)
+     * 🟢 ISSUE 7.6 : Exécute UNE itération complète (Mouvement + Collision + Stats)
      */
     public void updateIteration() {
         double totalSpeedInThisTick = 0;
@@ -73,9 +52,7 @@ public class TrafficSimulationEngine {
 
             // Collecte de données instantanée
             totalSpeedInThisTick += car.getSpeed();
-
-            // Si la voiture roule, elle n'est pas bloquée
-            if (car.getSpeed() < 5.0) {
+            if (car.getSpeed() < 5.0) { // Si vitesse < 5 km/h, on considère qu'elle est bloquée
                 carsStuckCount++;
             }
         }
@@ -83,14 +60,10 @@ public class TrafficSimulationEngine {
         // 2. Calcul des Statistiques Globales de ce tour
         double avgSpeedThisTick = cars.isEmpty() ? 0 : totalSpeedInThisTick / cars.size();
 
-        // Mise à jour Min / Max (Monte Carlo)
-        if (avgSpeedThisTick < minGlobalSpeed) minGlobalSpeed = avgSpeedThisTick;
-        if (avgSpeedThisTick > maxGlobalSpeed) maxGlobalSpeed = avgSpeedThisTick;
-
         // Détection d'embouteillage global (si > 50% des voitures sont bloquées)
         boolean isJam = !cars.isEmpty() && ((double) carsStuckCount / cars.size()) > 0.5;
 
-        // 3. Mise à jour des cumuls globaux
+        // 3. Mise à jour des cumuls
         sumOfAverageSpeeds += avgSpeedThisTick;
         if (isJam) {
             totalJamsDetected++;
@@ -99,62 +72,24 @@ public class TrafficSimulationEngine {
     }
 
     /**
-     * Méthode pour récupérer le rapport final complet
-     * CORRIGÉE pour matcher ton constructeur SimulationResult
+     * Méthode pour récupérer le rapport final (Sera utilisée par le Worker à la fin)
      */
     public SimulationResult getFinalResult() {
         double globalAverageSpeed = iterationsExecuted == 0 ? 0 : sumOfAverageSpeeds / iterationsExecuted;
 
-        // Transformation du compteur brut (Integer) en pourcentage de congestion (Double) pour la Map
-        Map<String, Double> congestionResultMap = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : roadCongestionCounter.entrySet()) {
-            // Ratio : (Nombre de fois bouché) / (Nombre total d'itérations)
-            // Ex: 0.5 = bouché 50% du temps
-            double congestionRatio = iterationsExecuted == 0 ? 0.0 : (double) entry.getValue() / iterationsExecuted;
-            congestionResultMap.put(entry.getKey(), congestionRatio);
-        }
-
-        // Calcul probabilité accident
-        double accidentProb = cars.isEmpty() ? 0 : (double) totalAccidents / cars.size() * 100.0;
-
-        // Appel du constructeur EXACT de ta classe SimulationResult
-        return new SimulationResult(
-                totalJamsDetected,      // int totalJams
-                globalAverageSpeed,     // double avgSpeed
-                congestionResultMap,    // Map<String, Double> congestionMap
-                minGlobalSpeed,         // double minSpeedObserved
-                maxGlobalSpeed,         // double maxSpeedObserved
-                accidentProb            // double accidentProbability
-        );
+        // Note: La congestionMap sera implémentée plus finement plus tard,
+        // ici on met une map vide ou basique pour l'instant.
+        return new SimulationResult(totalJamsDetected, globalAverageSpeed, new HashMap<>());
     }
 
-    // --- Logique de Mouvement ---
+    // --- Logique de Mouvement (Issue 7.3 & 7.4) ---
     private void moveCar(Car car) {
-        // Si la voiture est accidentée, elle ne bouge plus
-        if (car.isCrashed()) {
-            car.setSpeed(0);
-            return;
-        }
-
         Road road = findRoadById(car.getCurrentRoadId());
         if (road == null) return;
 
         double desiredSpeed = calculateSpeed(car, road);
 
-        // --- SIMULATION ACCIDENT ---
-        double accidentChance = 0.0001;
-        if (currentParams.getWeather() == Weather.RAINY) accidentChance *= 3;
-        if (currentParams.getWeather() == Weather.FOGGY) accidentChance *= 5;
-        if (car.getDriverType() == DriverType.AGGRESSIVE) accidentChance *= 2;
-
-        if (randomEvent(accidentChance)) {
-            car.setCrashed(true);
-            car.setSpeed(0);
-            totalAccidents++;
-            return;
-        }
-
-        // --- COLLISION ---
+        // Collision logic (Issue 7.4)
         Car carInFront = findCarInFront(car);
         if (carInFront != null) {
             double distance = carInFront.getPosition() - car.getPosition();
@@ -165,34 +100,26 @@ public class TrafficSimulationEngine {
             }
         }
 
-        // --- FLUCTUATION ---
-        if (randomEvent(0.1)) {
-            double fluctuation = 0.9 + (random.nextDouble() * 0.2);
+        // Random fluctuation (Issue 7.5)
+        if (randomEvent(0.1)) { // 10% de chance de variation
+            double fluctuation = 0.9 + (random.nextDouble() * 0.2); // 0.9 à 1.1
             desiredSpeed *= fluctuation;
         }
 
         car.setSpeed(desiredSpeed);
 
-        // --- CALCUL POSITION ---
         double distanceParcourue = (car.getSpeed() / 3.6);
         double newPosition = car.getPosition() + distanceParcourue;
 
-        // Fin de route
         if (newPosition >= road.getLength()) {
             newPosition = road.getLength();
             car.setSpeed(0);
         }
 
-        // Anti-overlap
+        // Anti-overlap correction
         if (carInFront != null && newPosition > carInFront.getPosition() - 2.0) {
             newPosition = carInFront.getPosition() - 2.0;
             car.setSpeed(0);
-        }
-
-        // Mise à jour stats congestion par route
-        if (car.getSpeed() < 5.0) {
-            String rid = road.getId();
-            roadCongestionCounter.put(rid, roadCongestionCounter.getOrDefault(rid, 0) + 1);
         }
 
         car.setPosition(newPosition);
@@ -222,7 +149,7 @@ public class TrafficSimulationEngine {
         double minDistance = Double.MAX_VALUE;
         Car closestCar = null;
         for (Car otherCar : cars) {
-            if (otherCar != currentCar && otherCar.getCurrentRoadId().equals(currentCar.getCurrentRoadId())) {
+            if (otherCar.getCurrentRoadId().equals(currentCar.getCurrentRoadId())) {
                 if (otherCar.getPosition() > currentCar.getPosition()) {
                     double distance = otherCar.getPosition() - currentCar.getPosition();
                     if (distance < minDistance) {
@@ -243,7 +170,7 @@ public class TrafficSimulationEngine {
         return roads.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
     }
 
-    // --- Création ---
+    // --- Création (Issue 7.2) ---
     private List<Car> generateCars(int count) {
         List<Car> generatedCars = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -257,22 +184,12 @@ public class TrafficSimulationEngine {
         return generatedCars;
     }
 
-    private List<Road> generateDynamicGrid(int size) {
-        List<Road> generatedRoads = new ArrayList<>();
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                if (x < size - 1) {
-                    generatedRoads.add(new Road("R_H_" + x + "_" + y, "I_" + x + "_" + y, "I_" + (x + 1) + "_" + y, 1000, 50));
-                }
-                if (y < size - 1) {
-                    generatedRoads.add(new Road("R_V_" + x + "_" + y, "I_" + x + "_" + y, "I_" + x + "_" + (y + 1), 1000, 50));
-                }
-            }
-        }
-        return generatedRoads;
+    private List<Road> createSimpleGrid() {
+        List<Road> cityRoads = new ArrayList<>();
+        cityRoads.add(new Road("R01", "I00", "I01", 500, 50));
+        cityRoads.add(new Road("R02", "I01", "I02", 500, 50));
+        cityRoads.add(new Road("R03", "I02", "I03", 500, 50));
+        cityRoads.add(new Road("R04", "I00", "I10", 300, 30));
+        return cityRoads;
     }
-
-    // Getters
-    public List<Car> getCars() { return cars; }
-    public List<Road> getRoads() { return roads; }
 }
