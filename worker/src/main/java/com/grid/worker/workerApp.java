@@ -23,40 +23,27 @@ public class workerApp {
         Thread workerThread = null;
 
         if (registry != null) {
-            System.out.println("✅ Successfully connected to RMI Registry.");
+            System.out.println("Successfully connected to RMI Registry.");
             try {
-                workerImpl = new WorkerImpl();
+                workerImpl = new WorkerImpl(registry);
                 String workerId = workerImpl.getId();
 
                 registry.rebind(workerId, workerImpl);
 
-                System.out.printf("✅ Worker registered successfully with ID: %s.\n", workerId);
+                System.out.printf("Worker registered successfully with ID: %s.\n", workerId);
+
 
                 workerThread = new Thread(workerImpl, "Worker-Task-Processor");
                 workerThread.start();
+
                 System.out.println("LOG: Worker is now running and waiting for tasks...");
 
-                final WorkerImpl finalWorkerImpl = workerImpl;
-                final Thread finalWorkerThread = workerThread;
-
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    System.out.println("\nLOG: Received shutdown signal. Initiating graceful stop...");
-                    finalWorkerImpl.stopWorker();
-
-                    try {
-                        finalWorkerThread.join(5000);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    System.out.println("LOG: Worker shutdown complete.");
-                }));
-
             } catch (RemoteException e) {
-                System.err.println("❌ Critical error during RMI registration or binding: " + e.getMessage());
+                System.err.println("Critical error during RMI registration or binding: " + e.getMessage());
                 System.exit(1);
             }
         } else {
-            System.err.println("❌ Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
+            System.err.println("Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
             System.exit(1);
         }
     }

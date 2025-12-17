@@ -1,8 +1,16 @@
 package com.grid.common.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class SimulationParams implements Serializable {
+
     private int numberOfCars;
     private int iterations;
     private Weather weather;
@@ -10,23 +18,4 @@ public class SimulationParams implements Serializable {
     private long seed;
     private int gridSize;
 
-    // Constructeur mis à jour
-    public SimulationParams(int numberOfCars, int iterations, Weather weather, boolean trafficLightsEnabled, long seed, int gridSize) {
-        this.numberOfCars = numberOfCars;
-        this.iterations = iterations;
-        this.weather = weather;
-        this.trafficLightsEnabled = trafficLightsEnabled;
-        this.seed = seed;
-        this.gridSize = gridSize;
-    }
-
-    // Getters
-    public int getNumberOfCars() { return numberOfCars; }
-    public int getIterations() { return iterations; }
-    public Weather getWeather() { return weather; }
-    public int getGridSize() { return gridSize; }
-    public boolean isTrafficLightsEnabled() { return trafficLightsEnabled; }
-
-    // <--- LA MÉTHODE MANQUANTE
-    public long getSeed() { return seed; }
 }

@@ -19,17 +19,13 @@ public class WorkerImplExampleForAsync extends UnicastRemoteObject implements IW
 
         new Thread(() -> {
             try {
-                Result result = null ; // execute the task something like   result = task.execute() // heavy computing
-                callback.onTaskCompleted(jobId, List.of(result));
+                Result result = task.execute() ;
+                callback.onTaskCompleted(jobId, result);
             } catch (Exception e) {
                 System.err.println("[Worker] Error: " + e);
-                //you can callback the OnTaskFailled
+
             }
         }).start();
     }
 
-    @Override
-    public Result execute(Task task) throws RemoteException {
-        return null;
-    }
 }
