@@ -16,9 +16,6 @@ import com.grid.master.splitting.TaskSplitter;
 import java.rmi.RemoteException;
 import java.util.*;
 
-import static com.grid.master.results.JobStatus.COMPLETED;
-import static com.grid.master.results.JobStatus.RUNNING;
-
 public class MasterAsyncTest {
 
     // Fake worker to simulate async RMI execution

@@ -39,7 +39,7 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
         // Callback implementation for async tasks
         this.callback = new MasterCallbackImpl(collector);
 
-        //discoverWorkers();
+         //discoverWorkers();
     }
 
     /**
@@ -65,7 +65,7 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
         //---------------------- Async dispatch — Master does !!!!****not*****!!!!!! wait --------------------------------
         assignmentService.dispatchAsync(jobId, chunks, callback);
 
-        //----------------------------- Master returns immediately -------------------------------------
+        //---------------------------- Master returns immediately -------------------------------
         return jobId;
     }
 
