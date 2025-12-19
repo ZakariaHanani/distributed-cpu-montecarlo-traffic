@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ResultCollector {
 
-
     private final ConcurrentMap<UUID, SimulationResult> finalResults = new ConcurrentHashMap<>();
 
 
