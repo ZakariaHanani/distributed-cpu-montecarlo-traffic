@@ -59,7 +59,8 @@ TaskSplitter {
                     iterationsForThisWorker,
                     globalParams.getWeather(),
                     globalParams.isTrafficLightsEnabled(),
-                    chunkSeed
+                    chunkSeed ,
+                    globalParams.getGridSize()
             );
 
             SimulationChunkTask chunkTask = new SimulationChunkTask(

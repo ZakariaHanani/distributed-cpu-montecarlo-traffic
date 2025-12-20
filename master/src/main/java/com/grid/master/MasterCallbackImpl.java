@@ -17,9 +17,9 @@ public class MasterCallbackImpl implements MasterCallback {
     }
 
     @Override
-    public void onTaskCompleted(UUID jobId, List<Result> partialResults) throws RemoteException {
+    public void onTaskCompleted(UUID jobId, Result partialResults) throws RemoteException {
         // Thread-safe, only completes job once
-        collector.addResults(jobId, partialResults);
+        collector.addResults(jobId, List.of(partialResults));
     }
 
     @Override

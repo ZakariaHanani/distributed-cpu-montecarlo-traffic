@@ -78,59 +78,6 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
         return collector.getFinalResult(jobId);
     }
 
-    /**
-     * Synchronous version:
-     * Master waits until *all* workers finish, then merges and returns.
-     */
-    @Override
-    public Result submitTaskSync(SimulationParams params) throws RemoteException {
-
-        System.out.println("[Master] Received simulation request. <<<<Synchronized Mode>>>>");
-
-        UUID jobId = UUID.randomUUID();
-
-        int workerCount = workerRegistry.size();
-        if (workerCount == 0) {
-            throw new IllegalStateException("[Master] No workers registered!");
-        }
-
-        //------------------------ Step 1: Split simulation into chunks --------------------------------
-        List<SimulationChunkTask> chunks =
-                splitter.splitForWorkers(params, workerCount);
-
-        System.out.printf("[Master] Created %d chunks.\n", chunks.size());
-
-        collector.registerJob(jobId, chunks.size());
-        collector.markJobRunning(jobId);
-
-        //------------------------ Step 2: Dispatch tasks (blocking) ------------------------------
-        List<Result> partialResults;
-        try {
-            partialResults = assignmentService.dispatchTasksRoundRobin(chunks);
-
-        } catch (RemoteException e) {
-            collector.markJobFailed(jobId, "[Master] Worker communication error.");
-            throw e;
-        }
-
-        // --------------------------- Step 3: Store partial  -----------------------------------
-        collector.addResults(jobId, partialResults); //What is the purpos of the collector if will add the results at once(Fhamtini assat)
-
-        // -----------------------Step 4: Validate everything is received --------------------------
-        if (!collector.isCompleted(jobId)) {
-            System.err.println("[Master] ERROR: Not all results were received!");
-            collector.markJobFailed(jobId, "Incomplete results.");
-            return null;
-        }
-
-        // ---------------------------- Step 5: Merge (aggregation 4.7) -------------------------------------------
-        List<SimulationResult> allParts = collector.getResults(jobId);
-        Result finalResult = aggregator.merge(allParts);
-
-        System.out.println("[Master] Aggregation complete. Returning final result.");
-
-        return finalResult;
-    }
 
 
     public WorkerRegistry getWorkerRegistry() {
@@ -161,5 +108,61 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
             e.printStackTrace();
         }
     }
+
+
+
+    /**
+     * Synchronous version:
+     * Master waits until *all* workers finish, then merges and returns.
+     */
+//    @Override
+//    public Result submitTaskSync(SimulationParams params) throws RemoteException {
+//
+//        System.out.println("[Master] Received simulation request. <<<<Synchronized Mode>>>>");
+//
+//        UUID jobId = UUID.randomUUID();
+//
+//        int workerCount = workerRegistry.size();
+//        if (workerCount == 0) {
+//            throw new IllegalStateException("[Master] No workers registered!");
+//        }
+//
+//        //------------------------ Step 1: Split simulation into chunks --------------------------------
+//        List<SimulationChunkTask> chunks =
+//                splitter.splitForWorkers(params, workerCount);
+//
+//        System.out.printf("[Master] Created %d chunks.\n", chunks.size());
+//
+//        collector.registerJob(jobId, chunks.size());
+//        collector.markJobRunning(jobId);
+//
+//        //------------------------ Step 2: Dispatch tasks (blocking) ------------------------------
+//        List<Result> partialResults;
+//        try {
+//            partialResults = assignmentService.dis(chunks);
+//
+//        } catch (RemoteException e) {
+//            collector.markJobFailed(jobId, "[Master] Worker communication error.");
+//            throw e;
+//        }
+//
+//        // --------------------------- Step 3: Store partial  -----------------------------------
+//        collector.addResults(jobId, partialResults); //What is the purpos of the collector if will add the results at once(Fhamtini assat)
+//
+//        // -----------------------Step 4: Validate everything is received --------------------------
+//        if (!collector.isCompleted(jobId)) {
+//            System.err.println("[Master] ERROR: Not all results were received!");
+//            collector.markJobFailed(jobId, "Incomplete results.");
+//            return null;
+//        }
+//
+//        // ---------------------------- Step 5: Merge (aggregation 4.7) -------------------------------------------
+//        List<SimulationResult> allParts = collector.getResults(jobId);
+//        Result finalResult = aggregator.merge(allParts);
+//
+//        System.out.println("[Master] Aggregation complete. Returning final result.");
+//
+//        return finalResult;
+//    }
 
 }

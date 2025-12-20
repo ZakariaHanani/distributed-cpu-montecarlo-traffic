@@ -19,22 +19,31 @@ public class workerApp {
 
         Registry registry = connectToRegistry(registryHost, registryPort, maxRetries, waitTimeMs);
 
+        WorkerImpl workerImpl = null;
+        Thread workerThread = null;
+
         if (registry != null) {
-            System.out.println("✅ Successfully connected to RMI Registry.");
+            System.out.println("Successfully connected to RMI Registry.");
             try {
-                Worker workerService = new WorkerImpl();
-                String workerId = workerService.getId();
+                workerImpl = new WorkerImpl(registry);
+                String workerId = workerImpl.getId();
 
-                registry.rebind(workerId, workerService);
+                registry.rebind(workerId, workerImpl);
 
-                System.out.printf("✅ Worker registered successfully with ID: %s. Ready to receive tasks.\n", workerId);
+                System.out.printf("Worker registered successfully with ID: %s.\n", workerId);
+
+
+                workerThread = new Thread(workerImpl, "Worker-Task-Processor");
+                workerThread.start();
+
+                System.out.println("LOG: Worker is now running and waiting for tasks...");
 
             } catch (RemoteException e) {
-                System.err.println("❌ Critical error during RMI registration or binding: " + e.getMessage());
+                System.err.println("Critical error during RMI registration or binding: " + e.getMessage());
                 System.exit(1);
             }
         } else {
-            System.err.println("❌ Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
+            System.err.println("Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
             System.exit(1);
         }
     }

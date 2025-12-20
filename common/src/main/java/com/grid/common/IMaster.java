@@ -15,7 +15,7 @@ public interface IMaster extends Remote {
      */
 
     UUID submitTaskAsync(SimulationParams params) throws RemoteException;
-    Result submitTaskSync(SimulationParams params) throws RemoteException;
+//    Result submitTaskSync(SimulationParams params) throws RemoteException;
     /**
      * Return the final aggregated result for a task.
      */

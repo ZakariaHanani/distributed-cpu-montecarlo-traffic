@@ -34,6 +34,12 @@ public interface Task extends Serializable {
      * @return A Result object describing the result of the execution. ( Maxi daba , tal mn ba3d)
      */
 
-    //Result execute();
+    Result execute();
+
+    UUID getJobId();
+    void setJobId(UUID jobId);
+
+    MasterCallback getMasterCallback();
+    void setMasterCallback(MasterCallback masterCallback);
 
 }

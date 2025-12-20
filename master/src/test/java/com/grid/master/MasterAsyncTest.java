@@ -22,45 +22,50 @@ public class MasterAsyncTest {
     static class FakeAsyncWorker implements com.grid.common.IWorker {
 
         private final String id;
+        private final Random random = new Random();
 
         public FakeAsyncWorker(String id) {
             this.id = id;
         }
 
         @Override
-        public Result execute(Task task) throws RemoteException {
-            // blocking version (not used here)
-            return simulateResult();
-        }
-
-        @Override
-        public void executeAsync(UUID jobId, Task task, MasterCallback callback) throws RemoteException {
-            // simulate async delay
+        public void execute(UUID jobId, Task task, MasterCallback callback) throws RemoteException {
             new Thread(() -> {
                 try {
-                    Thread.sleep(new Random().nextInt(500)); // simulate work
-                    SimulationResult result = simulateResult();
-                    System.out.printf("[Worker-%s] Task done, called callback%n", id);
-                    callback.onTaskCompleted(jobId, List.of(result));
+                    Thread.sleep(random.nextInt(500));
 
-                } catch (InterruptedException e) {
+                    SimulationResult result = simulateResult();
+                    System.out.printf("[Worker-%s] Task done → callback%n", id);
+
+                    callback.onTaskCompleted(jobId, result);
+
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
                 }
             }).start();
         }
 
         private SimulationResult simulateResult() {
-            Map<String, Double> congestion = Map.of("R01", Math.random());
+            Map<String, Double> congestion = Map.of(
+                    "R01", random.nextDouble(),
+                    "R02", random.nextDouble()
+            );
+
+            double minSpeed = 30 + random.nextDouble() * 10;
+            double maxSpeed = 80 + random.nextDouble() * 20;
+            double avgSpeed = (minSpeed + maxSpeed) / 2;
+
             return new SimulationResult(
-                    new Random().nextInt(5),   // total jams
-                    50 + Math.random() * 10,   // avg speed
-                    congestion
+                    random.nextInt(5),       // total jams
+                    avgSpeed,                // average speed
+                    congestion,              // congestion map
+                    minSpeed,                // min speed
+                    maxSpeed,                // max speed
+                    random.nextDouble()      // accident probability
             );
         }
-
     }
+
 
     public static void main(String[] args) throws Exception {
         // ------------------------- Setup Master -------------------------
@@ -90,17 +95,17 @@ public class MasterAsyncTest {
         master.getWorkerRegistry().registerWorker("worker-3", new FakeAsyncWorker("worker-13"));
 
         // prepare simulation parameters
-        SimulationParams params = new SimulationParams(
-                10,       // number of cars
-                1000000000,      // iterations
-                Weather.SUNNY,
-                true,     // traffic lights
-                42L       // seed
-        );
+
 
         // run async
         System.out.println("------------------------------Start the Async Submiting------------------------");
-        UUID jobId = master.submitTaskAsync(params);
+        UUID jobId = master.submitTaskAsync(new SimulationParams(10,
+                10000,
+                Weather.SUNNY,
+                true,
+                45L,
+                4)
+        );
 
 
         // wait for completion (polling for testing)
