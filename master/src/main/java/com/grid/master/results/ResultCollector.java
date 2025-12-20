@@ -1,8 +1,7 @@
 package com.grid.master.results;
 
-import com.grid.common.Result;
+import com.grid.common.Interfaces.Result;
 import com.grid.common.model.SimulationResult;
-import com.grid.master.results.JobStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;

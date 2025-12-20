@@ -3,7 +3,6 @@ package com.grid.worker;
 import com.grid.common.configLoader;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import com.grid.common.Worker;
 import java.rmi.RemoteException;
 
 public class workerApp {

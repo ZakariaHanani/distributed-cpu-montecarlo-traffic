@@ -1,7 +1,7 @@
 package com.grid.master;
 
-import com.grid.common.MasterCallback;
-import com.grid.common.Result;
+import com.grid.common.Interfaces.MasterCallback;
+import com.grid.common.Interfaces.Result;
 import com.grid.master.results.ResultCollector;
 
 import java.rmi.RemoteException;

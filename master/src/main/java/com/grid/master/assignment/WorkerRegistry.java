@@ -1,6 +1,6 @@
 package com.grid.master.assignment;
 
-import com.grid.common.IWorker;
+import com.grid.common.Interfaces.IWorker;
 
 import java.util.ArrayList;
 import java.util.List;

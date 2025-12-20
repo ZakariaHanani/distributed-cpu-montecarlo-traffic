@@ -1,5 +1,6 @@
 package com.grid.common;
 
+import com.grid.common.Interfaces.Task;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

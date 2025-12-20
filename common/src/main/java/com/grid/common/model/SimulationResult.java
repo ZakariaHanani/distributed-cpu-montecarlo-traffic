@@ -1,8 +1,7 @@
 package com.grid.common.model;
 
-import com.grid.common.Result;
+import com.grid.common.Interfaces.Result;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 

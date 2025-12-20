@@ -1,8 +1,8 @@
 package com.grid.common.model;
 
 import com.grid.common.AbstractTask;
-import com.grid.common.MasterCallback;
-import com.grid.common.Result;
+import com.grid.common.Interfaces.MasterCallback;
+import com.grid.common.Interfaces.Result;
 import com.grid.common.logic.TrafficSimulationEngine;
 import lombok.Getter;
 

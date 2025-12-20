@@ -1,4 +1,4 @@
-package com.grid.common;
+package com.grid.common.Interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

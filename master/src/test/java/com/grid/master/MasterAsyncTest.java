@@ -1,8 +1,8 @@
 package com.grid.master;
 
-import com.grid.common.MasterCallback;
-import com.grid.common.Result;
-import com.grid.common.Task;
+import com.grid.common.Interfaces.IWorker;
+import com.grid.common.Interfaces.MasterCallback;
+import com.grid.common.Interfaces.Task;
 import com.grid.common.model.SimulationParams;
 import com.grid.common.model.SimulationResult;
 import com.grid.common.model.Weather;
@@ -19,7 +19,7 @@ import java.util.*;
 public class MasterAsyncTest {
 
     // Fake worker to simulate async RMI execution
-    static class FakeAsyncWorker implements com.grid.common.IWorker {
+    static class FakeAsyncWorker implements IWorker {
 
         private final String id;
         private final Random random = new Random();

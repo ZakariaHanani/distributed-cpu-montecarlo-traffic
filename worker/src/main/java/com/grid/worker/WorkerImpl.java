@@ -1,6 +1,6 @@
 package com.grid.worker;
 
-import com.grid.common.*;
+import com.grid.common.Interfaces.*;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

@@ -1,12 +1,9 @@
 package com.grid.master.assignment;
 
-import com.grid.common.IWorker;
-import com.grid.common.MasterCallback;
-import com.grid.common.Result;
-import com.grid.common.Task;
+import com.grid.common.Interfaces.MasterCallback;
+import com.grid.common.Interfaces.Task;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

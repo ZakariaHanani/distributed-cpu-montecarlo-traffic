@@ -1,9 +1,11 @@
 package com.grid.master;
 
 import com.grid.common.*;
+import com.grid.common.Interfaces.IMaster;
+import com.grid.common.Interfaces.IWorker;
+import com.grid.common.Interfaces.MasterCallback;
 import com.grid.common.model.SimulationChunkTask;
 import com.grid.common.model.SimulationParams;
-import com.grid.common.model.SimulationResult;
 import com.grid.master.assignment.WorkerAssignmentService;
 import com.grid.master.assignment.WorkerRegistry;
 import com.grid.master.results.ResultAggregator;

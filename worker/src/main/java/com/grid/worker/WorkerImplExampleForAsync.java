@@ -1,13 +1,12 @@
 package com.grid.worker;
 
-import com.grid.common.IWorker;
-import com.grid.common.MasterCallback;
-import com.grid.common.Result;
-import com.grid.common.Task;
+import com.grid.common.Interfaces.IWorker;
+import com.grid.common.Interfaces.MasterCallback;
+import com.grid.common.Interfaces.Result;
+import com.grid.common.Interfaces.Task;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.UUID;
 
 public class WorkerImplExampleForAsync extends UnicastRemoteObject implements IWorker {

@@ -1,8 +1,9 @@
-package com.grid.common;
+package com.grid.common.Interfaces;
+
+import com.grid.common.Interfaces.Result;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.UUID;
 
 public interface MasterCallback extends Remote {
