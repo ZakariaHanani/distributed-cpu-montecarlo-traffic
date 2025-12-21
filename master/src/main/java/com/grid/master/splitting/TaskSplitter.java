@@ -15,7 +15,8 @@ import java.util.UUID;
 
  * Each chunk will be executed by ONE worker.
  */
-public class TaskSplitter {
+public class
+TaskSplitter {
 
     /**
      * Split a global simulation into chunks for each worker.
@@ -58,7 +59,8 @@ public class TaskSplitter {
                     iterationsForThisWorker,
                     globalParams.getWeather(),
                     globalParams.isTrafficLightsEnabled(),
-                    chunkSeed
+                    chunkSeed ,
+                    globalParams.getGridSize()
             );
 
             SimulationChunkTask chunkTask = new SimulationChunkTask(

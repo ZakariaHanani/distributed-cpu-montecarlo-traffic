@@ -13,17 +13,15 @@ public class MasterNode {
 
         // Step 4.2: Create master implementation
         MasterImpl masterImpl = new MasterImpl();
-
         // Bind master to registry
 
-        try{
 
-        registry.rebind("MasterService", masterImpl);
-        }catch (Exception e){
-            System.err.println("Error "+e);
+        try {
+            registry.rebind("MasterService", masterImpl);
+            System.out.println("[Master] MasterService bound to registry and ready.");
+        } catch (Exception e) {
+            System.err.println("[Master] Failed to bind MasterService: " + e);
+            e.printStackTrace();
         }
-
-        System.out.println("[Master] MasterService bound to registry and ready.");
     }
 }
-

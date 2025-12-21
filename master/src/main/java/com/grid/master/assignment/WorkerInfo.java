@@ -1,6 +1,6 @@
 package com.grid.master.assignment;
 
-import com.grid.common.IWorker;
+import com.grid.common.Interfaces.IWorker;
 
 public class WorkerInfo {
     private final String id;

@@ -1,6 +1,6 @@
 package com.grid.master.assignment;
 
-import com.grid.common.IWorker;
+import com.grid.common.Interfaces.IWorker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,9 @@ public class WorkerRegistry {
         }
 
         return Optional.empty(); // all workers OFFLINE/BUSY
+    }
+    public int size(){
+        return workers.size() ;
     }
 
     /** For debugging / monitoring later if needed. */
