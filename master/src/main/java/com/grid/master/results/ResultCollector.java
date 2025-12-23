@@ -40,8 +40,6 @@ public class ResultCollector {
         }
         return res;
     }
-    */
-
     public JobResult getFinalResult(UUID jobId) {
         SimulationResult res = finalResults.get(jobId);
 
@@ -50,6 +48,30 @@ public class ResultCollector {
         }
         return new JobResult(JobStatus.COMPLETED, res);
     }
+*/
+public JobResult getFinalResult(UUID jobId) {
+    JobState state = jobs.get(jobId);
+
+    // If job not registered yet
+    if (state == null) {
+        return new JobResult(JobStatus.PENDING, null);
+    }
+
+    synchronized (state) {
+        // If failed, return FAILED immediately (no final result)
+        if (state.status == JobStatus.FAILED) {
+            return new JobResult(JobStatus.FAILED, null);
+        }
+    }
+
+    // Otherwise, check finalResults map
+    SimulationResult res = finalResults.get(jobId);
+
+    if (res == null) {
+        return new JobResult(JobStatus.RUNNING, null);
+    }
+    return new JobResult(JobStatus.COMPLETED, res);
+}
 
 
 
