@@ -1,7 +1,6 @@
 package com.grid.master;
 
 
-import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
 public class MasterNode {
