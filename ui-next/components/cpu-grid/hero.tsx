@@ -2,6 +2,7 @@
 
 import { ArrowRight, Play, Zap, Globe, Cpu } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -37,14 +38,20 @@ export function Hero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
-          <Button size="lg" className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 py-6 text-lg group">
-            Start Simulating
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <Button
+              size="lg"
+              className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 py-6 text-lg group"
+              asChild
+          >
+            <Link href="/simulations/new">
+              Start Simulating
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </Button>
           <Button
-            size="lg"
-            variant="outline"
-            className="rounded-full px-8 py-6 text-lg border-slate-300 hover:bg-slate-100 bg-transparent"
+              size="lg"
+              variant="outline"
+              className="rounded-full px-8 py-6 text-lg border-slate-300 hover:bg-slate-100 bg-transparent"
           >
             <Play className="mr-2 w-5 h-5" />
             Watch Demo
