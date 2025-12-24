@@ -1,5 +1,6 @@
 package com.grid.common.Interfaces;
 
+import com.grid.common.dto.JobResult;
 import com.grid.common.model.SimulationParams;
 
 import java.rmi.Remote;
@@ -16,6 +17,9 @@ public interface IMaster extends Remote {
 
     UUID submitTaskAsync(SimulationParams params) throws RemoteException;
 //    Result submitTaskSync(SimulationParams params) throws RemoteException;
+
+    // API for client ; depends only on common.
+    JobResult getJobResult(UUID jobId) throws RemoteException;
     /**
      * Return the final aggregated result for a task.
      */

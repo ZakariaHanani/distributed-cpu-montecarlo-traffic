@@ -112,7 +112,7 @@ public class MasterAsyncTest {
         ResultCollector.JobResult jr;
 
         while (true) {
-            jr = master.getFinalResult(jobId);
+            jr = master.getFinalResultInternal(jobId);
 
             if (jr.status() == JobStatus.COMPLETED) break;
 

@@ -6,6 +6,10 @@ import com.grid.common.Interfaces.IWorker;
 import com.grid.common.Interfaces.MasterCallback;
 import com.grid.common.model.SimulationChunkTask;
 import com.grid.common.model.SimulationParams;
+
+import com.grid.common.dto.JobResult;
+import com.grid.common.dto.JobStatus;
+
 import com.grid.master.assignment.WorkerAssignmentService;
 import com.grid.master.assignment.WorkerRegistry;
 import com.grid.master.results.ResultAggregator;
@@ -75,9 +79,54 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
      * Client asks for the final result (async mode)
      * Master returns it if ready, or null if still running.
      */
+
     @Override
-    public ResultCollector.JobResult getFinalResult(UUID jobId) throws RemoteException {
+    public Record /* ResultCollector.JobResult */ getFinalResult(UUID jobId) throws RemoteException {
+        return collector.getFinalResult(jobId);     // must match IMaster signature exactly.
+    }
+    public ResultCollector.JobResult getFinalResultInternal(UUID jobId) {
         return collector.getFinalResult(jobId);
+    }
+    /**
+     * API for client depends only on common.
+     */
+    @Override
+    public JobResult getJobResult(UUID jobId) throws RemoteException {
+
+        ResultCollector.JobSnapshot snap;
+
+        // If jobId not registered, treat as PENDING or 'return FAILED'
+        try {
+            snap = collector.getSnapshot(jobId);
+        } catch (IllegalArgumentException e) {
+            return new JobResult(JobStatus.PENDING, null, null);
+        }
+
+        JobStatus mapped = mapStatus(snap.status());
+
+        // Only fetch result if completed
+        com.grid.common.model.SimulationResult result = null;
+        if (mapped == JobStatus.COMPLETED) {
+            // Now safe: final result exists
+            ResultCollector.JobResult jr = collector.getFinalResult(jobId);
+            result = jr.result();
+        }
+
+        // Use snapshot error message when FAILED
+        String error = (mapped == JobStatus.FAILED) ? snap.errorMessage() : null;
+
+        return new JobResult(mapped, result, error);
+    }
+    /**
+     * explicit mapping
+     */
+    private static JobStatus mapStatus(com.grid.master.results.JobStatus s) {
+        return switch (s) {
+            case PENDING -> JobStatus.PENDING;
+            case RUNNING -> JobStatus.RUNNING;
+            case COMPLETED -> JobStatus.COMPLETED;
+            case FAILED -> JobStatus.FAILED;
+        };
     }
 
 

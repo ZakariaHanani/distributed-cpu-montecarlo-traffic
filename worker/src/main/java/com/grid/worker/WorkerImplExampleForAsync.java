@@ -13,7 +13,7 @@ public class WorkerImplExampleForAsync extends UnicastRemoteObject implements IW
     public WorkerImplExampleForAsync() throws RemoteException {}
 
     @Override
-    public void executeAsync(UUID jobId, Task task, MasterCallback callback)
+    public void execute(UUID jobId, Task task, MasterCallback callback)
             throws RemoteException {
 
         new Thread(() -> {
