@@ -14,6 +14,9 @@
         <module>master</module>
         <module>worker</module>
         <module>client</module>
+        <module>auth-service</module>
+        <module>auth-service</module>
+        <module>auth-service</module>
     </modules>
 
     <properties>
