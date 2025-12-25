@@ -6,7 +6,9 @@ import com.grid.common.model.SimulationJobTask;
 import com.grid.common.model.SimulationParams;
 import com.grid.common.model.SimulationResult;
 import com.grid.common.model.Weather;
-import com.grid.master.results.ResultCollector;
+//import com.grid.master.results.ResultCollector;
+import com.grid.common.dto.JobResult;
+import com.grid.common.dto.JobStatus;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -17,35 +19,36 @@ import java.util.UUID;
 
 public class ClientApp {
 
-    // 6.3 – polling configuration
-    private static final long MAX_WAIT_MS = 60_000L;   // 1 minute max
-    private static final long POLL_INTERVAL_MS = 1_000L; // check every 1 second
 
     public static void main(String[] args) {
         final String registryHost = configLoader.get("registry.host");
         final int registryPort = configLoader.getInt("registry.port");
-        final String serviceName  = "MasterService"; // same as MasterNode binds
+        String masterServiceName = configLoader.get("master.service.name");
+        final long maxWaitMs = configLoader.getLong("client.max.wait.ms");
+        final long pollIntervalMs = configLoader.getLong("client.poll.interval.ms");
+
+
 
         System.out.printf("[Client] Connecting to RMI registry at %s:%d...%n",
                 registryHost, registryPort);
 
         try {
             Registry registry = LocateRegistry.getRegistry(registryHost, registryPort);
-            IMaster master = (IMaster) registry.lookup(serviceName);
+            IMaster master = (IMaster) registry.lookup(masterServiceName);
             System.out.println("The [Client] Successfully obtained IMaster stub from RMI registry.");
 
             // 6.2 – submit simulation parameters and get jobId
             UUID jobId = submitSimulation(master);
 
             SimulationResult finalResult =
-                    waitForFinalResult(master, jobId, MAX_WAIT_MS, POLL_INTERVAL_MS);
+                    waitForFinalResult(master, jobId, maxWaitMs, pollIntervalMs);
 
             displayFinalResult(jobId, finalResult);
 
 
         } catch (NotBoundException e) {
             System.err.printf("The [Client] Failed to connect to Master service:%n" +
-                    "\tNotBoundException - %s%n", serviceName);
+                    "\tNotBoundException - %s%n", masterServiceName);
             e.printStackTrace();
         } catch (RemoteException e) {
             System.err.printf("The [Client] RemoteException when connecting to registry: %s%n",
@@ -70,7 +73,7 @@ public class ClientApp {
 
         int iterations = readPositiveInt(scanner, "Iterations (e.g. 10_000): ");
         int cars       = readPositiveInt(scanner, "Cars count (e.g. 150): ");
-        int gridsize =readPositiveInt(scanner,"Grid Size");
+        int gridsize = readPositiveInt(scanner, "Grid Size: ");
         System.out.print("Use random seed? (y/n): ");
         String randomAnswer = scanner.nextLine().trim();
         boolean useRandomSeed = randomAnswer.equalsIgnoreCase("y")
@@ -90,17 +93,18 @@ public class ClientApp {
         // seed: we either generated it or validated user input
         // ---------------------------------------
 
-        // For now we fix weather + traffic lights. Later you can ask user too.
+        // For now we fix weather + traffic lights. Later you can ask user too. !!!!!!!!!!!
         SimulationParams params = new SimulationParams(
                 cars,
                 iterations,
-                Weather.SUNNY, // maybe default SUNNY for now
-                true,          // trafficLightsEnabled
+                Weather.SUNNY, // TEMP DEFAULT (user-select later)
+                true,           // TEMP DEFAULT (user-toggle later)
                 seed,
                 gridsize
         );
-
-        SimulationJobTask task = new SimulationJobTask(params);
+        // NOTE: SimulationJobTask is not used yet because IMaster currently accepts SimulationParams.
+        // When we expose a REST API / UI, we may submit a higher-level job object instead.
+        // SimulationJobTask task = new SimulationJobTask(params);
 
         System.out.println("[Client] Submitting simulation task to Master...");
         UUID jobId = master.submitTaskAsync(params);
@@ -108,11 +112,6 @@ public class ClientApp {
         System.out.printf("[Client] Simulation submitted successfully. jobId = %s%n", jobId);
         return jobId;
     }
-
-    /**
-     * 6.3 – Poll Master for the final result with timeout.
-     * Handles delays and temporary RemoteExceptions.
-     */
     private static SimulationResult waitForFinalResult(
             IMaster master,
             UUID jobId,
@@ -121,6 +120,8 @@ public class ClientApp {
     ) throws InterruptedException {
 
         long start = System.currentTimeMillis();
+        JobStatus lastStatus = null;
+        int consecutiveRemoteErrors = 0;
 
         while (true) {
             long elapsed = System.currentTimeMillis() - start;
@@ -131,26 +132,47 @@ public class ClientApp {
             }
 
             try {
-                ResultCollector.JobResult jobResult = (ResultCollector.JobResult )master.getFinalResult(jobId);
+                JobResult jobResult = master.getJobResult(jobId);
+                consecutiveRemoteErrors = 0;
 
-                if (jobResult == null) {
-                    System.out.println("[Client] Job not registered yet, waiting...");
-                } else {
-                    switch (jobResult.status()) {
-                        case RUNNING -> System.out.println("[Client] Job still running...");
-                        case COMPLETED -> {
-                            System.out.println("[Client] Job completed!");
-                            return jobResult.result();
-                        }
-                        case FAILED -> {
-                            System.err.println("[Client] Job failed: " + jobResult.status());
+                JobStatus status = (jobResult == null) ? JobStatus.PENDING : jobResult.status();
+
+                // Print only when status changes (less spam)
+                if (status != lastStatus) {
+                    System.out.println("[Client] Status = " + status + " (elapsed " + (elapsed / 1000) + "s)");
+                    lastStatus = status;
+                }
+                long lastProgressPrintMs = 0;
+                switch (status) {
+                    case COMPLETED -> {
+                        System.out.println("[Client] Job completed!");
+                        if (jobResult.result() == null) {
+                            System.err.println("[Client] Completed but result is null (check Master logs).");
                             return null;
+                        }
+                        return jobResult.result();
+                    }
+                    case FAILED -> {
+                        String msg = (jobResult.errorMessage() == null) ? "Unknown error" : jobResult.errorMessage();
+                        System.err.println("[Client] Job failed: " + msg);
+                        return null;
+                    }
+                    case RUNNING, PENDING -> {
+                        long now = System.currentTimeMillis();
+                        if (now - lastProgressPrintMs >= 5000) {
+                            System.out.println("[Client] Still " + status + "... (elapsed " + (elapsed / 1000) + "s)");
+                            lastProgressPrintMs = now;
                         }
                     }
                 }
 
             } catch (RemoteException e) {
-                System.err.println("[Client] Remote error while polling: " + e.getMessage());
+                consecutiveRemoteErrors++;
+                System.err.println("[Client] Remote error while polling (" + consecutiveRemoteErrors + "): " + e.getMessage());
+                if (consecutiveRemoteErrors >= 5) {
+                    System.err.println("[Client] Too many remote errors. Aborting.");
+                    return null;
+                }
             }
 
             Thread.sleep(pollIntervalMs);
@@ -174,13 +196,25 @@ public class ClientApp {
         }
 
         System.out.println("Total jams: " + result.getTotalJamsDetected());
-        System.out.println("Average speed: " + result.getAverageSpeed());
-        System.out.println("Congestion map: " + result.getCongestionMap());
+        System.out.printf("Average speed: %.2f%n", result.getAverageSpeed());
+        System.out.printf("Min speed observed: %.2f%n", result.getMinSpeedObserved());
+        System.out.printf("Max speed observed: %.2f%n", result.getMaxSpeedObserved());
+        System.out.printf("Accident probability: %.2f%%%n", result.getAccidentProbability() * 100);
+
+        System.out.println("Congestion map (road -> congestion%):");
+        if (result.getCongestionMap() == null || result.getCongestionMap().isEmpty()) {
+            System.out.println("  (empty)");
+        } else {
+            result.getCongestionMap().forEach((road, congestion) ->
+                    System.out.printf("  %s -> %.2f%%%n", road, congestion * 100)
+            );
+        }
     }
 
 
+
     private static int readPositiveInt(Scanner scanner, String label) {
-        final int MAX_VALUE = 1_000_000;
+        final int MAX_VALUE = configLoader.getInt("client.input.max.int");
 
         while (true) {
             System.out.print(label);

@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-public class TrafficSimulationEngine {
+public class
+TrafficSimulationEngine {
 
     private List<Road> roads;
     private List<Car> cars;
