@@ -3,11 +3,13 @@ package com.grid.master.assignment;
 import com.grid.common.Interfaces.MasterCallback;
 import com.grid.common.Interfaces.Task;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.UUID;
 
-public class WorkerAssignmentService {
+public class WorkerAssignmentService implements Remote {
 
     private final WorkerRegistry workerRegistry;
 
@@ -82,7 +84,11 @@ public class WorkerAssignmentService {
 
             // Call the async method in the worker
             // Worker will compute, then call callback.receivePartialResult(jobId, result)
+            try {
             worker.getStub().execute(jobId, task, callback);
+            }catch (RemoteException e){
+                System.err.println("[Master] have problem in calling the [Worker]"+e);
+            }
         }
     }
 }

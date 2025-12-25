@@ -57,4 +57,12 @@ public class MasterRegistryConnector {
             Thread.sleep(ms);
         } catch (InterruptedException ignored) {}
     }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getHost() {
+        return host;
+    }
 }

@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class MasterImpl extends UnicastRemoteObject implements IMaster {
+public class MasterImpl implements IMaster {
 
     private final WorkerRegistry workerRegistry;
     private final TaskSplitter splitter;
@@ -37,6 +37,7 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
 
     public MasterImpl() throws RemoteException {
         this.workerRegistry = new WorkerRegistry();
+        discoverWorkers();
         this.splitter = new TaskSplitter();
         this.assignmentService = new WorkerAssignmentService(workerRegistry);
         this.collector = new ResultCollector();
@@ -45,7 +46,6 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
         // Callback implementation for async tasks
         this.callback = new MasterCallbackImpl(collector);
 
-         //discoverWorkers();
     }
 
     /**
@@ -59,17 +59,23 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
         UUID jobId = UUID.randomUUID();
 
         int workers = workerRegistry.size();
-        if (workers == 0) throw new IllegalStateException("No workers registered!");
+        System.out.println("Workers size "+workers);
+        if (workers == 0) throw new IllegalStateException("No workers registered!"+workers);
 
         //------------------------ Split the simulation into chunks --------------------------------
         List<SimulationChunkTask> chunks = splitter.splitForWorkers(params, workers);
 
         // -----------------------Register the job in collector (count how many chunks) -------------------------------
         collector.registerJob(jobId, chunks.size());
+        System.out.println("The job is registred");
         collector.markJobRunning(jobId);
 
         //---------------------- Async dispatch — Master does !!!!****not*****!!!!!! wait --------------------------------
-        assignmentService.dispatchAsync(jobId, chunks, callback);
+        try{
+            assignmentService.dispatchAsync(jobId, chunks, callback);
+        }catch(RemoteException e){
+             e.printStackTrace();
+        }
 
         //---------------------------- Master returns immediately -------------------------------
         return jobId;
@@ -145,7 +151,7 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
             System.out.println("[Master] RMI registry contains: " + Arrays.toString(names));
 
             for (String name : names) {
-                if (name.startsWith("worker-")) {
+                if (name.startsWith("Worker-")) {
 
                     IWorker workerStub = (IWorker) registry.lookup(name);
 
@@ -161,59 +167,5 @@ public class MasterImpl extends UnicastRemoteObject implements IMaster {
     }
 
 
-
-    /**
-     * Synchronous version:
-     * Master waits until *all* workers finish, then merges and returns.
-     */
-//    @Override
-//    public Result submitTaskSync(SimulationParams params) throws RemoteException {
-//
-//        System.out.println("[Master] Received simulation request. <<<<Synchronized Mode>>>>");
-//
-//        UUID jobId = UUID.randomUUID();
-//
-//        int workerCount = workerRegistry.size();
-//        if (workerCount == 0) {
-//            throw new IllegalStateException("[Master] No workers registered!");
-//        }
-//
-//        //------------------------ Step 1: Split simulation into chunks --------------------------------
-//        List<SimulationChunkTask> chunks =
-//                splitter.splitForWorkers(params, workerCount);
-//
-//        System.out.printf("[Master] Created %d chunks.\n", chunks.size());
-//
-//        collector.registerJob(jobId, chunks.size());
-//        collector.markJobRunning(jobId);
-//
-//        //------------------------ Step 2: Dispatch tasks (blocking) ------------------------------
-//        List<Result> partialResults;
-//        try {
-//            partialResults = assignmentService.dis(chunks);
-//
-//        } catch (RemoteException e) {
-//            collector.markJobFailed(jobId, "[Master] Worker communication error.");
-//            throw e;
-//        }
-//
-//        // --------------------------- Step 3: Store partial  -----------------------------------
-//        collector.addResults(jobId, partialResults); //What is the purpos of the collector if will add the results at once(Fhamtini assat)
-//
-//        // -----------------------Step 4: Validate everything is received --------------------------
-//        if (!collector.isCompleted(jobId)) {
-//            System.err.println("[Master] ERROR: Not all results were received!");
-//            collector.markJobFailed(jobId, "Incomplete results.");
-//            return null;
-//        }
-//
-//        // ---------------------------- Step 5: Merge (aggregation 4.7) -------------------------------------------
-//        List<SimulationResult> allParts = collector.getResults(jobId);
-//        Result finalResult = aggregator.merge(allParts);
-//
-//        System.out.println("[Master] Aggregation complete. Returning final result.");
-//
-//        return finalResult;
-//    }
 
 }
