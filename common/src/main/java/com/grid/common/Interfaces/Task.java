@@ -1,4 +1,4 @@
-package com.grid.common;
+package com.grid.common.Interfaces;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -29,13 +29,17 @@ public interface Task extends Serializable {
      * Optional random seed used for deterministic or Monte-Carlo style tasks.
      */
     long getSeed();
-
-
     /**
      * Executes the logic of the task.
      * @return A Result object describing the result of the execution. ( Maxi daba , tal mn ba3d)
      */
 
-    //Result execute();
+    Result execute();
+
+    UUID getJobId();
+    void setJobId(UUID jobId);
+
+    MasterCallback getMasterCallback();
+    void setMasterCallback(MasterCallback masterCallback);
 
 }
