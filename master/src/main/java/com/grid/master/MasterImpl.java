@@ -11,12 +11,14 @@ import com.grid.common.model.SimulationParams;
 import com.grid.common.dto.JobResult;
 import com.grid.common.dto.JobStatus;
 
+import com.grid.common.model.SimulationResult;
 import com.grid.master.assignment.WorkerAssignmentService;
 import com.grid.master.assignment.WorkerRegistry;
 import com.grid.master.results.ResultAggregator;
 import com.grid.master.results.ResultCollector;
 import com.grid.master.splitting.TaskSplitter;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -69,7 +71,6 @@ public class MasterImpl implements IMaster, Heartbeat {
         UUID jobId = UUID.randomUUID();
 
         int workers = workerRegistry.size();
-        System.out.println("There is "+workers +" worker in the registry ");
         if (workers == 0) throw new IllegalStateException("No workers registered!"+workers);
 
         //------------------------ Split the simulation into chunks --------------------------------
@@ -91,18 +92,6 @@ public class MasterImpl implements IMaster, Heartbeat {
     }
 
     /**
-     * Client asks for the final result (async mode)
-     * Master returns it if ready, or null if still running.
-     */
-
-    @Override
-    public Record /* ResultCollector.JobResult */ getFinalResult(UUID jobId) throws RemoteException {
-        return collector.getFinalResult(jobId);     // must match IMaster signature exactly.
-    }
-    public ResultCollector.JobResult getFinalResultInternal(UUID jobId) {
-        return collector.getFinalResult(jobId);
-    }
-    /**
      * API for client depends only on common.
      */
     @Override
@@ -119,12 +108,12 @@ public class MasterImpl implements IMaster, Heartbeat {
 
         JobStatus mapped = mapStatus(snap.status());
 
-        // Only fetch result if completed
+         // Only fetch result if completed
         com.grid.common.model.SimulationResult result = null;
-        if (mapped == JobStatus.COMPLETED) {
+        if (collector.isCompleted(jobId)) {
             // Now safe: final result exists
-            ResultCollector.JobResult jr = collector.getFinalResult(jobId);
-            result = jr.result();
+           result = aggregator.merge(collector.getResults(jobId));
+
         }
 
         // Use snapshot error message when FAILED
@@ -135,7 +124,7 @@ public class MasterImpl implements IMaster, Heartbeat {
     /**
      * explicit mapping
      */
-    private static JobStatus mapStatus(com.grid.master.results.JobStatus s) {
+    private static JobStatus mapStatus(JobStatus s) {
         return switch (s) {
             case PENDING -> JobStatus.PENDING;
             case RUNNING -> JobStatus.RUNNING;
@@ -150,31 +139,6 @@ public class MasterImpl implements IMaster, Heartbeat {
         return workerRegistry;
     }
 
-    private void discoverWorkers() {
-        try {
-            String host = configLoader.get("registry.host");
-            int port = configLoader.getInt("registry.port");
-            Registry registry = LocateRegistry.getRegistry(host, port);
-
-            String[] names = registry.list();
-            System.out.println("[Master] RMI registry contains: " + Arrays.toString(names));
-
-            for (String name : names) {
-                if (name.startsWith("Worker-")) {
-
-                    IWorker workerStub = (IWorker) registry.lookup(name);
-
-                    workerRegistry.registerWorker(name, workerStub);
-
-                    System.out.println("[Master] Registered worker: " + name);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public synchronized void registerWorker(String workerId, IWorker worker)
@@ -183,6 +147,7 @@ public class MasterImpl implements IMaster, Heartbeat {
         workerRegistry.registerWorker(workerId, worker);
         System.out.println("[Master] Worker registered: " + workerId);
     }
+
 
     @Override
     public synchronized void heartbeat(String workerId) throws RemoteException {

@@ -3,12 +3,13 @@ package com.grid.master;
 import com.grid.common.Interfaces.IWorker;
 import com.grid.common.Interfaces.MasterCallback;
 import com.grid.common.Interfaces.Task;
+import com.grid.common.dto.JobResult;
+import com.grid.common.dto.JobStatus;
 import com.grid.common.model.SimulationParams;
 import com.grid.common.model.SimulationResult;
 import com.grid.common.model.Weather;
 import com.grid.master.assignment.WorkerAssignmentService;
 import com.grid.master.assignment.WorkerRegistry;
-import com.grid.master.results.JobStatus;
 import com.grid.master.results.ResultAggregator;
 import com.grid.master.results.ResultCollector;
 import com.grid.master.splitting.TaskSplitter;
@@ -109,10 +110,10 @@ public class MasterAsyncTest {
 
 
         // wait for completion (polling for testing)
-        ResultCollector.JobResult jr;
+      JobResult jr;
 
         while (true) {
-            jr = master.getFinalResultInternal(jobId);
+            jr = master.getJobResult(jobId);
 
             if (jr.status() == JobStatus.COMPLETED) break;
 

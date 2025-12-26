@@ -2,6 +2,7 @@ package com.grid.master;
 
 import com.grid.common.Interfaces.MasterCallback;
 import com.grid.common.Interfaces.Result;
+import com.grid.common.model.SimulationResult;
 import com.grid.master.results.ResultCollector;
 
 import java.rmi.RemoteException;
@@ -20,11 +21,11 @@ public class MasterCallbackImpl extends UnicastRemoteObject implements MasterCal
     @Override
     public void onTaskCompleted(UUID jobId, Result partialResults) throws RemoteException {
         // Thread-safe, only completes job once
-        collector.addResults(jobId, List.of(partialResults));
+        collector.addResults(jobId, List.of((SimulationResult) partialResults));
     }
 
     @Override
     public void onTaskFailed(UUID jobId, String errorMessage) throws RemoteException {
-        collector.markJobFailed(jobId, errorMessage);
+        collector.markFailed(jobId, errorMessage);
     }
 }
