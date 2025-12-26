@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -30,6 +30,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
@@ -103,7 +104,7 @@ public class AuthController {
         }
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    String code = String.format("%06d", (int) (Math.random() * 1_000_000));
+                    String code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
                     user.setResetCode(code);
                     user.setResetCodeExpiresAt(java.time.Instant.now().plusSeconds(10 * 60));
                     userRepository.save(user);
