@@ -11,10 +11,12 @@ import java.util.UUID;
  * Master orchestrates the distributed execution of tasks.
  */
 public interface IMaster extends Remote {
+
+    /* ================= CLIENT API ================= */
+
     /**
      * Accept a task from a Client, split it, and assign chunks to Workers.
      */
-
     UUID submitTaskAsync(SimulationParams params) throws RemoteException;
 //    Result submitTaskSync(SimulationParams params) throws RemoteException;
 
@@ -24,4 +26,6 @@ public interface IMaster extends Remote {
      * Return the final aggregated result for a task.
      */
      Record getFinalResult(UUID taskId) throws RemoteException;
+
+
 }

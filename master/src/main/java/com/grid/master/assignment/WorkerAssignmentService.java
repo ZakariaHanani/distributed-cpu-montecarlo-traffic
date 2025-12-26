@@ -18,50 +18,6 @@ public class WorkerAssignmentService implements Remote {
     }
 
     /**
-     * Dispatch tasks synchronously using round-robin.
-     * Each task is executed immediately (blocking) by calling worker.execute(task).
-     *
-     * This is the "simple" synchronous flow.
-     */
-//    public List<Result> dispatchTasksRoundRobin(List<? extends Task> tasks) throws RemoteException {
-//        if (!workerRegistry.hasWorkers()) {
-//            throw new IllegalStateException("No workers are registered in the Master.");
-//        }
-//
-//        List<Result> results = new ArrayList<>();
-//
-//        for (Task task : tasks) {
-//            WorkerInfo chosen = workerRegistry
-//                    .nextAvailableWorkerRoundRobin()
-//                    .orElseThrow(() -> new IllegalStateException("No AVAILABLE workers to assign task."));
-//            IWorker workerStub = chosen.getStub();
-//
-//            try {
-//                // This is a blocking RMI call
-//                // Master waits for worker to finish
-//                Result result = workerStub.execute(task);
-//                results.add(result);
-//
-//            } catch (RemoteException e) {
-//                System.err.printf(
-//                        "[Master] RMI error when executing task %s on worker %s: %s%n",
-//                        task.getTaskId(),
-//                        chosen.getId(),
-//                        e.getMessage()
-//                );
-//
-//                /*
-//                 TODO: re-try logic or requeue the task
-//                 For now, we rethrow so the caller (MasterImpl) handles it.
-//                 */
-//                throw e;
-//            }
-//        }
-//
-//        return results;
-//    }
-
-    /**
      * Asynchronous dispatch:
      * Master sends jobs to workers and finishes immediately.
      * Workers will later call back MasterCallback.receivePartialResult(...)

@@ -5,14 +5,15 @@ import com.grid.common.Interfaces.Result;
 import com.grid.master.results.ResultCollector;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.UUID;
 
-public class MasterCallbackImpl implements MasterCallback {
+public class MasterCallbackImpl extends UnicastRemoteObject implements MasterCallback {
 
     private final ResultCollector collector;
 
-    public MasterCallbackImpl(ResultCollector collector) {
+    public MasterCallbackImpl(ResultCollector collector)  throws  RemoteException{
         this.collector = collector;
     }
 

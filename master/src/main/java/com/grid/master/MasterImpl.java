@@ -1,6 +1,7 @@
 package com.grid.master;
 
 import com.grid.common.*;
+import com.grid.common.Interfaces.Heartbeat;
 import com.grid.common.Interfaces.IMaster;
 import com.grid.common.Interfaces.IWorker;
 import com.grid.common.Interfaces.MasterCallback;
@@ -23,8 +24,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class MasterImpl implements IMaster {
+public class MasterImpl implements IMaster, Heartbeat {
 
     private final WorkerRegistry workerRegistry;
     private final TaskSplitter splitter;
@@ -37,15 +41,21 @@ public class MasterImpl implements IMaster {
 
     public MasterImpl() throws RemoteException {
         this.workerRegistry = new WorkerRegistry();
-        discoverWorkers();
+        //discoverWorkers();
         this.splitter = new TaskSplitter();
         this.assignmentService = new WorkerAssignmentService(workerRegistry);
         this.collector = new ResultCollector();
         this.aggregator = new ResultAggregator();
-
         // Callback implementation for async tasks
         this.callback = new MasterCallbackImpl(collector);
 
+
+        ScheduledExecutorService scheduler =
+                Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleAtFixedRate(() -> {
+            workerRegistry.cleanupDeadWorkers();
+        }, 5, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -59,7 +69,7 @@ public class MasterImpl implements IMaster {
         UUID jobId = UUID.randomUUID();
 
         int workers = workerRegistry.size();
-        System.out.println("Workers size "+workers);
+        System.out.println("There is "+workers +" worker in the registry ");
         if (workers == 0) throw new IllegalStateException("No workers registered!"+workers);
 
         //------------------------ Split the simulation into chunks --------------------------------
@@ -67,7 +77,6 @@ public class MasterImpl implements IMaster {
 
         // -----------------------Register the job in collector (count how many chunks) -------------------------------
         collector.registerJob(jobId, chunks.size());
-        System.out.println("The job is registred");
         collector.markJobRunning(jobId);
 
         //---------------------- Async dispatch — Master does !!!!****not*****!!!!!! wait --------------------------------
@@ -167,5 +176,24 @@ public class MasterImpl implements IMaster {
     }
 
 
+    @Override
+    public synchronized void registerWorker(String workerId, IWorker worker)
+            throws RemoteException {
 
+        workerRegistry.registerWorker(workerId, worker);
+        System.out.println("[Master] Worker registered: " + workerId);
+    }
+
+    @Override
+    public synchronized void heartbeat(String workerId) throws RemoteException {
+        workerRegistry.heartbeat(workerId);
+    }
+
+    @Override
+    public synchronized void unregisterWorker(String workerId)
+            throws RemoteException {
+
+        workerRegistry.removeWorker(workerId);
+        System.out.println("[Master] Worker unregistered: " + workerId);
+    }
 }

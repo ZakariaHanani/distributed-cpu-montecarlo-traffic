@@ -20,9 +20,7 @@ public class WorkerImpl extends UnicastRemoteObject implements IWorker, Runnable
     @Override
     public void execute(UUID jobId, Task task, MasterCallback callback) throws RemoteException{
         task.setJobId(jobId);
-        MasterCallback callbackStub =
-                (MasterCallback) UnicastRemoteObject.exportObject(callback, 0);
-        task.setMasterCallback(callbackStub);
+        task.setMasterCallback(callback);
         synchronized (taskQueue) {
             taskQueue.add(task);
             System.out.println("LOG: Task received and added to queue at: " + System.currentTimeMillis());
