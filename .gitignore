@@ -55,5 +55,6 @@ target/
 ui-next/node_modules/
 ui-next/.next/
 ui-next/.env.local
-
+ui-next/$null
+ui-next/tsconfig.tsbuildinfo
 >>>>>>> fa64ae810088e3cb8732f9786e5bc590684d6bb4
