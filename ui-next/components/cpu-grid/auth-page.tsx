@@ -1,13 +1,36 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Cpu, Eye, EyeOff, ArrowLeft, Github, Mail } from "lucide-react";
+import { gsap } from "gsap";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle,
+  Cpu,
+  Eye,
+  EyeOff,
+  Github,
+  Mail,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ViewType } from "@/app/page";
-import { login, signup, forgot, reset, setToken } from "@/lib/authApi";
+import {
+  getDisplayNameFromToken,
+  login,
+  reset,
+  setDisplayName,
+  setToken,
+  signup,
+  forgot,
+} from "@/lib/authApi";
 
 interface AuthPageProps {
   mode: "login" | "signup";
@@ -15,6 +38,10 @@ interface AuthPageProps {
 }
 
 export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const successBannerRef = useRef<HTMLDivElement>(null);
+  const errorBannerRef = useRef<HTMLDivElement>(null);
+  const redirectTimeoutRef = useRef<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -33,7 +60,85 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const [newPassword, setNewPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
   const isLogin = mode === "login";
-  const router = useRouter();
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current !== null) {
+        window.clearTimeout(redirectTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mode !== "login" || flow !== "auth") return;
+    requestAnimationFrame(() => {
+      const el = document.querySelector<HTMLInputElement>(
+        '[data-auth-field="username"]'
+      );
+      el?.focus();
+      el?.select();
+    });
+  }, [mode, flow]);
+
+  useLayoutEffect(() => {
+    if (!contentRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        contentRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
+      );
+    }, contentRef);
+    return () => ctx.revert();
+  }, [mode, flow]);
+
+  useLayoutEffect(() => {
+    if (!successMessage || !successBannerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.killTweensOf(successBannerRef.current);
+      gsap.fromTo(
+        successBannerRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
+      );
+      gsap.fromTo(
+        successBannerRef.current,
+        { boxShadow: "0 0 0 rgba(99, 102, 241, 0)" },
+        {
+          boxShadow: "0 0 34px rgba(99, 102, 241, 0.22)",
+          duration: 0.7,
+          ease: "sine.inOut",
+          repeat: 1,
+          yoyo: true,
+        }
+      );
+    }, successBannerRef);
+    return () => ctx.revert();
+  }, [successMessage]);
+
+  useLayoutEffect(() => {
+    if (!apiError || !errorBannerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.killTweensOf(errorBannerRef.current);
+      gsap.fromTo(
+        errorBannerRef.current,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.32, ease: "power2.out" }
+      );
+      gsap.fromTo(
+        errorBannerRef.current,
+        { boxShadow: "0 0 0 rgba(244, 63, 94, 0)" },
+        {
+          boxShadow: "0 0 28px rgba(244, 63, 94, 0.18)",
+          duration: 0.65,
+          ease: "sine.inOut",
+          repeat: 1,
+          yoyo: true,
+        }
+      );
+    }, errorBannerRef);
+    return () => ctx.revert();
+  }, [apiError]);
 
   const handleAuthSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -64,22 +169,38 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
     setIsSubmitting(true);
     try {
-      const token = isLogin
-        ? await login({ usernameOrEmail: username, password })
-        : await signup({
-            firstName,
-            lastName,
-            username,
-            email,
-            password,
-            confirmPassword,
-          });
+      if (redirectTimeoutRef.current !== null) {
+        window.clearTimeout(redirectTimeoutRef.current);
+        redirectTimeoutRef.current = null;
+      }
 
-      setToken(token);
-      setSuccessMessage("Success. Redirecting...");
-      setTimeout(() => {
-        router.push("/");
-      }, 400);
+      if (isLogin) {
+        const token = await login({ usernameOrEmail: username, password });
+        setToken(token);
+        const name = getDisplayNameFromToken(token);
+        if (name) setDisplayName(name);
+        window.dispatchEvent(new Event("auth:changed"));
+        setSuccessMessage("Success. Redirecting…");
+        redirectTimeoutRef.current = window.setTimeout(() => {
+          setCurrentView("home");
+        }, 380);
+      } else {
+        await signup({
+          firstName,
+          lastName,
+          username,
+          email,
+          password,
+          confirmPassword,
+        });
+        setPassword("");
+        setConfirmPassword("");
+        setFirstName("");
+        setLastName("");
+        setSuccessMessage("Account created. Please sign in.");
+        setFlow("auth");
+        setCurrentView("login");
+      }
     } catch (err) {
       setApiError(err instanceof Error ? err.message : "Request failed");
     } finally {
@@ -202,221 +323,255 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             <div className="flex-1 h-px bg-slate-200" />
           </div>
 
-          {flow === "auth" && (
-            <form className="space-y-4" onSubmit={handleAuthSubmit}>
-              {!isLogin && (
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="First Name"
-                    className="h-12 rounded-xl"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                  />
-                  <Input
-                    placeholder="Last Name"
-                    className="h-12 rounded-xl"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                  />
+          <div className="relative">
+            <div className="h-[76px] relative mb-4">
+              {successMessage && (
+                <div
+                  ref={successBannerRef}
+                  className="absolute inset-0 flex items-center gap-3 rounded-[2.5rem] bg-white/80 backdrop-blur-2xl border border-white/50 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.35)] px-5"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/15 to-violet-500/15 ring-1 ring-indigo-500/25">
+                    <CheckCircle className="size-5 text-indigo-600" />
+                  </div>
+                  <div className="text-sm font-medium text-slate-800">
+                    {successMessage}
+                  </div>
                 </div>
               )}
-              <Input
-                placeholder="Username"
-                className="h-12 rounded-xl"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              {!isLogin && (
-                <Input
-                  type="email"
-                  placeholder="Email Address"
-                  className="h-12 rounded-xl"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              )}
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  className="h-12 rounded-xl pr-12"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
 
-              {!isLogin && (
-                <div className="relative">
+              {apiError && (
+                <div
+                  ref={errorBannerRef}
+                  role="alert"
+                  className="absolute inset-0 flex items-center gap-3 rounded-[2.5rem] bg-rose-50/80 backdrop-blur-2xl border border-rose-200/60 shadow-[0_20px_60px_-35px_rgba(244,63,94,0.15)] px-5"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-rose-500/15 to-rose-600/15 ring-1 ring-rose-500/25">
+                    <AlertTriangle className="size-5 text-rose-600" />
+                  </div>
+                  <div className="text-sm font-medium text-rose-700">
+                    {apiError}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={contentRef} className="min-h-[440px]">
+              {flow === "auth" && (
+                <form className="space-y-4" onSubmit={handleAuthSubmit}>
+                  {!isLogin && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input
+                        placeholder="First Name"
+                        className="h-12 rounded-xl"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Last Name"
+                        className="h-12 rounded-xl"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  )}
                   <Input
-                    type={showRepeatPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
-                    className="h-12 rounded-xl pr-12"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Username"
+                    className="h-12 rounded-xl"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    data-auth-field="username"
+                    autoComplete="username"
                   />
+                  {!isLogin && (
+                    <Input
+                      type="email"
+                      placeholder="Email Address"
+                      className="h-12 rounded-xl"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      autoComplete="email"
+                    />
+                  )}
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      className="h-12 rounded-xl pr-12"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete={
+                        isLogin ? "current-password" : "new-password"
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+
+                  {!isLogin && (
+                    <div className="relative">
+                      <Input
+                        type={showRepeatPassword ? "text" : "password"}
+                        placeholder="Confirm Password"
+                        className="h-12 rounded-xl pr-12"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowRepeatPassword(!showRepeatPassword)
+                        }
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      >
+                        {showRepeatPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+
+                  {isLogin && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setApiError(null);
+                        setSuccessMessage(null);
+                        setForgotEmail("");
+                        setFlow("forgot");
+                      }}
+                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+
+                  <Button
+                    disabled={isSubmitting}
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                  >
+                    {isSubmitting
+                      ? "Please wait..."
+                      : isLogin
+                      ? "Sign In"
+                      : "Create Account"}
+                  </Button>
+                </form>
+              )}
+
+              {flow === "forgot" && (
+                <form className="space-y-4" onSubmit={handleForgotSubmit}>
+                  <Input
+                    type="email"
+                    placeholder="Email Address"
+                    className="h-12 rounded-xl"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setApiError(null);
+                        setSuccessMessage(null);
+                        setFlow("auth");
+                      }}
+                      className="text-sm text-slate-600 hover:text-slate-900"
+                    >
+                      Back to sign in
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setApiError(null);
+                        setSuccessMessage(null);
+                        setResetEmail(forgotEmail);
+                        setFlow("reset");
+                      }}
+                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                    >
+                      I have a code
+                    </button>
+                  </div>
+
+                  <Button
+                    disabled={isSubmitting}
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                  >
+                    {isSubmitting ? "Sending..." : "Send reset code"}
+                  </Button>
+                </form>
+              )}
+
+              {flow === "reset" && (
+                <form className="space-y-4" onSubmit={handleResetSubmit}>
+                  <Input
+                    type="email"
+                    placeholder="Email Address"
+                    className="h-12 rounded-xl"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                  <Input
+                    placeholder="Code"
+                    className="h-12 rounded-xl"
+                    value={resetCode}
+                    onChange={(e) => setResetCode(e.target.value)}
+                    autoComplete="one-time-code"
+                  />
+                  <Input
+                    type="password"
+                    placeholder="New Password"
+                    className="h-12 rounded-xl"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                  <Input
+                    type="password"
+                    placeholder="Confirm Password"
+                    className="h-12 rounded-xl"
+                    value={resetConfirmPassword}
+                    onChange={(e) => setResetConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+
                   <button
                     type="button"
-                    onClick={() => setShowRepeatPassword(!showRepeatPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    onClick={() => {
+                      setApiError(null);
+                      setSuccessMessage(null);
+                      setFlow("auth");
+                    }}
+                    className="text-sm text-slate-600 hover:text-slate-900"
                   >
-                    {showRepeatPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
+                    Back to sign in
                   </button>
-                </div>
+
+                  <Button
+                    disabled={isSubmitting}
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                  >
+                    {isSubmitting ? "Resetting..." : "Reset password"}
+                  </Button>
+                </form>
               )}
-
-              {apiError && <p className="text-sm text-red-600">{apiError}</p>}
-              {successMessage && (
-                <p className="text-sm text-green-700">{successMessage}</p>
-              )}
-
-              {isLogin && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setApiError(null);
-                    setSuccessMessage(null);
-                    setForgotEmail("");
-                    setFlow("forgot");
-                  }}
-                  className="text-sm text-indigo-600 hover:text-indigo-700"
-                >
-                  Forgot password?
-                </button>
-              )}
-
-              <Button
-                disabled={isSubmitting}
-                className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
-              >
-                {isSubmitting
-                  ? "Please wait..."
-                  : isLogin
-                  ? "Sign In"
-                  : "Create Account"}
-              </Button>
-            </form>
-          )}
-
-          {flow === "forgot" && (
-            <form className="space-y-4" onSubmit={handleForgotSubmit}>
-              <Input
-                type="email"
-                placeholder="Email Address"
-                className="h-12 rounded-xl"
-                value={forgotEmail}
-                onChange={(e) => setForgotEmail(e.target.value)}
-              />
-
-              {apiError && <p className="text-sm text-red-600">{apiError}</p>}
-              {successMessage && (
-                <p className="text-sm text-green-700">{successMessage}</p>
-              )}
-
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setApiError(null);
-                    setSuccessMessage(null);
-                    setFlow("auth");
-                  }}
-                  className="text-sm text-slate-600 hover:text-slate-900"
-                >
-                  Back to sign in
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setApiError(null);
-                    setSuccessMessage(null);
-                    setResetEmail(forgotEmail);
-                    setFlow("reset");
-                  }}
-                  className="text-sm text-indigo-600 hover:text-indigo-700"
-                >
-                  I have a code
-                </button>
-              </div>
-
-              <Button
-                disabled={isSubmitting}
-                className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
-              >
-                {isSubmitting ? "Sending..." : "Send reset code"}
-              </Button>
-            </form>
-          )}
-
-          {flow === "reset" && (
-            <form className="space-y-4" onSubmit={handleResetSubmit}>
-              <Input
-                type="email"
-                placeholder="Email Address"
-                className="h-12 rounded-xl"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-              />
-              <Input
-                placeholder="Code"
-                className="h-12 rounded-xl"
-                value={resetCode}
-                onChange={(e) => setResetCode(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="New Password"
-                className="h-12 rounded-xl"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-              <Input
-                type="password"
-                placeholder="Confirm Password"
-                className="h-12 rounded-xl"
-                value={resetConfirmPassword}
-                onChange={(e) => setResetConfirmPassword(e.target.value)}
-              />
-
-              {apiError && <p className="text-sm text-red-600">{apiError}</p>}
-              {successMessage && (
-                <p className="text-sm text-green-700">{successMessage}</p>
-              )}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setApiError(null);
-                  setSuccessMessage(null);
-                  setFlow("auth");
-                }}
-                className="text-sm text-slate-600 hover:text-slate-900"
-              >
-                Back to sign in
-              </button>
-
-              <Button
-                disabled={isSubmitting}
-                className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
-              >
-                {isSubmitting ? "Resetting..." : "Reset password"}
-              </Button>
-            </form>
-          )}
+            </div>
+          </div>
 
           <p className="text-center text-slate-500 mt-8">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -425,6 +580,8 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                 setApiError(null);
                 setSuccessMessage(null);
                 setFlow("auth");
+                setPassword("");
+                setConfirmPassword("");
                 setCurrentView(isLogin ? "signup" : "login");
               }}
               className="text-indigo-600 hover:text-indigo-700 font-medium"
