@@ -49,8 +49,7 @@ public class AuthController {
         log.debug("Signup request received for username={} email={} city={}", request.getUsername(), request.getEmail(), request.getCity());
         if (isBlank(request.getFirstName()) || isBlank(request.getLastName()) ||
                 isBlank(request.getUsername()) || isBlank(request.getEmail()) ||
-                isBlank(request.getCity()) || isBlank(request.getPassword())) {
-            log.warn("Signup validation failed: missing fields for username={} email={}", request.getUsername(), request.getEmail());
+                isBlank(request.getPassword()) || isBlank(request.getConfirmPassword())) {
             return ResponseEntity.badRequest().body(error("All fields are required"));
         }
         if (!isValidEmail(request.getEmail())) {
@@ -79,7 +78,8 @@ public class AuthController {
             user.setLastName(request.getLastName());
             user.setUsername(request.getUsername());
             user.setEmail(request.getEmail());
-            user.setCity(request.getCity());
+            String city = isBlank(request.getCity()) ? "UNKNOWN" : request.getCity().trim();
+            user.setCity(city);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             userRepository.save(user);
 
@@ -90,6 +90,7 @@ public class AuthController {
             String token = jwtService.generateToken(user.getUsername(), claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception ex) {
+            ex.printStackTrace(); // TEMP for debugging
             log.error("Signup failed for username={} email={} cause={}", request.getUsername(), request.getEmail(), ex.getMessage(), ex);
             return ResponseEntity.internalServerError().body(error("Registration failed"));
         }
