@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { Cpu, Moon, Sun } from "lucide-react"
 import { useTheme } from "@/hooks/use-theme"
+import { Toaster } from "@/components/ui/sonner"
+import { ProfileMenu } from "@/components/ui/profile-menu"
+import { useAuth } from "@/hooks/useAuth"
 import type { ViewType } from "@/app/page"
 
 interface NavigationProps {
@@ -14,6 +17,7 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeLink, setActiveLink] = useState<string | null>(null)
   const { theme, toggleTheme } = useTheme()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,6 +51,7 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
+      <Toaster richColors position="top-center" />
       <nav
         className={`
           transition-all duration-300 ease-out
@@ -104,7 +109,9 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2 min-w-[300px]">
+            {isAuthenticated && <ProfileMenu setCurrentView={setCurrentView} />}
+
             <button
               type="button"
               onClick={toggleTheme}
@@ -142,35 +149,39 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
               <span className="sr-only">{theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}</span>
             </button>
 
-            <button
-              onClick={() => setCurrentView("login")}
-              className="
-                relative px-4 py-2 text-sm font-medium text-slate-600 
-                rounded-full border border-transparent
-                transition-all duration-200 ease-out
-                hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200 
-                hover:-translate-y-[1px] hover:shadow-sm
-                active:translate-y-0 active:shadow-none
-              "
-            >
-              Sign in
-            </button>
+            {!isAuthenticated && (
+              <>
+                <button
+                  onClick={() => setCurrentView("login")}
+                  className="
+                    relative px-4 py-2 text-sm font-medium text-slate-600 
+                    rounded-full border border-transparent
+                    transition-all duration-200 ease-out
+                    hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200 
+                    hover:-translate-y-[1px] hover:shadow-sm
+                    active:translate-y-0 active:shadow-none
+                  "
+                >
+                  Sign in
+                </button>
 
-            <button
-              onClick={() => setCurrentView("signup")}
-              className="
-                relative px-5 py-2 text-sm font-semibold text-white 
-                rounded-full overflow-hidden
-                bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500
-                transition-all duration-200 ease-out
-                hover:scale-[1.02] hover:-translate-y-[1px]
-                hover:shadow-[0_8px_24px_rgba(99,102,241,0.4)]
-                active:scale-[0.98] active:translate-y-0
-              "
-            >
-              <span className="relative z-10">Sign up</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-violet-400 to-rose-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
-            </button>
+                <button
+                  onClick={() => setCurrentView("signup")}
+                  className="
+                    relative px-5 py-2 text-sm font-semibold text-white 
+                    rounded-full overflow-hidden
+                    bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500
+                    transition-all duration-200 ease-out
+                    hover:scale-[1.02] hover:-translate-y-[1px]
+                    hover:shadow-[0_8px_24px_rgba(99,102,241,0.4)]
+                    active:scale-[0.98] active:translate-y-0
+                  "
+                >
+                  <span className="relative z-10">Sign up</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-violet-400 to-rose-400 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>
