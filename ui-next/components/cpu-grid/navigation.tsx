@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Cpu, Moon, Sun } from "lucide-react"
-import { useTheme } from "@/hooks/use-theme"
-import { Toaster } from "@/components/ui/sonner"
-import { ProfileMenu } from "@/components/ui/profile-menu"
-import { useAuth } from "@/hooks/useAuth"
-import type { ViewType } from "@/app/page"
+import { useState, useEffect } from "react";
+import { Cpu, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
+import { Toaster } from "@/components/ui/sonner";
+import { ProfileMenu } from "@/components/ui/profile-menu";
+import { useAuth } from "@/hooks/useAuth";
+import type { ViewType } from "@/app/page";
 
 interface NavigationProps {
-  currentView: ViewType
-  setCurrentView: (view: ViewType) => void
+  currentView: ViewType;
+  setCurrentView: (view: ViewType) => void;
 }
 
 export function Navigation({ currentView, setCurrentView }: NavigationProps) {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [activeLink, setActiveLink] = useState<string | null>(null)
-  const { theme, toggleTheme } = useTheme()
-  const { isAuthenticated } = useAuth()
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeLink, setActiveLink] = useState<string | null>(null);
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthed } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { label: "Home", href: "#hero" },
@@ -33,21 +33,21 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
     { label: "Workers", href: "#network" },
     { label: "Docs", href: "#architecture" },
     { label: "FAQ", href: "#team" },
-  ]
+  ];
 
   const handleNavClick = (href: string, label: string) => {
-    setActiveLink(label)
+    setActiveLink(label);
     if (currentView !== "home") {
-      setCurrentView("home")
+      setCurrentView("home");
       setTimeout(() => {
-        const element = document.querySelector(href)
-        element?.scrollIntoView({ behavior: "smooth" })
-      }, 100)
+        const element = document.querySelector(href);
+        element?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } else {
-      const element = document.querySelector(href)
-      element?.scrollIntoView({ behavior: "smooth" })
+      const element = document.querySelector(href);
+      element?.scrollIntoView({ behavior: "smooth" });
     }
-  }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4">
@@ -68,7 +68,10 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
             ${isScrolled ? "px-4 py-2" : "px-6 py-4"}
           `}
         >
-          <button onClick={() => setCurrentView("home")} className="flex items-center gap-3 group">
+          <button
+            onClick={() => setCurrentView("home")}
+            className="flex items-center gap-3 group"
+          >
             <div className="relative">
               <div className="absolute inset-0 bg-indigo-500/20 rounded-xl blur-xl group-hover:bg-indigo-500/40 transition-all duration-300" />
               <div className="relative bg-slate-900 p-2 rounded-xl transition-transform duration-200 group-hover:scale-105">
@@ -76,9 +79,13 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
               </div>
             </div>
             <div className="flex flex-col items-start">
-              <span className="text-lg font-bold text-slate-900 tracking-tight leading-none">CPU Grid</span>
+              <span className="text-lg font-bold text-slate-900 tracking-tight leading-none">
+                CPU Grid
+              </span>
               <span
-                className={`text-[10px] text-slate-500 tracking-wide uppercase transition-all duration-300 ${isScrolled ? "opacity-0 h-0" : "opacity-100 h-3"}`}
+                className={`text-[10px] text-slate-500 tracking-wide uppercase transition-all duration-300 ${
+                  isScrolled ? "opacity-0 h-0" : "opacity-100 h-3"
+                }`}
               >
                 Traffic Monte Carlo
               </span>
@@ -92,7 +99,11 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
                 onClick={() => handleNavClick(link.href, link.label)}
                 className={`
                   relative px-3 py-2 text-sm font-medium transition-colors duration-200
-                  ${activeLink === link.label ? "text-slate-900" : "text-slate-600 hover:text-slate-900"}
+                  ${
+                    activeLink === link.label
+                      ? "text-slate-900"
+                      : "text-slate-600 hover:text-slate-900"
+                  }
                   group
                 `}
               >
@@ -102,7 +113,11 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
                   className={`
                     absolute bottom-1 left-3 right-3 h-[2px] bg-indigo-500 rounded-full
                     transition-transform duration-300 origin-left
-                    ${activeLink === link.label ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}
+                    ${
+                      activeLink === link.label
+                        ? "scale-x-100"
+                        : "scale-x-0 group-hover:scale-x-100"
+                    }
                   `}
                 />
               </button>
@@ -110,7 +125,7 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
           </div>
 
           <div className="flex items-center justify-end gap-2 min-w-[300px]">
-            {isAuthenticated && <ProfileMenu setCurrentView={setCurrentView} />}
+            {isAuthed && <ProfileMenu setCurrentView={setCurrentView} />}
 
             <button
               type="button"
@@ -137,7 +152,11 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
                 className={`
                   relative flex items-center justify-center
                   transition-transform duration-300
-                  ${theme === "dark" ? "rotate-180 scale-110" : "rotate-0 scale-100"}
+                  ${
+                    theme === "dark"
+                      ? "rotate-180 scale-110"
+                      : "rotate-0 scale-100"
+                  }
                 `}
               >
                 {theme === "dark" ? (
@@ -146,10 +165,14 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
                   <Sun className="h-4 w-4 text-amber-400" />
                 )}
               </span>
-              <span className="sr-only">{theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}</span>
+              <span className="sr-only">
+                {theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"}
+              </span>
             </button>
 
-            {!isAuthenticated && (
+            {!isAuthed && (
               <>
                 <button
                   onClick={() => setCurrentView("login")}
@@ -186,5 +209,5 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
         </div>
       </nav>
     </header>
-  )
+  );
 }

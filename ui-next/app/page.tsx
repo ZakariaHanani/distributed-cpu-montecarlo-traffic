@@ -18,6 +18,10 @@ import { Footer } from "@/components/cpu-grid/footer";
 import { AuthPage } from "@/components/cpu-grid/auth-page";
 import { LegalPage } from "@/components/cpu-grid/legal-page";
 import { ProfilePage } from "@/components/cpu-grid/profile-page";
+import { AdminProfilePage } from "@/components/cpu-grid/admin-profile-page";
+import { AdminWorkersPage } from "@/components/cpu-grid/admin-workers-page";
+import { AdminAuditPage } from "@/components/cpu-grid/admin-audit-page";
+import { MySimulationsPage } from "@/components/cpu-grid/my-simulations-page";
 import { NoiseOverlay } from "@/components/cpu-grid/noise-overlay";
 import { AmbientLight } from "@/components/cpu-grid/ambient-light";
 import { WebGLBackground } from "@/components/cpu-grid/webgl-background";
@@ -27,6 +31,10 @@ export type ViewType =
   | "login"
   | "signup"
   | "profile"
+  | "simulations"
+  | "admin_profile"
+  | "admin_audit"
+  | "admin_workers"
   | "privacy"
   | "terms"
   | "cookies";
@@ -80,6 +88,22 @@ export default function Home() {
 
       {currentView === "profile" && (
         <ProfilePage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "simulations" && (
+        <MySimulationsPage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "admin_profile" && (
+        <AdminProfilePage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "admin_audit" && (
+        <AdminAuditPage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "admin_workers" && (
+        <AdminWorkersPage setCurrentView={setCurrentView} />
       )}
 
       {(currentView === "privacy" ||

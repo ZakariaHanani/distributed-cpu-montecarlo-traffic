@@ -23,9 +23,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ViewType } from "@/app/page";
 import {
+  decodeJwtPayload,
   getDisplayNameFromToken,
   login,
   reset,
+  setAuthMeta,
   setDisplayName,
   setToken,
   signup,
@@ -177,8 +179,18 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
       if (isLogin) {
         const token = await login({ usernameOrEmail: username, password });
         setToken(token);
-        const name = getDisplayNameFromToken(token);
-        if (name) setDisplayName(name);
+        const payload = decodeJwtPayload(token);
+        const rawRole = typeof payload?.role === "string" ? payload.role : "";
+        const normalizedRole = rawRole.trim().toUpperCase();
+        const role =
+          normalizedRole === "ADMIN" || normalizedRole === "ROLE_ADMIN"
+            ? "ADMIN"
+            : "USER";
+        const authedName =
+          typeof payload?.name === "string" ? payload.name : "—";
+        setAuthMeta({ role, name: authedName });
+        const displayName = getDisplayNameFromToken(token);
+        if (displayName) setDisplayName(displayName);
         window.dispatchEvent(new Event("auth:changed"));
         setSuccessMessage("Success. Redirecting…");
         redirectTimeoutRef.current = window.setTimeout(() => {
