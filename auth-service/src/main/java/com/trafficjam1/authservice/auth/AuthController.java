@@ -1,6 +1,7 @@
 package com.trafficjam1.authservice.auth;
 
 import com.trafficjam1.authservice.security.JwtService;
+import com.trafficjam1.authservice.user.Role;
 import com.trafficjam1.authservice.user.User;
 import com.trafficjam1.authservice.user.UserRepository;
 import jakarta.validation.Valid;
@@ -87,6 +88,7 @@ public class AuthController {
             Map<String, Object> claims = new HashMap<>();
             claims.put("uid", user.getId());
             claims.put("name", user.getFirstName() + " " + user.getLastName());
+            claims.put("role", user.getRole().name());
             String token = jwtService.generateToken(user.getUsername(), claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception ex) {
@@ -178,10 +180,21 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(principal, request.getPassword())
             );
-            String subject = authentication.getName();
+            User user = principal.contains("@")
+                    ? userRepository.findByEmail(principal).orElse(null)
+                    : userRepository.findByUsername(principal).orElse(null);
+            if (user == null) {
+                throw new IllegalStateException("Authenticated user not found");
+            }
+            if (user.getRole() == null) {
+                user.setRole(Role.USER);
+                userRepository.save(user);
+            }
             Map<String, Object> claims = new HashMap<>();
-            claims.put("auth", "user");
-            String token = jwtService.generateToken(subject, claims);
+            claims.put("uid", user.getId());
+            claims.put("name", user.getFirstName() + " " + user.getLastName());
+            claims.put("role", user.getRole().name());
+            String token = jwtService.generateToken(user.getUsername(), claims);
             log.info("Login succeeded principal={}", principal);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (BadCredentialsException ex) {

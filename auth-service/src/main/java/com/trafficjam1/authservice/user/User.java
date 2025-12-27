@@ -10,6 +10,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    private Role role = Role.USER;
+
     @Column(nullable = false)
     private String firstName;
 
@@ -40,10 +44,19 @@ public class User {
     @PrePersist
     void onCreate() {
         this.createdAt = Instant.now();
+        if (this.role == null) this.role = Role.USER;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getFirstName() {
