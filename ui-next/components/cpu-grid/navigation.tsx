@@ -11,9 +11,14 @@ import type { ViewType } from "@/app/page";
 interface NavigationProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
+  isVisible?: boolean;
 }
 
-export function Navigation({ currentView, setCurrentView }: NavigationProps) {
+export function Navigation({
+  currentView,
+  setCurrentView,
+  isVisible = true,
+}: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const { theme, toggleTheme } = useTheme();
@@ -55,6 +60,11 @@ export function Navigation({ currentView, setCurrentView }: NavigationProps) {
       <nav
         className={`
           transition-all duration-300 ease-out
+          ${
+            isVisible
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 -translate-y-6 pointer-events-none"
+          }
           ${
             isScrolled
               ? "max-w-[800px] w-full rounded-full bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)]"

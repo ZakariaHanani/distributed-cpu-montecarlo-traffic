@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { ArrowRight, Cpu, Globe, Server, Zap } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ArrowRight, Cpu, Globe, Server, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { ViewType } from "@/app/page";
 
@@ -23,7 +23,9 @@ export function Hero({ setCurrentView }: HeroProps) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
           </span>
-          <span className="text-sm font-medium text-slate-600">University Research Project</span>
+          <span className="text-sm font-medium text-slate-600">
+            University Research Project
+          </span>
         </div>
 
         {/* Main Title */}
@@ -37,28 +39,29 @@ export function Hero({ setCurrentView }: HeroProps) {
 
         {/* Subtitle */}
         <p className="text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto mb-12 leading-relaxed">
-          High-performance distributed computing platform for traffic simulation and Monte Carlo analysis. Scale your
-          computations across thousands of nodes.
+          High-performance distributed computing platform for traffic simulation
+          and Monte Carlo analysis. Scale your computations across thousands of
+          nodes.
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button
-              size="lg"
-              className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 py-6 text-lg group"
-              asChild
+            size="lg"
+            className="h-14 bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 text-lg group"
+            asChild
           >
             <Link href="/simulations/new">
-              Launch New Simulation
+              Launch Simulation
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
           <Button
-              size="lg"
-              variant="outline"
-              onClick={() => setCurrentView("become_worker")}
-              className="
-                rounded-full px-8 py-6 text-lg
+            size="lg"
+            variant="outline"
+            onClick={() => setCurrentView("become_worker")}
+            className="
+                h-14 rounded-full px-8 text-lg
                 bg-white/60 backdrop-blur-xl
                 border border-indigo-500/20
                 text-slate-900
@@ -84,14 +87,19 @@ export function Hero({ setCurrentView }: HeroProps) {
             { icon: Globe, value: "500+", label: "Active Nodes" },
             { icon: Cpu, value: "99.9%", label: "Uptime" },
           ].map((stat, i) => (
-            <div key={i} className="glass card-super p-8 shadow-deep liquid-hover">
+            <div
+              key={i}
+              className="glass card-super p-8 shadow-deep liquid-hover"
+            >
               <stat.icon className="w-8 h-8 text-indigo-500 mx-auto mb-4" />
-              <div className="text-4xl font-bold text-slate-900 mb-2">{stat.value}</div>
+              <div className="text-4xl font-bold text-slate-900 mb-2">
+                {stat.value}
+              </div>
               <div className="text-slate-500">{stat.label}</div>
             </div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
