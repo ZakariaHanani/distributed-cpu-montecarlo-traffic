@@ -1,5 +1,6 @@
 package com.trafficjam1.authservice.security;
 
+import com.trafficjam1.authservice.user.Role;
 import com.trafficjam1.authservice.user.User;
 import com.trafficjam1.authservice.user.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,13 +32,18 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                getAuthorities()
+                getAuthorities(user)
         );
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities() {
+    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+        if (user.getRole() == Role.ADMIN) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER")
+            );
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 }
-
 

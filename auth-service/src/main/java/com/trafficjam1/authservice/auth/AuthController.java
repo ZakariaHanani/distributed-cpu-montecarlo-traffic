@@ -1,6 +1,7 @@
 package com.trafficjam1.authservice.auth;
 
 import com.trafficjam1.authservice.security.JwtService;
+import com.trafficjam1.authservice.user.Role;
 import com.trafficjam1.authservice.user.User;
 import com.trafficjam1.authservice.user.UserRepository;
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -30,6 +31,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final MailService mailService;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public AuthController(UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
@@ -48,8 +50,7 @@ public class AuthController {
         log.debug("Signup request received for username={} email={} city={}", request.getUsername(), request.getEmail(), request.getCity());
         if (isBlank(request.getFirstName()) || isBlank(request.getLastName()) ||
                 isBlank(request.getUsername()) || isBlank(request.getEmail()) ||
-                isBlank(request.getCity()) || isBlank(request.getPassword())) {
-            log.warn("Signup validation failed: missing fields for username={} email={}", request.getUsername(), request.getEmail());
+                isBlank(request.getPassword()) || isBlank(request.getConfirmPassword())) {
             return ResponseEntity.badRequest().body(error("All fields are required"));
         }
         if (!isValidEmail(request.getEmail())) {
@@ -78,7 +79,8 @@ public class AuthController {
             user.setLastName(request.getLastName());
             user.setUsername(request.getUsername());
             user.setEmail(request.getEmail());
-            user.setCity(request.getCity());
+            String city = isBlank(request.getCity()) ? "UNKNOWN" : request.getCity().trim();
+            user.setCity(city);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             userRepository.save(user);
 
@@ -86,9 +88,11 @@ public class AuthController {
             Map<String, Object> claims = new HashMap<>();
             claims.put("uid", user.getId());
             claims.put("name", user.getFirstName() + " " + user.getLastName());
+            claims.put("role", user.getRole().name());
             String token = jwtService.generateToken(user.getUsername(), claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception ex) {
+            ex.printStackTrace(); // TEMP for debugging
             log.error("Signup failed for username={} email={} cause={}", request.getUsername(), request.getEmail(), ex.getMessage(), ex);
             return ResponseEntity.internalServerError().body(error("Registration failed"));
         }
@@ -103,7 +107,7 @@ public class AuthController {
         }
         return userRepository.findByEmail(email)
                 .map(user -> {
-                    String code = String.format("%06d", (int) (Math.random() * 1_000_000));
+                    String code = String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
                     user.setResetCode(code);
                     user.setResetCodeExpiresAt(java.time.Instant.now().plusSeconds(10 * 60));
                     userRepository.save(user);
@@ -176,10 +180,21 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(principal, request.getPassword())
             );
-            String subject = authentication.getName();
+            User user = principal.contains("@")
+                    ? userRepository.findByEmail(principal).orElse(null)
+                    : userRepository.findByUsername(principal).orElse(null);
+            if (user == null) {
+                throw new IllegalStateException("Authenticated user not found");
+            }
+            if (user.getRole() == null) {
+                user.setRole(Role.USER);
+                userRepository.save(user);
+            }
             Map<String, Object> claims = new HashMap<>();
-            claims.put("auth", "user");
-            String token = jwtService.generateToken(subject, claims);
+            claims.put("uid", user.getId());
+            claims.put("name", user.getFirstName() + " " + user.getLastName());
+            claims.put("role", user.getRole().name());
+            String token = jwtService.generateToken(user.getUsername(), claims);
             log.info("Login succeeded principal={}", principal);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (BadCredentialsException ex) {
