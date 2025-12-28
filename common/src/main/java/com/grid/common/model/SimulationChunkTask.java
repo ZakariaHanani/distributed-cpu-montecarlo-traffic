@@ -26,6 +26,8 @@ public class SimulationChunkTask extends AbstractTask {
      *  Workers will use this to configure the TrafficSimulationEngine.
      */
     private final SimulationParams params;
+    private UUID jobId ;
+    private MasterCallback masterCallback ;
 
     public SimulationChunkTask(UUID taskId, SimulationParams params) {
         super(taskId, buildParametersMap(params), params.getSeed());
@@ -89,21 +91,21 @@ public class SimulationChunkTask extends AbstractTask {
 
     @Override
     public UUID getJobId() {
-        return null;
+        return jobId;
     }
 
     @Override
     public void setJobId(UUID jobId) {
-
+      this.jobId =jobId ;
     }
 
     @Override
     public MasterCallback getMasterCallback() {
-        return null;
+        return masterCallback;
     }
 
     @Override
     public void setMasterCallback(MasterCallback masterCallback) {
-
+        this.masterCallback =masterCallback ;
     }
 }
