@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { Preloader } from "@/components/cpu-grid/preloader";
 import { Navigation } from "@/components/cpu-grid/navigation";
 import { Hero } from "@/components/cpu-grid/hero";
+import { WorkerTeaser } from "@/components/cpu-grid/worker-teaser";
 import { CoreCapabilities } from "@/components/cpu-grid/core-capabilities";
 import { Network } from "@/components/cpu-grid/network";
 import { Process } from "@/components/cpu-grid/process";
@@ -26,6 +27,8 @@ import { BecomeWorkerPage } from "@/components/cpu-grid/become-worker-page";
 import { NoiseOverlay } from "@/components/cpu-grid/noise-overlay";
 import { AmbientLight } from "@/components/cpu-grid/ambient-light";
 import { WebGLBackground } from "@/components/cpu-grid/webgl-background";
+import { EligibilityPage } from "@/components/cpu-grid/eligibility-page";
+import { RewardRulesPage } from "@/components/cpu-grid/reward-rules-page";
 
 export type ViewType =
   | "home"
@@ -34,6 +37,8 @@ export type ViewType =
   | "profile"
   | "simulations"
   | "become_worker"
+  | "eligibility"
+  | "reward_rules"
   | "admin_profile"
   | "admin_audit"
   | "admin_workers"
@@ -44,6 +49,12 @@ export type ViewType =
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>("home");
   const [isLoading, setIsLoading] = useState(true);
+  const [isNavVisible, setIsNavVisible] = useState(false);
+
+  const isFocusedOnboarding =
+    currentView === "become_worker" ||
+    currentView === "eligibility" ||
+    currentView === "reward_rules";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -51,6 +62,16 @@ export default function Home() {
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  useLayoutEffect(() => {
+    if (
+      currentView === "become_worker" ||
+      currentView === "eligibility" ||
+      currentView === "reward_rules"
+    ) {
+      setIsNavVisible(false);
+    }
+  }, [currentView]);
 
   if (isLoading) {
     return <Preloader />;
@@ -64,12 +85,48 @@ export default function Home() {
       <WebGLBackground />
 
       {/* Navigation */}
-      <Navigation currentView={currentView} setCurrentView={setCurrentView} />
+      <Navigation
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        isVisible={!isFocusedOnboarding || isNavVisible}
+      />
+
+      {isFocusedOnboarding && (
+        <button
+          type="button"
+          aria-label="Open navigation menu"
+          onClick={() => setIsNavVisible((v) => !v)}
+          className="
+            fixed top-5 left-4 z-50
+            flex h-11 w-11 items-center justify-center
+            rounded-full border border-white/60
+            bg-white/70 backdrop-blur-2xl
+            shadow-[0_18px_55px_-44px_rgba(15,23,42,0.35)]
+            text-slate-900
+            transition-all duration-200 ease-out
+            hover:-translate-y-[1px]
+            hover:shadow-[0_22px_70px_-44px_rgba(99,102,241,0.35)]
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70
+          "
+        >
+          <span className="text-[22px] leading-none">☰</span>
+        </button>
+      )}
+
+      {isFocusedOnboarding && isNavVisible && (
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => setIsNavVisible(false)}
+          className="fixed inset-0 z-40 cursor-default"
+        />
+      )}
 
       {/* View Router */}
       {currentView === "home" && (
         <div className="relative z-10">
           <Hero setCurrentView={setCurrentView} />
+          <WorkerTeaser setCurrentView={setCurrentView} />
           <CoreCapabilities />
           <Network />
           <Process />
@@ -98,6 +155,14 @@ export default function Home() {
 
       {currentView === "become_worker" && (
         <BecomeWorkerPage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "eligibility" && (
+        <EligibilityPage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "reward_rules" && (
+        <RewardRulesPage setCurrentView={setCurrentView} />
       )}
 
       {currentView === "admin_profile" && (
