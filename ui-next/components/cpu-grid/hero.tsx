@@ -1,10 +1,15 @@
 "use client"
 
-import { ArrowRight, Play, Zap, Globe, Cpu } from "lucide-react"
+import { ArrowRight, Cpu, Globe, Server, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
+import type { ViewType } from "@/app/page";
 
-export function Hero() {
+type HeroProps = {
+  setCurrentView: (view: ViewType) => void;
+};
+
+export function Hero({ setCurrentView }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden">
       {/* Background gradient orbs */}
@@ -37,29 +42,43 @@ export function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button
               size="lg"
               className="bg-slate-900 hover:bg-slate-800 text-white rounded-full px-8 py-6 text-lg group"
               asChild
           >
             <Link href="/simulations/new">
-              Start Simulating
+              Launch New Simulation
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
           <Button
               size="lg"
               variant="outline"
-              className="rounded-full px-8 py-6 text-lg border-slate-300 hover:bg-slate-100 bg-transparent"
+              onClick={() => setCurrentView("become_worker")}
+              className="
+                rounded-full px-8 py-6 text-lg
+                bg-white/60 backdrop-blur-xl
+                border border-indigo-500/20
+                text-slate-900
+                shadow-[0_14px_45px_-34px_rgba(15,23,42,0.25)]
+                transition-all duration-200 ease-out
+                hover:-translate-y-[2px]
+                hover:shadow-[0_22px_70px_-44px_rgba(99,102,241,0.40)]
+              "
           >
-            <Play className="mr-2 w-5 h-5" />
-            Watch Demo
+            <Server className="mr-2 w-5 h-5 text-indigo-600" />
+            Join the Worker Network
           </Button>
         </div>
 
+        <p className="mt-3 text-sm text-slate-500">
+          Contribute compute power by running a worker node in the CPU Grid.
+        </p>
+
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-16">
           {[
             { icon: Zap, value: "10M+", label: "Simulations Run" },
             { icon: Globe, value: "500+", label: "Active Nodes" },

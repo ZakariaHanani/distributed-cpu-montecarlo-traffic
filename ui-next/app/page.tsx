@@ -22,6 +22,7 @@ import { AdminProfilePage } from "@/components/cpu-grid/admin-profile-page";
 import { AdminWorkersPage } from "@/components/cpu-grid/admin-workers-page";
 import { AdminAuditPage } from "@/components/cpu-grid/admin-audit-page";
 import { MySimulationsPage } from "@/components/cpu-grid/my-simulations-page";
+import { BecomeWorkerPage } from "@/components/cpu-grid/become-worker-page";
 import { NoiseOverlay } from "@/components/cpu-grid/noise-overlay";
 import { AmbientLight } from "@/components/cpu-grid/ambient-light";
 import { WebGLBackground } from "@/components/cpu-grid/webgl-background";
@@ -32,6 +33,7 @@ export type ViewType =
   | "signup"
   | "profile"
   | "simulations"
+  | "become_worker"
   | "admin_profile"
   | "admin_audit"
   | "admin_workers"
@@ -67,7 +69,7 @@ export default function Home() {
       {/* View Router */}
       {currentView === "home" && (
         <div className="relative z-10">
-          <Hero />
+          <Hero setCurrentView={setCurrentView} />
           <CoreCapabilities />
           <Network />
           <Process />
@@ -92,6 +94,10 @@ export default function Home() {
 
       {currentView === "simulations" && (
         <MySimulationsPage setCurrentView={setCurrentView} />
+      )}
+
+      {currentView === "become_worker" && (
+        <BecomeWorkerPage setCurrentView={setCurrentView} />
       )}
 
       {currentView === "admin_profile" && (
