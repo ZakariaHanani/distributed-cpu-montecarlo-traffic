@@ -1,9 +1,14 @@
 package com.grid.worker;
 
 import com.grid.common.configLoader;
+import com.grid.common.Interfaces.Heartbeat;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.RemoteException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class workerApp {
 
@@ -12,37 +17,62 @@ public class workerApp {
         final int registryPort = configLoader.getInt("registry.port");
         final int maxRetries = configLoader.getInt("worker.max.retries");
         final long waitTimeMs = configLoader.getLong("worker.wait.time.ms");
+        final long heartbeatIntervalMs = configLoader.getLong("worker.heartbeat.interval.ms");
 
         System.out.println("Starting Worker Node...");
         System.out.printf("Attempting to connect to RMI Registry at %s:%d\n", registryHost, registryPort);
 
         Registry registry = connectToRegistry(registryHost, registryPort, maxRetries, waitTimeMs);
+        if (registry == null) {
+            System.err.println("Failed to connect to RMI Registry. Worker shutting down.");
+            System.exit(1);
+        }
 
-        WorkerImpl workerImpl = null;
-        Thread workerThread = null;
+        try {
+            // Lookup the Master service (must implement Heartbeat interface)
+            Heartbeat master = (Heartbeat) registry.lookup("MasterService");
 
-        if (registry != null) {
-            System.out.println("Successfully connected to RMI Registry.");
-            try {
-                workerImpl = new WorkerImpl(registry);
-                String workerId = workerImpl.getId();
+            // Create WorkerImpl
+            WorkerImpl workerImpl = new WorkerImpl(registry);
+            String workerId = workerImpl.getId();
 
-                registry.rebind(workerId, workerImpl);
+            // Bind worker in local registry for RMI calls from master (optional)
+//            registry.rebind(workerId, workerImpl);
+//            System.out.printf("Worker bound locally with ID: %s\n", workerId);
 
-                System.out.printf("Worker registered successfully with ID: %s.\n", workerId);
+            // Register worker with Master
+            master.registerWorker(workerId, workerImpl);
+            System.out.printf("Worker registered with Master: %s\n", workerId);
 
+            // Start heartbeat scheduler
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+            scheduler.scheduleAtFixedRate(() -> {
+                try {
+                    master.heartbeat(workerId);
+                } catch (RemoteException e) {
+                    System.err.println("[Worker] Failed to send heartbeat: " + e.getMessage());
+                }
+            }, 0, heartbeatIntervalMs, TimeUnit.MILLISECONDS);
 
-                workerThread = new Thread(workerImpl, "Worker-Task-Processor");
-                workerThread.start();
+            // Start worker task thread
+            Thread workerThread = new Thread(workerImpl, "Worker-Task-Processor");
+            workerThread.start();
+            System.out.println("[Worker] Now running and waiting for tasks...");
 
-                System.out.println("LOG: Worker is now running and waiting for tasks...");
+            // Shutdown hook to unregister worker
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    master.unregisterWorker(workerId);
+                    scheduler.shutdown();
+                    System.out.println("[Worker] Successfully unregistered on shutdown.");
+                } catch (RemoteException e) {
+                    System.err.println("[Worker] Failed to unregister on shutdown: " + e.getMessage());
+                }
+            }));
 
-            } catch (RemoteException e) {
-                System.err.println("Critical error during RMI registration or binding: " + e.getMessage());
-                System.exit(1);
-            }
-        } else {
-            System.err.println("Failed to connect to RMI Registry after maximum retries. Worker shutting down.");
+        } catch (Exception e) {
+            System.err.println("Critical error: " + e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
     }
@@ -55,9 +85,8 @@ public class workerApp {
             attempts++;
             try {
                 registry = LocateRegistry.getRegistry(host, port);
-                registry.list();
+                registry.list(); // test connection
                 return registry;
-
             } catch (Exception e) {
                 System.out.printf("Attempt %d/%d failed: Registry not reachable. Retrying in %dms...\n",
                         attempts, maxRetries, waitTimeMs);

@@ -3,14 +3,24 @@ package com.grid.master.assignment;
 import com.grid.common.Interfaces.IWorker;
 
 public class WorkerInfo {
+
     private final String id;
     private final IWorker stub;
-    private WorkerStatus status;
+    private volatile long lastHeartbeat;
+    private WorkerStatus status = WorkerStatus.AVAILABLE;
 
     public WorkerInfo(String id, IWorker stub) {
         this.id = id;
         this.stub = stub;
-        this.status = WorkerStatus.AVAILABLE;
+        this.lastHeartbeat = System.currentTimeMillis();
+    }
+
+    public void heartbeat() {
+        lastHeartbeat = System.currentTimeMillis();
+    }
+
+    public long lastSeen() {
+        return lastHeartbeat;
     }
 
     public String getId() {

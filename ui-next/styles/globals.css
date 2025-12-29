@@ -75,6 +75,9 @@
 }
 
 @theme inline {
+
+  --font-sans: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
