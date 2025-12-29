@@ -114,7 +114,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
               <div className="p-10 sm:p-12">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/35 via-violet-500/30 to-rose-500/25 blur-[18px] opacity-70" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/26 via-violet-500/22 to-indigo-500/14 blur-[18px] opacity-60" />
                     <div className="relative flex size-16 items-center justify-center rounded-full bg-white/70 ring-1 ring-white/60 shadow-[0_18px_50px_-30px_rgba(99,102,241,0.35)]">
                       <FolderOpen className="size-7 text-slate-900/80" />
                     </div>
@@ -140,8 +140,8 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
                       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60
                     "
                   >
-                    <span className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/15 via-violet-500/15 to-rose-500/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                    <span className="absolute -inset-px rounded-full bg-gradient-to-r from-indigo-500/45 via-violet-500/35 to-rose-500/30 opacity-0 blur-[10px] transition-opacity duration-200 group-hover:opacity-70" />
+                    <span className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/14 via-violet-500/14 to-indigo-500/8 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    <span className="absolute -inset-px rounded-full bg-gradient-to-r from-indigo-500/40 via-violet-500/32 to-indigo-500/26 opacity-0 blur-[10px] transition-opacity duration-200 group-hover:opacity-65" />
                     <span className="relative inline-flex items-center gap-2">
                       <Play className="size-4 text-indigo-700" />
                       Launch New Simulation

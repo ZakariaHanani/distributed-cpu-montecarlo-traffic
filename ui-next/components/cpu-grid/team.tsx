@@ -1,70 +1,230 @@
 "use client"
 
-import { Github, Linkedin, Twitter } from "lucide-react"
+import { useEffect, useLayoutEffect, useRef } from "react"
+import { gsap } from "gsap"
+import { Github, GitPullRequest, Linkedin, Twitter } from "lucide-react"
 
 const team = [
   {
-    name: "Alex Thompson",
-    role: "Project Lead",
-    bio: "Distributed systems researcher with focus on high-performance computing.",
-    avatar: "AT",
+    name: "Mohamed Ouijjane",
+    role: "Full-Stack Contributor (Frontend + Coordination)",
+    bio: "UI architecture in Next.js + Tailwind, UX flow, integration planning, and project coordination.",
+    avatar: "MO",
+    tag: { label: "Frontend", className: "bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15" },
   },
   {
-    name: "Sarah Kim",
-    role: "Algorithm Engineer",
-    bio: "Monte Carlo methods specialist with background in statistical physics.",
-    avatar: "SK",
+    name: "Zakaria Hanani",
+    role: "Backend Developer",
+    bio: "Distributed services, orchestration endpoints, and core backend implementation for the compute mesh.",
+    avatar: "ZH",
+    tag: { label: "Backend", className: "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15" },
   },
   {
-    name: "Marcus Chen",
-    role: "Infrastructure Lead",
-    bio: "Cloud architect with experience scaling systems at major tech companies.",
-    avatar: "MC",
+    name: "Ali Halla",
+    role: "Backend Developer",
+    bio: "Worker/master runtime features, task execution flow, and reliability improvements.",
+    avatar: "AH",
+    tag: { label: "Backend", className: "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15" },
   },
   {
-    name: "Elena Rodriguez",
-    role: "Data Scientist",
-    bio: "Traffic modeling expert with PhD in transportation engineering.",
-    avatar: "ER",
+    name: "Ayoub Karkouri",
+    role: "Backend Developer",
+    bio: "API foundations, simulation job lifecycle, and system integration support.",
+    avatar: "AK",
+    tag: { label: "Backend", className: "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15" },
   },
-]
+  {
+    name: "Ahmed Lahmaine",
+    role: "Authentication & Security Engineer",
+    bio: "Auth logic, JWT handling, role gating, and security best practices across services.",
+    avatar: "AL",
+    tag: { label: "Security", className: "bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/15" },
+  },
+  {
+    name: "Hmad Ait Lahmouss",
+    role: "Architecture & Conception",
+    bio: "System design, UML/sequence flows, and distributed architecture documentation.",
+    avatar: "HL",
+    tag: { label: "Architecture", className: "bg-slate-900/5 text-slate-700 ring-1 ring-slate-900/10" },
+  },
+  {
+    name: "Mohamed Ouadra",
+    role: "Frontend Developer",
+    bio: "UI components, animations, and user flows for simulations, worker onboarding, and dashboards.",
+    avatar: "MO",
+    tag: { label: "Frontend", className: "bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15" },
+  },
+] as const
 
 export function Team() {
+  const rootRef = useRef<HTMLElement>(null)
+  const hasAnimatedRef = useRef(false)
+
+  useLayoutEffect(() => {
+    if (!rootRef.current) return
+    const ctx = gsap.context(() => {
+      const prefersReducedMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+      const header = rootRef.current?.querySelector<HTMLElement>('[data-team="header"]')
+      const cards = gsap.utils.toArray<HTMLElement>('[data-team="card"]', rootRef.current)
+
+      if (prefersReducedMotion) {
+        if (header) gsap.set(header, { opacity: 1, y: 0 })
+        if (cards.length) gsap.set(cards, { opacity: 1, y: 0 })
+        return
+      }
+
+      if (header) gsap.set(header, { opacity: 0, y: 12 })
+      if (cards.length) gsap.set(cards, { opacity: 0, y: 12 })
+    }, rootRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (prefersReducedMotion) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        if (hasAnimatedRef.current) return
+        hasAnimatedRef.current = true
+
+        const header = root.querySelector<HTMLElement>('[data-team="header"]')
+        const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-team="card"]'))
+
+        const tl = gsap.timeline({ defaults: { duration: 0.6, ease: "power3.out" } })
+        if (header) tl.to(header, { opacity: 1, y: 0, clearProps: "transform" })
+        if (cards.length)
+          tl.to(cards, { opacity: 1, y: 0, stagger: 0.08, clearProps: "transform" }, header ? "-=0.25" : 0)
+
+        observer.disconnect()
+      },
+      { threshold: 0.25 }
+    )
+
+    observer.observe(root)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section id="team" className="py-32 relative">
+    <section
+      id="team"
+      ref={rootRef}
+      className="py-32 relative bg-white overflow-hidden"
+      aria-labelledby="team-title"
+    >
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 opacity-[0.26] [background-image:linear-gradient(to_right,rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:56px_56px]" />
+        <div className="absolute left-1/2 top-24 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.09),transparent_62%)] blur-3xl" />
+        <div className="absolute left-1/2 top-44 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.07),transparent_62%)] blur-3xl" />
+      </div>
       <div className="max-w-7xl mx-auto px-6">
-        {/* Section Header */}
-        <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 mb-6">
-            Project Team
-          </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Meet the researchers and engineers behind CPU Grid
-          </p>
+        <div
+          data-team="header"
+          className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 md:mb-20 gap-6"
+        >
+          <div className="max-w-3xl">
+            <h2
+              id="team-title"
+              className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 mb-5"
+            >
+              Core Contributors
+            </h2>
+            <p className="text-xl text-slate-500 leading-relaxed">
+              Built by a university engineering team delivering a distributed CPU grid for Monte Carlo traffic
+              simulation — from architecture to secure authentication and UI.
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              Open-source workflow • GitHub issues/PRs • Iterative delivery
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 backdrop-blur-xl px-4 py-2 shadow-[0_18px_55px_-44px_rgba(15,23,42,0.25)]">
+            <GitPullRequest className="size-4 text-indigo-600" />
+            <span className="text-sm font-semibold text-slate-700">
+              GitHub Contributors
+            </span>
+          </div>
         </div>
 
-        {/* Team Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {team.map((member, i) => (
-            <div key={i} className="group glass card-super-lg p-8 shadow-deep text-center liquid-hover">
-              {/* Avatar */}
-              <div className="relative mx-auto mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {team.map((member) => (
+            <div
+              key={member.name}
+              data-team="card"
+              className="
+                group glass card-super-lg p-8 shadow-deep rounded-3xl
+                border border-white/40 bg-white/70 backdrop-blur-xl
+                text-center
+                transition-all duration-200 ease-out
+                hover:-translate-y-1 hover:shadow-glow hover:border-white/75
+                focus-within:-translate-y-1 focus-within:shadow-glow focus-within:border-white/75
+                liquid-hover
+              "
+            >
+              <div className="flex items-center justify-between gap-4">
+                <span
+                  className={[
+                    "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+                    member.tag.className,
+                  ].join(" ")}
+                >
+                  {member.tag.label}
+                </span>
+                <span className="text-[11px] font-semibold text-slate-500">
+                  v0.1
+                </span>
+              </div>
+
+              <div className="relative mx-auto mt-6 mb-6 w-fit">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
                 <div className="relative w-24 h-24 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
                   {member.avatar}
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-slate-900 mb-1">{member.name}</h3>
-              <div className="text-indigo-600 font-medium mb-3">{member.role}</div>
-              <p className="text-slate-500 text-sm leading-relaxed mb-6">{member.bio}</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">
+                {member.name}
+              </h3>
+              <div className="text-indigo-700 font-semibold mb-3">
+                {member.role}
+              </div>
+              <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                {member.bio}
+              </p>
 
-              {/* Social Links */}
               <div className="flex items-center justify-center gap-3">
-                {[Github, Linkedin, Twitter].map((Icon, j) => (
+                {[
+                  { Icon: Github, label: "GitHub", primary: true },
+                  { Icon: Linkedin, label: "LinkedIn", primary: false },
+                  { Icon: Twitter, label: "X/Twitter", primary: false },
+                ].map(({ Icon, label, primary }) => (
                   <button
-                    key={j}
-                    className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-all"
+                    key={label}
+                    type="button"
+                    disabled
+                    aria-label={`${label} link coming soon`}
+                    title="Link coming soon"
+                    className={[
+                      "w-9 h-9 rounded-full flex items-center justify-center transition-all",
+                      primary
+                        ? "bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15"
+                        : "bg-slate-100 text-slate-400 ring-1 ring-slate-900/10",
+                      "opacity-50 cursor-not-allowed",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60",
+                    ].join(" ")}
                   >
                     <Icon className="w-4 h-4" />
                   </button>

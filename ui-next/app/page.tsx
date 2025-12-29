@@ -51,6 +51,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNavVisible, setIsNavVisible] = useState(false);
 
+  const isAuthView = currentView === "login" || currentView === "signup";
   const isFocusedOnboarding =
     currentView === "become_worker" ||
     currentView === "eligibility" ||
@@ -85,11 +86,13 @@ export default function Home() {
       <WebGLBackground />
 
       {/* Navigation */}
-      <Navigation
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        isVisible={!isFocusedOnboarding || isNavVisible}
-      />
+      {!isAuthView && (
+        <Navigation
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          isVisible={!isFocusedOnboarding || isNavVisible}
+        />
+      )}
 
       {isFocusedOnboarding && (
         <button
@@ -125,16 +128,21 @@ export default function Home() {
       {/* View Router */}
       {currentView === "home" && (
         <div className="relative z-10">
+          <div id="home" className="scroll-mt-28" />
           <Hero setCurrentView={setCurrentView} />
+          <div id="workers" className="scroll-mt-28" />
           <WorkerTeaser setCurrentView={setCurrentView} />
           <CoreCapabilities />
           <Network />
+          <div id="simulations" className="scroll-mt-28" />
           <Process />
           <Integration />
+          <div id="architecture" className="scroll-mt-28" />
           <Architecture />
           <DataVis />
           <Showcase />
           <Insights />
+          <div id="team" className="scroll-mt-28" />
           <Team />
           <Contact />
           <Footer setCurrentView={setCurrentView} />

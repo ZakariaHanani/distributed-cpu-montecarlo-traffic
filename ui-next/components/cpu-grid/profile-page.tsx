@@ -589,7 +589,19 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                 <p className="text-sm text-slate-500 mt-2">{tabSubtitle}</p>
               </div>
               <div className="hidden md:flex items-center gap-3 rounded-full bg-slate-900 text-white px-4 py-2 shadow-[0_16px_40px_-20px_rgba(15,23,42,0.45)]">
-                <Cpu className="size-4 text-indigo-300" />
+                <div className="relative size-4">
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 flex size-[7px] items-center justify-center rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.10)]">
+                    <div className="size-[2px] rounded-full bg-white/90" />
+                  </div>
+
+                  <div className="absolute left-[6px] top-[4px] h-px w-[7px] origin-left -rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-200/70 via-violet-200/70 to-violet-200/10" />
+                  <div className="absolute left-[6px] top-1/2 h-px w-[7px] -translate-y-1/2 rounded-full bg-gradient-to-r from-indigo-200/70 via-violet-200/70 to-violet-200/10" />
+                  <div className="absolute left-[6px] bottom-[4px] h-px w-[7px] origin-left rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-200/70 via-violet-200/70 to-violet-200/10" />
+
+                  <div className="absolute right-0 top-[1px] size-[4px] rounded-full bg-gradient-to-br from-indigo-200 to-violet-300 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                  <div className="absolute right-0 top-1/2 size-[4px] -translate-y-1/2 rounded-full bg-gradient-to-br from-indigo-200 to-violet-300 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                  <div className="absolute right-0 bottom-[1px] size-[4px] rounded-full bg-gradient-to-br from-indigo-200 to-violet-300 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                </div>
                 <span className="text-sm font-semibold">CPU Grid</span>
               </div>
             </div>

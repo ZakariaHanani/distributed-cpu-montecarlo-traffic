@@ -525,9 +525,10 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                 className="group mt-6 rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl px-6 py-6 shadow-[0_22px_70px_-55px_rgba(15,23,42,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 md:px-7 md:py-7"
                 aria-label="Quick example: click to replay the credit calculator demo"
               >
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-1 text-center">
-                    <div className="text-lg font-semibold tracking-tight text-slate-900">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/65 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">
+                      <span className="size-1.5 rounded-full bg-indigo-500" />
                       Quick example
                     </div>
                     <div className="text-sm text-slate-600">
@@ -535,280 +536,159 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 1
-                          ? "border-indigo-500/40 ring-1 ring-indigo-500/25 shadow-[0_18px_70px_-60px_rgba(99,102,241,0.45)]"
-                          : exampleStage > 1
-                          ? "border-indigo-500/25"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
+                  <div className="relative w-full max-w-3xl">
+                    <div className="pointer-events-none absolute inset-0 rounded-[2.25rem] bg-gradient-to-r from-indigo-500/14 via-violet-500/10 to-rose-500/10 blur-[22px] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                    <div className="relative mx-auto flex flex-wrap items-center justify-center gap-2 rounded-[2.25rem] border border-white/60 bg-white/70 px-4 py-3 shadow-sm">
                       <div
                         className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 1 ? "opacity-100" : "opacity-55",
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 1
+                            ? "border-indigo-500/35"
+                            : "border-white/60",
+                          exampleStage >= 1
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
                         ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(99,102,241,0.10)]">
-                            <Clock className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step A
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Uptime
-                              </span>
-                            </div>
-                            <div className="mt-2 text-xs text-slate-600">
-                              3 hours × 10 credits/hour
-                            </div>
-                          </div>
-                        </div>
+                      >
+                        <Clock className="size-4 text-indigo-700" />
+                        <span className="font-semibold">Uptime</span>
+                        <span className="text-slate-500">3h × 10</span>
+                        <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 font-semibold text-indigo-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.uptime}
+                        </span>
+                        <span className="text-slate-500">credits</span>
+                      </div>
 
-                        <span
-                          className={[
-                            "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-indigo-500/10 text-indigo-800 border-indigo-500/20",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 1
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.uptime}
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 2
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        +
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 2
+                            ? "border-violet-500/35"
+                            : "border-white/60",
+                          exampleStage >= 2
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <CheckCircle2 className="size-4 text-violet-700" />
+                        <span className="font-semibold">Tasks completed</span>
+                        <span className="text-slate-500">12 × 5</span>
+                        <span className="rounded-full bg-violet-500/10 px-2 py-0.5 font-semibold text-violet-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.tasks}
+                        </span>
+                        <span className="text-slate-500">credits</span>
+                      </div>
+
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 3
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        =
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 3
+                            ? "border-slate-900/15"
+                            : "border-white/60",
+                          exampleStage >= 3
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <Sigma className="size-4 text-slate-700" />
+                        <span className="font-semibold">Base credits</span>
+                        <span className="text-slate-500">30 + 60</span>
+                        <span className="rounded-full bg-slate-900/5 px-2 py-0.5 font-semibold text-slate-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.base}
+                        </span>
+                        <span className="text-slate-500">Base credits</span>
+                      </div>
+
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        →
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 4
+                            ? "border-rose-500/25"
+                            : "border-white/60",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <Sparkles className="size-4 text-rose-700" />
+                        <span className="font-semibold">
+                          Weekly bonus multiplier
+                        </span>
+                        <span className="rounded-full bg-rose-500/10 px-2 py-0.5 font-semibold text-rose-700 tabular-nums">
+                          1.5×
                         </span>
                       </div>
-                    </div>
 
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 2
-                          ? "border-violet-500/40 ring-1 ring-violet-500/25 shadow-[0_18px_70px_-60px_rgba(139,92,246,0.45)]"
-                          : exampleStage > 2
-                          ? "border-violet-500/25"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        =
+                      </span>
+
                       <div
                         className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-500/10 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 2 ? "opacity-100" : "opacity-55",
+                          "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tabular-nums shadow-sm",
+                          "bg-gradient-to-r from-rose-600/12 via-amber-500/10 to-indigo-600/10 text-slate-900 border-rose-500/20",
+                          "shadow-[0_16px_60px_-55px_rgba(244,63,94,0.55)]",
+                          "transition-[opacity,transform] duration-500 ease-out",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
                         ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(139,92,246,0.10)]">
-                            <CheckCircle2 className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step B
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Tasks completed
-                              </span>
-                            </div>
-                            <div className="mt-2 text-xs text-slate-600">
-                              12 tasks × 5 credits/task
-                            </div>
-                          </div>
-                        </div>
-
-                        <span
-                          className={[
-                            "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-violet-500/10 text-violet-800 border-violet-500/20",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 2
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.tasks}
+                      >
+                        <span className="min-w-[4ch] text-center">
+                          {exampleValues.final}
                         </span>
+                        <span className="text-slate-700">Final credits</span>
                       </div>
                     </div>
 
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 3
-                          ? "border-slate-400/40 ring-1 ring-slate-900/10 shadow-[0_18px_70px_-60px_rgba(15,23,42,0.25)]"
-                          : exampleStage > 3
-                          ? "border-slate-300/35"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
-                      <div
-                        className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-slate-900/5 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 3 ? "opacity-100" : "opacity-55",
-                        ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-slate-900/5 text-slate-700 ring-1 ring-slate-900/10 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(15,23,42,0.06)]">
-                            <Sigma className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step C
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Base credits
-                              </span>
-                            </div>
-                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                              <span className="rounded-full border border-white/70 bg-white/80 px-2 py-0.5 font-semibold text-slate-700 tabular-nums">
-                                30
-                              </span>
-                              <span className="text-slate-400">+</span>
-                              <span className="rounded-full border border-white/70 bg-white/80 px-2 py-0.5 font-semibold text-slate-700 tabular-nums">
-                                60
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <span
-                          className={[
-                            "inline-flex min-w-[9.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-slate-900/5 text-slate-800 border-slate-900/10",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 3
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.base} Base credits
-                        </span>
-                      </div>
+                    <div className="mt-2 text-[11px] font-medium text-slate-500">
+                      Tap to replay
                     </div>
-
-                    <div
-                      className={[
-                        "relative overflow-hidden rounded-[2.5rem] border bg-white/75 backdrop-blur-2xl p-6 shadow-sm md:col-span-3",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_22px_70px_-60px_rgba(15,23,42,0.42)]",
-                        exampleStage === 4
-                          ? "border-rose-500/30 ring-1 ring-rose-500/15 shadow-[0_26px_90px_-70px_rgba(244,63,94,0.35)]"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
-                      <div
-                        className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-rose-500/10 via-white/0 to-amber-500/8",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 4 ? "opacity-100" : "opacity-55",
-                        ].join(" ")}
-                      />
-
-                      <div
-                        className={[
-                          "pointer-events-none absolute -inset-10 rounded-[3rem] bg-rose-500/10 blur-[34px]",
-                          "opacity-0 transition-opacity duration-300",
-                          exampleStage === 4 ? "opacity-100 animate-pulse" : "",
-                        ].join(" ")}
-                      />
-
-                      <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-3">
-                            <div className="relative flex size-11 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/15">
-                              <Sparkles className="size-5" />
-                            </div>
-
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <div className="text-sm font-semibold text-slate-900">
-                                  Weekly bonus multiplier
-                                </div>
-                                <div className="group/tooltip relative">
-                                  <button
-                                    type="button"
-                                    aria-label="Weekly bonus multiplier details"
-                                    onClick={(event) => event.stopPropagation()}
-                                    onKeyDown={(event) => {
-                                      if (
-                                        event.key === "Enter" ||
-                                        event.key === " "
-                                      ) {
-                                        event.stopPropagation();
-                                      }
-                                    }}
-                                    className="inline-flex size-7 items-center justify-center rounded-full border border-white/70 bg-white/70 text-slate-600 shadow-sm transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40"
-                                  >
-                                    <Info className="size-3.5" />
-                                  </button>
-                                  <div
-                                    role="tooltip"
-                                    className={[
-                                      "pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-[min(340px,calc(100vw-3.5rem))] -translate-x-1/2",
-                                      "rounded-2xl border border-white/70 bg-white/90 px-4 py-3 text-xs text-slate-700",
-                                      "shadow-[0_25px_70px_-55px_rgba(15,23,42,0.55)] backdrop-blur-2xl",
-                                      "opacity-0 translate-y-1.5 scale-[0.98] transition-[opacity,transform] duration-150 ease-out",
-                                      "group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 group-hover/tooltip:scale-100",
-                                      "group-focus-within/tooltip:opacity-100 group-focus-within/tooltip:translate-y-0 group-focus-within/tooltip:scale-100",
-                                    ].join(" ")}
-                                  >
-                                    Bonus depends on reliability (uptime +
-                                    completed tasks). Example uses 1.5×.
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                                <span className="font-medium text-slate-700">
-                                  Base credits ×
-                                </span>
-                                <span className="inline-flex items-center rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-[11px] font-semibold text-rose-700 tabular-nums shadow-sm">
-                                  1.5×
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-start md:justify-end">
-                          <span
-                            className={[
-                              "inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold tabular-nums",
-                              "bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-indigo-500/10 text-slate-900 border-rose-500/20",
-                              "shadow-[0_16px_60px_-55px_rgba(244,63,94,0.55)]",
-                              "transition-[opacity,transform] duration-300 ease-out",
-                              exampleStage >= 4
-                                ? "opacity-100 translate-y-0 scale-100"
-                                : "opacity-0 translate-y-1 scale-[0.98]",
-                            ].join(" ")}
-                          >
-                            = {exampleValues.final} Final credits
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center text-[11px] font-medium text-slate-500">
-                    Tap to replay
                   </div>
                 </div>
               </div>

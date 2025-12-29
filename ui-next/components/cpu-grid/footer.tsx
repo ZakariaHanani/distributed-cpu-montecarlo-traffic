@@ -1,6 +1,6 @@
 "use client"
 
-import { Cpu, Github, Linkedin, Twitter, Youtube, ArrowUpRight } from "lucide-react"
+import { Github, Linkedin, Twitter, Youtube, ArrowUpRight } from "lucide-react"
 import type { ViewType } from "@/app/page"
 
 interface FooterProps {
@@ -34,10 +34,28 @@ export function Footer({ setCurrentView }: FooterProps) {
           {/* Left: Logo & Description */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="bg-slate-900 p-2 rounded-xl">
-                <Cpu className="w-6 h-6 text-indigo-400" />
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-500/20 rounded-xl blur-xl" />
+                <div className="relative bg-slate-900 p-2 rounded-xl ring-1 ring-white/10">
+                  <div className="relative size-6">
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex size-3.5 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.10)]">
+                      <div className="size-[3px] rounded-full bg-white/90" />
+                    </div>
+
+                    <div className="absolute left-[10px] top-[8px] h-px w-3 origin-left -rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
+                    <div className="absolute left-[10px] top-1/2 h-px w-3 -translate-y-1/2 rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
+                    <div className="absolute left-[10px] bottom-[8px] h-px w-3 origin-left rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
+
+                    <div className="absolute right-0 top-[3px] size-2 rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                    <div className="absolute right-0 top-1/2 size-2 -translate-y-1/2 rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                    <div className="absolute right-0 bottom-[3px] size-2 rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
+                  </div>
+                </div>
               </div>
-              <span className="text-2xl font-bold text-slate-900 tracking-tight">CPU Grid</span>
+              <span className="text-2xl text-slate-900 tracking-tight">
+                <span className="font-semibold">CPU</span>{" "}
+                <span className="font-bold">Grid</span>
+              </span>
             </div>
             <p className="text-slate-500 leading-relaxed mb-6">
               Distributed systems university project dedicated to advancing traffic simulation through high-performance
