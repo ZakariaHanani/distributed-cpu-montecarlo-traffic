@@ -148,9 +148,13 @@ export function clearToken() {
   window.localStorage.removeItem(TOKEN_KEY);
 }
 
-export function decodeJwtPayload(
-  token: string
-): { role?: string; name?: string; uid?: number; sub?: string } | null {
+export function decodeJwtPayload(token: string): {
+  role?: string;
+  name?: string;
+  uid?: number;
+  sub?: string;
+  mustChangePassword?: boolean;
+} | null {
   if (typeof window === "undefined") return null;
   const parts = token.split(".");
   if (parts.length < 2) return null;
@@ -170,10 +174,19 @@ export function decodeJwtPayload(
       typeof record["name"] === "string" ? record["name"] : undefined;
     const uid = typeof record["uid"] === "number" ? record["uid"] : undefined;
     const sub = typeof record["sub"] === "string" ? record["sub"] : undefined;
-    return { role, name, uid, sub };
+    const mustChangePassword =
+      typeof record["mustChangePassword"] === "boolean"
+        ? record["mustChangePassword"]
+        : undefined;
+    return { role, name, uid, sub, mustChangePassword };
   } catch {
     return null;
   }
+}
+
+export function getMustChangePasswordFromToken(token: string): boolean {
+  const payload = decodeJwtPayload(token);
+  return payload?.mustChangePassword === true;
 }
 
 export function getDisplayNameFromToken(token: string): string | null {
@@ -265,11 +278,17 @@ export function getAuthHeader(): Record<string, string> {
 
 export type UserMe = {
   id: number;
-  firstName: string;
-  lastName: string;
   username: string;
   email: string;
+  firstName: string;
+  lastName: string;
   city?: string | null;
+  role?: UserRole;
+  active?: boolean;
+  lastLoginAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  mustChangePassword?: boolean;
 };
 
 export type UpdateMePayload = {
@@ -281,7 +300,7 @@ export type UpdateMePayload = {
 export type ChangePasswordPayload = {
   currentPassword: string;
   newPassword: string;
-  confirmPassword: string;
+  confirmNewPassword: string;
 };
 
 export type UserStats = {
@@ -292,11 +311,11 @@ export type UserStats = {
 };
 
 export async function getMe(): Promise<UserMe> {
-  return authedRequestJson<UserMe>("/api/users/me", { method: "GET" });
+  return authedRequestJson<UserMe>("/api/me", { method: "GET" });
 }
 
 export async function updateMe(payload: UpdateMePayload): Promise<UserMe> {
-  return authedRequestJson<UserMe>("/api/users/me", {
+  return authedRequestJson<UserMe>("/api/me", {
     method: "PUT",
     body: payload,
   });
@@ -304,14 +323,79 @@ export async function updateMe(payload: UpdateMePayload): Promise<UserMe> {
 
 export async function changePassword(
   payload: ChangePasswordPayload
-): Promise<{ message: string }> {
-  return authedRequestJson<{ message: string }>(
-    "/api/users/me/change-password",
+): Promise<{ message: string; token?: string }> {
+  return authedRequestJson<{ message: string; token?: string }>(
+    "/api/me/password",
     {
-      method: "POST",
+      method: "PUT",
       body: payload,
     }
   );
+}
+
+export async function deleteMe(payload: {
+  confirmText: string;
+  password?: string;
+}): Promise<{ message: string }> {
+  return authedRequestJson<{ message: string }>("/api/me", {
+    method: "DELETE",
+    body: payload,
+  });
+}
+
+export type AdminListItem = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  role: "ADMIN";
+  lastSeen: string | null;
+  status: "Online" | "Offline";
+};
+
+export type CreateAdminPayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  temporaryPassword: string;
+};
+
+export type UpdateAdminPayload = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+};
+
+export async function listAdmins(): Promise<AdminListItem[]> {
+  return authedRequestJson<AdminListItem[]>("/api/admins", { method: "GET" });
+}
+
+export async function createAdmin(
+  payload: CreateAdminPayload
+): Promise<AdminListItem> {
+  return authedRequestJson<AdminListItem>("/api/admins", {
+    method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateAdmin(
+  id: number,
+  payload: UpdateAdminPayload
+): Promise<AdminListItem> {
+  return authedRequestJson<AdminListItem>(`/api/admins/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}
+
+export async function deleteAdmin(id: number): Promise<{ message: string }> {
+  return authedRequestJson<{ message: string }>(`/api/admins/${id}`, {
+    method: "DELETE",
+  });
 }
 
 export async function getMyStats(): Promise<UserStats> {

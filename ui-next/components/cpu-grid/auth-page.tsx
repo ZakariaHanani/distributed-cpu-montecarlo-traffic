@@ -21,9 +21,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ViewType } from "@/app/page";
+import { AuthHeroPanel } from "@/components/cpu-grid/AuthHeroPanel";
 import {
   decodeJwtPayload,
   getDisplayNameFromToken,
+  getMustChangePasswordFromToken,
   login,
   reset,
   setAuthMeta,
@@ -222,12 +224,19 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         const displayName = getDisplayNameFromToken(token);
         if (displayName) setDisplayName(displayName);
         window.dispatchEvent(new Event("auth:changed"));
+        const mustChange = getMustChangePasswordFromToken(token);
         showToast({
           type: "success",
           title: "Signed in",
-          message: "Success. Redirecting…",
+          message: mustChange
+            ? "Password update required. Redirecting…"
+            : "Success. Redirecting…",
         });
         redirectTimeoutRef.current = window.setTimeout(() => {
+          if (mustChange) {
+            setCurrentView(role === "ADMIN" ? "admin_profile" : "profile");
+            return;
+          }
           setCurrentView("home");
         }, 380);
       } else {
@@ -346,16 +355,16 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         <div className="max-w-md mx-auto w-full">
           <button
             onClick={() => setCurrentView("home")}
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-12"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </button>
 
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-2">
             {isLogin ? "Welcome back" : "Create an account"}
           </h1>
-          <p className="text-slate-500 mb-8">
+          <p className="text-slate-500 dark:text-slate-300 mb-8">
             {isLogin
               ? "Sign in to access your simulations and results."
               : "Get started with CPU Grid for free."}
@@ -379,11 +388,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
           </div>
 
           <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-slate-400 text-sm">
+            <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+            <span className="text-slate-400 dark:text-slate-400 text-sm">
               or continue with email
             </span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
           </div>
 
           <div className="relative">
@@ -394,7 +403,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                   aria-live="polite"
                   className={[
                     "pointer-events-auto w-full max-w-[520px]",
-                    "rounded-2xl border bg-white/80 backdrop-blur-xl",
+                    "rounded-2xl border bg-white/80 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-xl",
                     "shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]",
                     "px-4 py-3",
                     "transition-[opacity,transform] duration-200 ease-out",
@@ -422,11 +431,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-slate-900">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         {toast.title}
                       </div>
                       {toast.message ? (
-                        <div className="mt-0.5 text-sm text-slate-600">
+                        <div className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
                           {toast.message}
                         </div>
                       ) : null}
@@ -435,7 +444,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                       type="button"
                       onClick={hideToast}
                       aria-label="Close alert"
-                      className="mt-0.5 inline-flex size-9 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
+                      className="mt-0.5 inline-flex size-9 items-center justify-center rounded-full text-slate-500 dark:text-slate-300 transition-colors hover:bg-slate-900/5 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
                     >
                       <X className="size-4" />
                     </button>
@@ -495,7 +504,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
                     >
                       {showPassword ? (
                         <EyeOff className="w-5 h-5" />
@@ -520,7 +529,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                         onClick={() =>
                           setShowRepeatPassword(!showRepeatPassword)
                         }
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
                       >
                         {showRepeatPassword ? (
                           <EyeOff className="w-5 h-5" />
@@ -539,7 +548,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                         setForgotEmail("");
                         setFlow("forgot");
                       }}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
                     >
                       Forgot password?
                     </button>
@@ -547,7 +556,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting
                       ? "Please wait..."
@@ -576,7 +585,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                         hideToast();
                         setFlow("auth");
                       }}
-                      className="text-sm text-slate-600 hover:text-slate-900"
+                      className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
                     >
                       Back to sign in
                     </button>
@@ -587,7 +596,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                         setResetEmail(forgotEmail);
                         setFlow("reset");
                       }}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
                     >
                       I have a code
                     </button>
@@ -595,7 +604,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting ? "Sending..." : "Send reset code"}
                   </Button>
@@ -642,14 +651,14 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                       hideToast();
                       setFlow("auth");
                     }}
-                    className="text-sm text-slate-600 hover:text-slate-900"
+                    className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
                   >
                     Back to sign in
                   </button>
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting ? "Resetting..." : "Reset password"}
                   </Button>
@@ -658,7 +667,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             </div>
           </div>
 
-          <p className="text-center text-slate-500 mt-6">
+          <p className="text-center text-slate-500 dark:text-slate-300 mt-6">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => {
@@ -668,7 +677,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                 setConfirmPassword("");
                 setCurrentView(isLogin ? "signup" : "login");
               }}
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200 font-medium"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
@@ -676,25 +685,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         </div>
       </div>
 
-      <div className="relative hidden md:flex md:w-1/2 min-h-screen bg-[url('/images/hero-bg-light.png')] bg-cover bg-center">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-[520px] h-[520px] rounded-full bg-indigo-500/25 blur-3xl opacity-80" />
-        </div>
-
-        <div className="relative z-10 flex w-full items-center justify-center px-8">
-          <div className="flex flex-col items-center text-center gap-8 max-w-md">
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-                Accelerate Your Research
-              </h2>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-md mx-auto">
-                Join thousands of researchers using CPU Grid to power their
-                traffic simulations and Monte Carlo analysis.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AuthHeroPanel />
     </div>
   );
 }

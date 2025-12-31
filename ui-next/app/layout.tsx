@@ -20,30 +20,36 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "CPU Grid — Distributed Traffic Monte Carlo",
   description:
-      "A distributed Monte Carlo traffic simulation platform for high-performance computing research.",
+    "A distributed Monte Carlo traffic simulation platform for high-performance computing research.",
   generator: "v0.app",
 };
 
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+  children,
+}: Readonly<{
   children: React.ReactNode;
 }>) {
+  const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var d=t==="dark"||(!t&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",!!d)}catch(e){}})();`;
+
   return (
-      <html
-          lang="en"
-          className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
-      >
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans antialiased overflow-x-hidden">
-      <ThemeProvider
+        <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-      >
-        {children}
-        {process.env.NODE_ENV === "production" && <Analytics />}
-      </ThemeProvider>
+          defaultTheme="system"
+          enableSystem={true}
+        >
+          {children}
+          {process.env.NODE_ENV === "production" && <Analytics />}
+        </ThemeProvider>
       </body>
-      </html>
+    </html>
   );
 }

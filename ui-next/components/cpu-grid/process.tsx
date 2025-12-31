@@ -199,10 +199,10 @@ export function Process() {
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div data-process="header" className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 mb-6">
+          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 dark:text-slate-100 mb-6">
             Simulation Workflow
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-500 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
             From configuration to results in four simple steps
           </p>
         </div>
@@ -226,7 +226,7 @@ export function Process() {
                     />
                     <div
                       data-process="bubble"
-                      className={`relative w-20 h-20 bg-white border-4 border-slate-200 rounded-full flex items-center justify-center shadow-deep animate-[float_6.5s_ease-in-out_infinite] motion-reduce:animate-none ring-1 ${step.accent.ring}`}
+                      className={`relative w-20 h-20 bg-white dark:bg-[rgb(var(--glass)/0.65)] border-4 border-slate-200 dark:border-white/10 rounded-full flex items-center justify-center shadow-deep animate-[float_6.5s_ease-in-out_infinite] motion-reduce:animate-none ring-1 ${step.accent.ring}`}
                       style={{
                         animationDelay: `${0.15 + i * 0.28}s`,
                         animationDuration: `${6.2 + i * 0.8}s`,
@@ -249,7 +249,7 @@ export function Process() {
                     />
                     <div
                       data-process="icon-plate"
-                      className={`relative w-14 h-14 rounded-2xl flex items-center justify-center bg-white/70 ring-1 ring-white/60 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.18)] overflow-hidden`}
+                      className={`relative w-14 h-14 rounded-2xl flex items-center justify-center bg-white/70 dark:bg-[rgb(var(--glass)/0.65)] ring-1 ring-white/60 dark:ring-white/10 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.18)] dark:shadow-[0_18px_50px_-30px_rgba(0,0,0,0.55)] overflow-hidden`}
                     >
                       <div
                         className={`absolute inset-0 opacity-90 bg-gradient-to-br ${step.accent.iconBg}`}
@@ -259,10 +259,10 @@ export function Process() {
                       />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-slate-500 leading-relaxed">
+                  <p className="text-slate-500 dark:text-slate-300 leading-relaxed">
                     {step.description}
                   </p>
                 </div>

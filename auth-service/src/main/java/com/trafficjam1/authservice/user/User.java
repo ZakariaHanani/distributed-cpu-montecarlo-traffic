@@ -26,14 +26,32 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String city;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "password_hash")
+    private String passwordHash;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "password")
+    private String passwordLegacy;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @Column(name = "last_login_at")
+    private Instant lastLoginAt;
+
+    @Column(name = "last_activity_at")
+    private Instant lastActivityAt;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
+    @Column(name = "must_change_password", nullable = false)
+    private boolean mustChangePassword = false;
 
     @Column
     private String resetCode;
@@ -43,8 +61,15 @@ public class User {
 
     @PrePersist
     void onCreate() {
-        this.createdAt = Instant.now();
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
         if (this.role == null) this.role = Role.USER;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        this.updatedAt = Instant.now();
     }
 
     public Long getId() {
@@ -100,15 +125,55 @@ public class User {
     }
 
     public String getPassword() {
-        return password;
+        if (passwordHash != null && !passwordHash.trim().isEmpty()) {
+            return passwordHash;
+        }
+        return passwordLegacy;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.passwordHash = password;
+        this.passwordLegacy = password;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Instant getLastLoginAt() {
+        return lastLoginAt;
+    }
+
+    public void setLastLoginAt(Instant lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
+    }
+
+    public Instant getLastActivityAt() {
+        return lastActivityAt;
+    }
+
+    public void setLastActivityAt(Instant lastActivityAt) {
+        this.lastActivityAt = lastActivityAt;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isMustChangePassword() {
+        return mustChangePassword;
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
     }
 
     public String getResetCode() {

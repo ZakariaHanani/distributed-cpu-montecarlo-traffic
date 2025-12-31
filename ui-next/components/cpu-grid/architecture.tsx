@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { Database, Server, Cloud, Lock, Workflow } from "lucide-react"
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { Database, Server, Cloud, Lock, Workflow } from "lucide-react";
 
 const layers = [
   {
@@ -33,90 +33,130 @@ const layers = [
     wire: "from-cyan-500/0 via-cyan-500/40 to-cyan-500/0",
     items: ["Time-series DB", "Object Storage", "Cache Layer"],
   },
-]
+];
 
 export function Architecture() {
-  const rootRef = useRef<HTMLElement>(null)
-  const hasAnimatedRef = useRef(false)
+  const rootRef = useRef<HTMLElement>(null);
+  const hasAnimatedRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (!rootRef.current) return
+    if (!rootRef.current) return;
     const ctx = gsap.context(() => {
       const prefersReducedMotion =
         typeof window !== "undefined" &&
         window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const header = rootRef.current?.querySelector<HTMLElement>('[data-arch="header"]')
-      const cards = gsap.utils.toArray<HTMLElement>('[data-arch="card"]', rootRef.current)
-      const dots = gsap.utils.toArray<HTMLElement>('[data-arch="dot"]', rootRef.current)
-      const bridges = gsap.utils.toArray<HTMLElement>('[data-arch="bridge"]', rootRef.current)
-      const spine = rootRef.current?.querySelector<HTMLElement>('[data-arch="spine"]')
-      const soc = rootRef.current?.querySelector<HTMLElement>('[data-arch="soc"]')
-      const packet = rootRef.current?.querySelector<HTMLElement>('[data-arch="packet"]')
+      const header = rootRef.current?.querySelector<HTMLElement>(
+        '[data-arch="header"]'
+      );
+      const cards = gsap.utils.toArray<HTMLElement>(
+        '[data-arch="card"]',
+        rootRef.current
+      );
+      const dots = gsap.utils.toArray<HTMLElement>(
+        '[data-arch="dot"]',
+        rootRef.current
+      );
+      const bridges = gsap.utils.toArray<HTMLElement>(
+        '[data-arch="bridge"]',
+        rootRef.current
+      );
+      const spine = rootRef.current?.querySelector<HTMLElement>(
+        '[data-arch="spine"]'
+      );
+      const soc =
+        rootRef.current?.querySelector<HTMLElement>('[data-arch="soc"]');
+      const packet = rootRef.current?.querySelector<HTMLElement>(
+        '[data-arch="packet"]'
+      );
 
       if (prefersReducedMotion) {
-        if (header) gsap.set(header, { opacity: 1, y: 0 })
-        if (cards.length) gsap.set(cards, { opacity: 1, y: 0 })
-        if (dots.length) gsap.set(dots, { opacity: 1, scale: 1 })
-        if (bridges.length) gsap.set(bridges, { scaleX: 1 })
-        if (spine) gsap.set(spine, { scaleY: 1 })
-        if (soc) gsap.set(soc, { opacity: 1, y: 0 })
-        if (packet) gsap.set(packet, { opacity: 0 })
-        return
+        if (header) gsap.set(header, { opacity: 1, y: 0 });
+        if (cards.length) gsap.set(cards, { opacity: 1, y: 0 });
+        if (dots.length) gsap.set(dots, { opacity: 1, scale: 1 });
+        if (bridges.length) gsap.set(bridges, { scaleX: 1 });
+        if (spine) gsap.set(spine, { scaleY: 1 });
+        if (soc) gsap.set(soc, { opacity: 1, y: 0 });
+        if (packet) gsap.set(packet, { opacity: 0 });
+        return;
       }
 
-      if (header) gsap.set(header, { opacity: 0, y: 18 })
-      if (cards.length) gsap.set(cards, { opacity: 0, y: 18 })
-      if (dots.length) gsap.set(dots, { opacity: 0, scale: 0.85 })
-      if (bridges.length) gsap.set(bridges, { scaleX: 0, transformOrigin: "center" })
-      if (spine) gsap.set(spine, { scaleY: 0, transformOrigin: "top" })
-      if (soc) gsap.set(soc, { opacity: 0, y: 18 })
-      if (packet) gsap.set(packet, { opacity: 0, y: 0 })
-    }, rootRef)
-    return () => ctx.revert()
-  }, [])
+      if (header) gsap.set(header, { opacity: 0, y: 18 });
+      if (cards.length) gsap.set(cards, { opacity: 0, y: 18 });
+      if (dots.length) gsap.set(dots, { opacity: 0, scale: 0.85 });
+      if (bridges.length)
+        gsap.set(bridges, { scaleX: 0, transformOrigin: "center" });
+      if (spine) gsap.set(spine, { scaleY: 0, transformOrigin: "top" });
+      if (soc) gsap.set(soc, { opacity: 0, y: 18 });
+      if (packet) gsap.set(packet, { opacity: 0, y: 0 });
+    }, rootRef);
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
-    const root = rootRef.current
-    if (!root) return
+    const root = rootRef.current;
+    if (!root) return;
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (prefersReducedMotion) return
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0]
-        if (!entry?.isIntersecting) return
-        if (hasAnimatedRef.current) return
-        hasAnimatedRef.current = true
+        const entry = entries[0];
+        if (!entry?.isIntersecting) return;
+        if (hasAnimatedRef.current) return;
+        hasAnimatedRef.current = true;
 
-        const header = root.querySelector<HTMLElement>('[data-arch="header"]')
-        const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-arch="card"]'))
-        const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-arch="dot"]'))
-        const bridges = Array.from(root.querySelectorAll<HTMLElement>('[data-arch="bridge"]'))
-        const spine = root.querySelector<HTMLElement>('[data-arch="spine"]')
-        const packet = root.querySelector<HTMLElement>('[data-arch="packet"]')
-        const soc = root.querySelector<HTMLElement>('[data-arch="soc"]')
-        const spineWrap = root.querySelector<HTMLElement>('[data-arch="spine-wrap"]')
+        const header = root.querySelector<HTMLElement>('[data-arch="header"]');
+        const cards = Array.from(
+          root.querySelectorAll<HTMLElement>('[data-arch="card"]')
+        );
+        const dots = Array.from(
+          root.querySelectorAll<HTMLElement>('[data-arch="dot"]')
+        );
+        const bridges = Array.from(
+          root.querySelectorAll<HTMLElement>('[data-arch="bridge"]')
+        );
+        const spine = root.querySelector<HTMLElement>('[data-arch="spine"]');
+        const packet = root.querySelector<HTMLElement>('[data-arch="packet"]');
+        const soc = root.querySelector<HTMLElement>('[data-arch="soc"]');
+        const spineWrap = root.querySelector<HTMLElement>(
+          '[data-arch="spine-wrap"]'
+        );
 
-        const tl = gsap.timeline({ defaults: { duration: 0.6, ease: "power3.out" } })
-        if (spine) tl.to(spine, { scaleY: 1, duration: 0.95, ease: "power2.out" }, 0)
-        if (header) tl.to(header, { opacity: 1, y: 0, clearProps: "transform" }, 0.05)
+        const tl = gsap.timeline({
+          defaults: { duration: 0.6, ease: "power3.out" },
+        });
+        if (spine)
+          tl.to(spine, { scaleY: 1, duration: 0.95, ease: "power2.out" }, 0);
+        if (header)
+          tl.to(header, { opacity: 1, y: 0, clearProps: "transform" }, 0.05);
 
-        const count = Math.max(cards.length, dots.length, bridges.length)
+        const count = Math.max(cards.length, dots.length, bridges.length);
         for (let i = 0; i < count; i++) {
-          const at = 0.22 + i * 0.18
-          if (dots[i]) tl.to(dots[i], { opacity: 1, scale: 1 }, at)
-          if (bridges[i]) tl.to(bridges[i], { scaleX: 1, duration: 0.55, ease: "power2.out" }, at)
-          if (cards[i]) tl.to(cards[i], { opacity: 1, y: 0, clearProps: "transform" }, at)
+          const at = 0.22 + i * 0.18;
+          if (dots[i]) tl.to(dots[i], { opacity: 1, scale: 1 }, at);
+          if (bridges[i])
+            tl.to(
+              bridges[i],
+              { scaleX: 1, duration: 0.55, ease: "power2.out" },
+              at
+            );
+          if (cards[i])
+            tl.to(cards[i], { opacity: 1, y: 0, clearProps: "transform" }, at);
         }
 
-        if (soc) tl.to(soc, { opacity: 1, y: 0, clearProps: "transform" }, 0.22 + count * 0.18)
-        if (packet) tl.to(packet, { opacity: 1, duration: 0.25 }, 0.55)
+        if (soc)
+          tl.to(
+            soc,
+            { opacity: 1, y: 0, clearProps: "transform" },
+            0.22 + count * 0.18
+          );
+        if (packet) tl.to(packet, { opacity: 1, duration: 0.25 }, 0.55);
 
         if (packet && spineWrap) {
           gsap.to(packet, {
@@ -125,7 +165,7 @@ export function Architecture() {
             ease: "none",
             repeat: -1,
             delay: 1.05,
-          })
+          });
         }
 
         if (cards.length) {
@@ -136,35 +176,43 @@ export function Architecture() {
             repeat: -1,
             yoyo: true,
             delay: 1.25,
-          })
+          });
         }
 
-        observer.disconnect()
+        observer.disconnect();
       },
       { threshold: 0.22 }
-    )
+    );
 
-    observer.observe(root)
-    return () => observer.disconnect()
-  }, [])
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section ref={rootRef} id="architecture" className="py-32 relative overflow-hidden">
+    <section
+      ref={rootRef}
+      id="architecture"
+      className="py-32 relative overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div data-arch="header" className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 mb-6">
+          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 dark:text-slate-100 mb-6">
             System Architecture
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Built on proven distributed systems patterns for reliability at scale
+          <p className="text-xl text-slate-500 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Built on proven distributed systems patterns for reliability at
+            scale
           </p>
         </div>
 
         {/* Architecture Diagram */}
         <div className="relative">
           {/* Vertical connector line */}
-          <div data-arch="spine-wrap" className="absolute left-1/2 top-0 bottom-0 hidden lg:block">
+          <div
+            data-arch="spine-wrap"
+            className="absolute left-1/2 top-0 bottom-0 hidden lg:block"
+          >
             <div
               data-arch="spine"
               className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-gradient-to-b from-indigo-500 via-violet-500 to-cyan-500"
@@ -194,13 +242,15 @@ export function Architecture() {
                                 <layer.icon className="w-7 h-7 text-white" />
                               </div>
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900">{layer.title}</h3>
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                              {layer.title}
+                            </h3>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {layer.items.map((item, j) => (
                               <span
                                 key={j}
-                                className="px-4 py-2 bg-slate-100 rounded-full text-sm text-slate-600 font-medium"
+                                className="px-4 py-2 bg-slate-100 dark:bg-white/10 rounded-full text-sm text-slate-600 dark:text-slate-300 font-medium"
                               >
                                 {item}
                               </span>
@@ -213,7 +263,10 @@ export function Architecture() {
 
                   <div className="hidden lg:flex w-28 justify-center">
                     <div className="relative flex items-center justify-center w-full h-full">
-                      <div data-arch="dot" className="relative flex items-center justify-center">
+                      <div
+                        data-arch="dot"
+                        className="relative flex items-center justify-center"
+                      >
                         <span
                           className={`absolute inset-0 rounded-full opacity-40 blur-[8px] bg-gradient-to-br ${layer.color}`}
                         />
@@ -226,7 +279,9 @@ export function Architecture() {
                       </div>
                       <div
                         data-arch="bridge"
-                        className={`absolute top-1/2 -translate-y-1/2 h-px ${i % 2 === 0 ? "left-0 right-1/2" : "left-1/2 right-0"} bg-gradient-to-r ${layer.wire}`}
+                        className={`absolute top-1/2 -translate-y-1/2 h-px ${
+                          i % 2 === 0 ? "left-0 right-1/2" : "left-1/2 right-0"
+                        } bg-gradient-to-r ${layer.wire}`}
                       />
                     </div>
                   </div>
@@ -246,13 +301,15 @@ export function Architecture() {
                                 <layer.icon className="w-7 h-7 text-white" />
                               </div>
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900">{layer.title}</h3>
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                              {layer.title}
+                            </h3>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {layer.items.map((item, j) => (
                               <span
                                 key={j}
-                                className="px-4 py-2 bg-slate-100 rounded-full text-sm text-slate-600 font-medium"
+                                className="px-4 py-2 bg-slate-100 dark:bg-white/10 rounded-full text-sm text-slate-600 dark:text-slate-300 font-medium"
                               >
                                 {item}
                               </span>
@@ -277,13 +334,15 @@ export function Architecture() {
                               <layer.icon className="w-7 h-7 text-white" />
                             </div>
                           </div>
-                          <h3 className="text-2xl font-bold text-slate-900">{layer.title}</h3>
+                          <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                            {layer.title}
+                          </h3>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {layer.items.map((item, j) => (
                             <span
                               key={j}
-                              className="px-4 py-2 bg-slate-100 rounded-full text-sm text-slate-600 font-medium"
+                              className="px-4 py-2 bg-slate-100 dark:bg-white/10 rounded-full text-sm text-slate-600 dark:text-slate-300 font-medium"
                             >
                               {item}
                             </span>
@@ -299,7 +358,10 @@ export function Architecture() {
 
           {/* Security Badge */}
           <div className="flex justify-center mt-16">
-            <div data-arch="soc" className="glass card-super p-6 shadow-deep inline-flex items-center gap-4">
+            <div
+              data-arch="soc"
+              className="glass card-super p-6 shadow-deep inline-flex items-center gap-4"
+            >
               <div className="relative">
                 <div className="absolute -inset-2 rounded-xl bg-emerald-500/15 blur-[12px]" />
                 <div className="relative w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center ring-1 ring-emerald-500/20">
@@ -307,13 +369,17 @@ export function Architecture() {
                 </div>
               </div>
               <div className="min-w-0">
-                <div className="font-bold text-slate-900">SOC 2 Type II Compliant</div>
-                <div className="text-slate-500 text-sm">Enterprise-grade security at every layer</div>
+                <div className="font-bold text-slate-900 dark:text-slate-100">
+                  SOC 2 Type II Compliant
+                </div>
+                <div className="text-slate-500 dark:text-slate-300 text-sm">
+                  Enterprise-grade security at every layer
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

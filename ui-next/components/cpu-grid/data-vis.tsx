@@ -478,15 +478,12 @@ export function DataVis() {
   ]);
 
   return (
-    <section
-      ref={rootRef}
-      className="py-32 bg-white relative overflow-hidden"
-    >
+    <section ref={rootRef} className="py-32 bg-canvas relative overflow-hidden">
       <div className="absolute inset-0 opacity-60">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(15,23,42,0.16) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(var(--fg),0.16) 1px, transparent 0)`,
             backgroundSize: "40px 40px",
           }}
         />
@@ -498,10 +495,10 @@ export function DataVis() {
             className={`text-center mb-16 transition-all duration-700 ease-out motion-reduce:transition-none ${visibleBlock}`}
           >
             <div className="inline-flex items-center gap-3 mb-6">
-              <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900">
+              <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 dark:text-slate-100">
                 Analytics &amp; Results
               </h2>
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-900/10 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 shadow-[0_18px_55px_-44px_rgba(15,23,42,0.25)]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-900/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-[0_18px_55px_-44px_rgba(15,23,42,0.25)]">
                 <span className="relative flex size-2">
                   <span className="absolute inline-flex size-2 rounded-full bg-green-400 opacity-40 animate-ping motion-reduce:animate-none" />
                   <span className="relative inline-flex size-2 rounded-full bg-green-400" />
@@ -509,7 +506,7 @@ export function DataVis() {
                 Live
               </span>
             </div>
-            <p className="text-xl text-slate-500 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-500 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
               Live statistical insights from distributed Monte Carlo execution
             </p>
           </div>
@@ -519,422 +516,432 @@ export function DataVis() {
           <div
             className={`glass card-super-lg p-8 shadow-deep transition-all duration-700 ease-out motion-reduce:transition-none ${visibleBlock}`}
           >
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4 border-b border-slate-900/10 pb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Simulation Dashboard
-                  </h3>
-                  <p className="text-slate-500 text-sm mt-1">
-                    Distributed execution telemetry and Monte Carlo reliability
-                    metrics
-                  </p>
-                </div>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 border-b border-slate-900/10 dark:border-white/10 pb-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                      Simulation Dashboard
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-300 text-sm mt-1">
+                      Distributed execution telemetry and Monte Carlo
+                      reliability metrics
+                    </p>
+                  </div>
 
-                <div className="inline-flex items-center gap-3 rounded-full border border-slate-900/10 bg-white/70 px-4 py-2 shadow-[0_18px_55px_-44px_rgba(15,23,42,0.25)]">
-                  <span
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusChip.bg} ${statusChip.text} ${statusChip.ring}`}
-                  >
-                    {statusChip.label}
-                  </span>
-                  <span className="h-4 w-px bg-slate-900/10" />
-                  <span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700">
-                    <Users className="size-4 text-indigo-600" />
-                    {Math.round(animatedWorkers)} online
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-900/10 bg-white/70 px-4 py-3 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-slate-500">Simulation State</div>
-                    <div className="text-slate-900 font-semibold tabular-nums">
+                  <div className="inline-flex items-center gap-3 rounded-full border border-slate-900/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-2 shadow-[0_18px_55px_-44px_rgba(15,23,42,0.25)]">
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ${statusChip.bg} ${statusChip.text} ${statusChip.ring}`}
+                    >
                       {statusChip.label}
-                    </div>
+                    </span>
+                    <span className="h-4 w-px bg-slate-900/10 dark:bg-white/10" />
+                    <span className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                      <Users className="size-4 text-indigo-600" />
+                      {Math.round(animatedWorkers)} online
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-slate-500">Active Workers</div>
-                    <div className="text-slate-900 font-semibold tabular-nums">
-                      {Math.round(animatedWorkers)}
+                </div>
+
+                <div className="rounded-2xl border border-slate-900/10 dark:border-white/10 bg-white/70 dark:bg-white/5 px-4 py-3 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-slate-500 dark:text-slate-300">
+                        Simulation State
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-semibold tabular-nums">
+                        {statusChip.label}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-slate-500">Tasks in Flight</div>
-                    <div className="text-slate-900 font-semibold tabular-nums">
-                      {Math.round(animatedTasks)}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-slate-500 dark:text-slate-300">
+                        Active Workers
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-semibold tabular-nums">
+                        {Math.round(animatedWorkers)}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-slate-500">Last Update</div>
-                    <div className="text-slate-900 font-semibold tabular-nums">
-                      {lastUpdateLabel}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-slate-500 dark:text-slate-300">
+                        Tasks in Flight
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-semibold tabular-nums">
+                        {Math.round(animatedTasks)}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-slate-500 dark:text-slate-300">
+                        Last Update
+                      </div>
+                      <div className="text-slate-900 dark:text-slate-100 font-semibold tabular-nums">
+                        {lastUpdateLabel}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {metrics.map((m) => {
-                const Icon = m.icon;
-                const pct = m.delta;
-                const isGood = m.good === "higher" ? pct >= 0 : pct <= 0;
-                const deltaColor = isGood
-                  ? "text-emerald-700"
-                  : "text-rose-700";
-                const sparkPoints = buildSparklinePoints(m.spark, 88, 26, 2);
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {metrics.map((m) => {
+                  const Icon = m.icon;
+                  const pct = m.delta;
+                  const isGood = m.good === "higher" ? pct >= 0 : pct <= 0;
+                  const deltaColor = isGood
+                    ? "text-emerald-700"
+                    : "text-rose-700";
+                  const sparkPoints = buildSparklinePoints(m.spark, 88, 26, 2);
 
-                return (
-                  <HoverCard key={m.key} openDelay={200}>
-                    <HoverCardTrigger asChild>
-                      <div
-                        className="
-                          group relative rounded-2xl border border-slate-900/10 bg-white/70 p-5
+                  return (
+                    <HoverCard key={m.key} openDelay={200}>
+                      <HoverCardTrigger asChild>
+                        <div
+                          className="
+                          group relative rounded-2xl border border-slate-900/10 dark:border-white/10 bg-white/70 dark:bg-white/5 p-5
                           transition-[transform,box-shadow,border-color] duration-300 ease-out
                           hover:-translate-y-[2px] hover:border-indigo-500/25 hover:shadow-[0_24px_60px_-44px_rgba(99,102,241,0.22)]
                           motion-reduce:transition-none motion-reduce:hover:translate-y-0
                         "
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Icon className="size-5 text-slate-700/80" />
-                            <span className="text-xs font-semibold text-slate-600 truncate">
-                              {m.label}
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Icon className="size-5 text-slate-700/80 dark:text-slate-200" />
+                              <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate">
+                                {m.label}
+                              </span>
+                            </div>
+                            <span
+                              className={`text-xs font-semibold tabular-nums ${deltaColor}`}
+                            >
+                              {formatSignedPercent(pct)}
                             </span>
                           </div>
-                          <span
-                            className={`text-xs font-semibold tabular-nums ${deltaColor}`}
-                          >
-                            {formatSignedPercent(pct)}
-                          </span>
-                        </div>
 
-                        <div className="flex items-end justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className="text-2xl font-bold text-slate-900 tabular-nums leading-none">
-                              {m.value}
+                          <div className="flex items-end justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums leading-none">
+                                {m.value}
+                              </div>
+                              <div className="mt-2 text-[11px] font-semibold text-slate-500 dark:text-slate-300">
+                                Updated continuously
+                              </div>
                             </div>
-                            <div className="mt-2 text-[11px] font-semibold text-slate-500">
-                              Updated continuously
-                            </div>
-                          </div>
 
-                          <div className="shrink-0">
-                            <svg
-                              width="88"
-                              height="26"
-                              viewBox="0 0 88 26"
-                              className="block"
-                            >
-                              <defs>
-                                <linearGradient
-                                  id={`${gradientId}-${m.key}`}
-                                  x1="0"
-                                  y1="0"
-                                  x2="1"
-                                  y2="0"
-                                >
-                                  <stop
-                                    offset="0"
-                                    stopColor="rgb(99,102,241)"
-                                    stopOpacity="0.2"
-                                  />
-                                  <stop
-                                    offset="0.5"
-                                    stopColor="rgb(139,92,246)"
-                                    stopOpacity="0.65"
-                                  />
-                                  <stop
-                                    offset="1"
-                                    stopColor="rgb(99,102,241)"
-                                    stopOpacity="0.35"
-                                  />
-                                </linearGradient>
-                              </defs>
-                              <polyline
-                                points={sparkPoints}
-                                fill="none"
-                                stroke={`url(#${gradientId}-${m.key})`}
-                                strokeWidth="2"
-                                strokeLinejoin="round"
-                                strokeLinecap="round"
-                              />
-                              <circle
-                                cx="86"
-                                cy="13"
-                                r="2.2"
-                                fill="rgb(99,102,241)"
-                                opacity="0.9"
+                            <div className="shrink-0">
+                              <svg
+                                width="88"
+                                height="26"
+                                viewBox="0 0 88 26"
+                                className="block"
                               >
-                                <animate
-                                  attributeName="opacity"
-                                  values="0.45;1;0.45"
-                                  dur="1.8s"
-                                  repeatCount="indefinite"
+                                <defs>
+                                  <linearGradient
+                                    id={`${gradientId}-${m.key}`}
+                                    x1="0"
+                                    y1="0"
+                                    x2="1"
+                                    y2="0"
+                                  >
+                                    <stop
+                                      offset="0"
+                                      stopColor="rgb(99,102,241)"
+                                      stopOpacity="0.2"
+                                    />
+                                    <stop
+                                      offset="0.5"
+                                      stopColor="rgb(139,92,246)"
+                                      stopOpacity="0.65"
+                                    />
+                                    <stop
+                                      offset="1"
+                                      stopColor="rgb(99,102,241)"
+                                      stopOpacity="0.35"
+                                    />
+                                  </linearGradient>
+                                </defs>
+                                <polyline
+                                  points={sparkPoints}
+                                  fill="none"
+                                  stroke={`url(#${gradientId}-${m.key})`}
+                                  strokeWidth="2"
+                                  strokeLinejoin="round"
+                                  strokeLinecap="round"
                                 />
-                              </circle>
-                            </svg>
+                                <circle
+                                  cx="86"
+                                  cy="13"
+                                  r="2.2"
+                                  fill="rgb(99,102,241)"
+                                  opacity="0.9"
+                                >
+                                  <animate
+                                    attributeName="opacity"
+                                    values="0.45;1;0.45"
+                                    dur="1.8s"
+                                    repeatCount="indefinite"
+                                  />
+                                </circle>
+                              </svg>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </HoverCardTrigger>
-                    <HoverCardContent
-                      className="
-                        w-80 rounded-2xl border border-slate-900/10 bg-white/95 backdrop-blur-xl
-                        text-slate-700 shadow-[0_28px_80px_-50px_rgba(15,23,42,0.18)]
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        className="
+                        w-80 rounded-2xl border border-slate-900/10 dark:border-white/10 bg-white/95 dark:bg-slate-950/80 backdrop-blur-xl
+                        text-slate-700 dark:text-slate-200 shadow-[0_28px_80px_-50px_rgba(15,23,42,0.18)]
                       "
-                      side="top"
-                      align="center"
-                      sideOffset={10}
+                        side="top"
+                        align="center"
+                        sideOffset={10}
+                      >
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                          {m.label}
+                        </div>
+                        <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                          {m.tooltip}
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  );
+                })}
+              </div>
+
+              <div className="grid lg:grid-cols-5 gap-4 items-stretch">
+                <div className="lg:col-span-3 rounded-2xl border border-slate-900/10 dark:border-white/10 bg-white/70 dark:bg-white/5 p-6 overflow-hidden shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        Convergence of Mean Estimate
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-300 mt-1">
+                        Mean stabilizes as iterations accumulate; shaded band
+                        approximates uncertainty (±σ)
+                      </div>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-700 dark:text-slate-200 tabular-nums">
+                      n ≈ {formatCompactNumber(animatedIterations, 1)}
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <svg
+                      viewBox={`0 0 ${chart.width} ${chart.height}`}
+                      className="w-full h-72"
+                      role="img"
+                      aria-label="Convergence chart showing Monte Carlo mean estimate and uncertainty band"
                     >
-                      <div className="text-sm font-semibold text-slate-900 mb-2">
-                        {m.label}
-                      </div>
-                      <div className="text-sm text-slate-600 leading-relaxed">
-                        {m.tooltip}
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                );
-              })}
-            </div>
-
-            <div className="grid lg:grid-cols-5 gap-4 items-stretch">
-              <div className="lg:col-span-3 rounded-2xl border border-slate-900/10 bg-white/70 p-6 overflow-hidden shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold text-slate-900">
-                      Convergence of Mean Estimate
-                    </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Mean stabilizes as iterations accumulate; shaded band
-                      approximates uncertainty (±σ)
-                    </div>
-                  </div>
-                  <div className="text-xs font-semibold text-slate-700 tabular-nums">
-                    n ≈ {formatCompactNumber(animatedIterations, 1)}
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <svg
-                    viewBox={`0 0 ${chart.width} ${chart.height}`}
-                    className="w-full h-72"
-                    role="img"
-                    aria-label="Convergence chart showing Monte Carlo mean estimate and uncertainty band"
-                  >
-                    <defs>
-                      <linearGradient
-                        id={`${gradientId}-stroke`}
-                        x1="0"
-                        y1="0"
-                        x2="1"
-                        y2="0"
-                      >
-                        <stop
-                          offset="0"
-                          stopColor="rgb(99,102,241)"
-                          stopOpacity="0.9"
-                        />
-                        <stop
-                          offset="0.5"
-                          stopColor="rgb(139,92,246)"
-                          stopOpacity="0.95"
-                        />
-                        <stop
-                          offset="1"
-                          stopColor="rgb(99,102,241)"
-                          stopOpacity="0.9"
-                        />
-                      </linearGradient>
-                      <linearGradient
-                        id={`${gradientId}-band`}
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0"
-                          stopColor="rgb(139,92,246)"
-                          stopOpacity="0.22"
-                        />
-                        <stop
-                          offset="1"
-                          stopColor="rgb(99,102,241)"
-                          stopOpacity="0.06"
-                        />
-                      </linearGradient>
-                    </defs>
-
-                    {chart.tickValues.map((v) => {
-                      const y =
-                        chart.padY +
-                        (1 - (v - chart.yMin) / (chart.yMax - chart.yMin)) *
-                          (chart.height - chart.padY * 2);
-                      return (
-                        <g key={v.toFixed(3)}>
-                          <line
-                            x1={chart.padX}
-                            x2={chart.width - chart.padX}
-                            y1={y}
-                            y2={y}
-                            stroke="rgba(15,23,42,0.08)"
+                      <defs>
+                        <linearGradient
+                          id={`${gradientId}-stroke`}
+                          x1="0"
+                          y1="0"
+                          x2="1"
+                          y2="0"
+                        >
+                          <stop
+                            offset="0"
+                            stopColor="rgb(99,102,241)"
+                            stopOpacity="0.9"
                           />
-                          <text
-                            x={chart.padX - 10}
-                            y={y + 4}
-                            textAnchor="end"
-                            fontSize="11"
-                            fill="rgba(100,116,139,0.85)"
-                            className="tabular-nums"
-                          >
-                            {v.toFixed(0)}
-                          </text>
-                        </g>
-                      );
-                    })}
+                          <stop
+                            offset="0.5"
+                            stopColor="rgb(139,92,246)"
+                            stopOpacity="0.95"
+                          />
+                          <stop
+                            offset="1"
+                            stopColor="rgb(99,102,241)"
+                            stopOpacity="0.9"
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id={`${gradientId}-band`}
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0"
+                            stopColor="rgb(139,92,246)"
+                            stopOpacity="0.22"
+                          />
+                          <stop
+                            offset="1"
+                            stopColor="rgb(99,102,241)"
+                            stopOpacity="0.06"
+                          />
+                        </linearGradient>
+                      </defs>
 
-                    <path
-                      d={chart.bandPath}
-                      fill={`url(#${gradientId}-band)`}
-                    />
-                    <path
-                      ref={chartPathRef}
-                      d={chart.meanPath}
-                      fill="none"
-                      stroke={`url(#${gradientId}-stroke)`}
-                      strokeWidth="3"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                      style={{
-                        strokeDasharray: pathLength
-                          ? `${pathLength}px`
-                          : undefined,
-                        strokeDashoffset: pathLength
-                          ? `${isVisible ? 0 : pathLength}px`
-                          : undefined,
-                        transition: pathLength
-                          ? "stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1)"
-                          : undefined,
-                      }}
-                    />
+                      {chart.tickValues.map((v) => {
+                        const y =
+                          chart.padY +
+                          (1 - (v - chart.yMin) / (chart.yMax - chart.yMin)) *
+                            (chart.height - chart.padY * 2);
+                        return (
+                          <g key={v.toFixed(3)}>
+                            <line
+                              x1={chart.padX}
+                              x2={chart.width - chart.padX}
+                              y1={y}
+                              y2={y}
+                              stroke="rgba(15,23,42,0.08)"
+                            />
+                            <text
+                              x={chart.padX - 10}
+                              y={y + 4}
+                              textAnchor="end"
+                              fontSize="11"
+                              fill="rgba(100,116,139,0.85)"
+                              className="tabular-nums"
+                            >
+                              {v.toFixed(0)}
+                            </text>
+                          </g>
+                        );
+                      })}
 
-                    <text
-                      x={chart.width - chart.padX}
-                      y={chart.height - 10}
-                      textAnchor="end"
-                      fontSize="11"
-                      fill="rgba(100,116,139,0.85)"
-                    >
-                      Iterations →
-                    </text>
-                    <text
-                      x={18}
-                      y={14}
-                      textAnchor="start"
-                      fontSize="11"
-                      fill="rgba(100,116,139,0.85)"
-                    >
-                      Estimated mean →
-                    </text>
-                  </svg>
+                      <path
+                        d={chart.bandPath}
+                        fill={`url(#${gradientId}-band)`}
+                      />
+                      <path
+                        ref={chartPathRef}
+                        d={chart.meanPath}
+                        fill="none"
+                        stroke={`url(#${gradientId}-stroke)`}
+                        strokeWidth="3"
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                        style={{
+                          strokeDasharray: pathLength
+                            ? `${pathLength}px`
+                            : undefined,
+                          strokeDashoffset: pathLength
+                            ? `${isVisible ? 0 : pathLength}px`
+                            : undefined,
+                          transition: pathLength
+                            ? "stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1)"
+                            : undefined,
+                        }}
+                      />
+
+                      <text
+                        x={chart.width - chart.padX}
+                        y={chart.height - 10}
+                        textAnchor="end"
+                        fontSize="11"
+                        fill="rgba(100,116,139,0.85)"
+                      >
+                        Iterations →
+                      </text>
+                      <text
+                        x={18}
+                        y={14}
+                        textAnchor="start"
+                        fontSize="11"
+                        fill="rgba(100,116,139,0.85)"
+                      >
+                        Estimated mean →
+                      </text>
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-2 grid gap-4">
+                  <div className="rounded-2xl border border-slate-900/10 bg-white/70 p-6 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
+                    <div className="text-sm font-semibold text-slate-900">
+                      Distributed Insight
+                    </div>
+                    <div className="mt-3 space-y-3">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="text-slate-500 text-sm">
+                          Parallel Speedup
+                        </div>
+                        <div className="text-slate-900 font-semibold text-sm tabular-nums">
+                          {callouts.speedup}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="text-slate-500 text-sm">
+                          Variance Reduction
+                        </div>
+                        <div className="text-slate-900 font-semibold text-sm tabular-nums">
+                          {callouts.variance}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="text-slate-500 text-sm">
+                          Result Stability
+                        </div>
+                        <div className="text-slate-900 font-semibold text-sm tabular-nums">
+                          {callouts.stability}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-900/10 bg-white/70 p-6 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
+                    <div className="text-sm font-semibold text-slate-900">
+                      Interpretation
+                    </div>
+                    <div className="mt-3 text-sm text-slate-600 leading-relaxed">
+                      The control plane tracks job progress while worker nodes
+                      execute independent Monte Carlo chunks in parallel.
+                      Aggregation reduces uncertainty, improving confidence in
+                      reported statistics without changing the underlying model.
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="lg:col-span-2 grid gap-4">
-                <div className="rounded-2xl border border-slate-900/10 bg-white/70 p-6 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
-                  <div className="text-sm font-semibold text-slate-900">
-                    Distributed Insight
-                  </div>
-                  <div className="mt-3 space-y-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="text-slate-500 text-sm">
-                        Parallel Speedup
-                      </div>
-                      <div className="text-slate-900 font-semibold text-sm tabular-nums">
-                        {callouts.speedup}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="text-slate-500 text-sm">
-                        Variance Reduction
-                      </div>
-                      <div className="text-slate-900 font-semibold text-sm tabular-nums">
-                        {callouts.variance}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="text-slate-500 text-sm">
-                        Result Stability
-                      </div>
-                      <div className="text-slate-900 font-semibold text-sm tabular-nums">
-                        {callouts.stability}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-slate-900/10 bg-white/70 p-6 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]">
-                  <div className="text-sm font-semibold text-slate-900">
-                    Interpretation
-                  </div>
-                  <div className="mt-3 text-sm text-slate-600 leading-relaxed">
-                    The control plane tracks job progress while worker nodes
-                    execute independent Monte Carlo chunks in parallel.
-                    Aggregation reduces uncertainty, improving confidence in
-                    reported statistics without changing the underlying model.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[
-                {
-                  title: "Healthy Mesh",
-                  value: `${Math.round(animatedWorkers)} workers responding`,
-                  accent:
-                    "from-indigo-500/18 via-violet-500/14 to-indigo-500/8",
-                },
-                {
-                  title: "Stable Estimates",
-                  value: `CI(95%) ≈ ±${animatedCi.toFixed(2)}`,
-                  accent:
-                    "from-violet-500/16 via-indigo-500/12 to-violet-500/8",
-                },
-                {
-                  title: "Research-Grade Output",
-                  value: `σ ≈ ${animatedStd.toFixed(2)} across runs`,
-                  accent:
-                    "from-indigo-500/14 via-violet-500/10 to-indigo-500/6",
-                },
-              ].map((c) => (
-                <div
-                  key={c.title}
-                  className="
+              <div className="grid sm:grid-cols-3 gap-4">
+                {[
+                  {
+                    title: "Healthy Mesh",
+                    value: `${Math.round(animatedWorkers)} workers responding`,
+                    accent:
+                      "from-indigo-500/18 via-violet-500/14 to-indigo-500/8",
+                  },
+                  {
+                    title: "Stable Estimates",
+                    value: `CI(95%) ≈ ±${animatedCi.toFixed(2)}`,
+                    accent:
+                      "from-violet-500/16 via-indigo-500/12 to-violet-500/8",
+                  },
+                  {
+                    title: "Research-Grade Output",
+                    value: `σ ≈ ${animatedStd.toFixed(2)} across runs`,
+                    accent:
+                      "from-indigo-500/14 via-violet-500/10 to-indigo-500/6",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.title}
+                    className="
                     relative overflow-hidden rounded-2xl border border-slate-900/10 bg-white/70 p-6
                     shadow-[0_22px_60px_-44px_rgba(15,23,42,0.18)]
                   "
-                >
-                  <div
-                    className={`absolute inset-0 opacity-30 bg-gradient-to-br ${c.accent}`}
-                  />
-                  <div className="relative">
-                    <div className="text-sm font-semibold text-slate-900">
-                      {c.title}
+                  >
+                    <div
+                      className={`absolute inset-0 opacity-30 bg-gradient-to-br ${c.accent}`}
+                    />
+                    <div className="relative">
+                      <div className="text-sm font-semibold text-slate-900">
+                        {c.title}
+                      </div>
+                      <div className="mt-2 text-sm text-slate-600">
+                        {c.value}
+                      </div>
                     </div>
-                    <div className="mt-2 text-sm text-slate-600">{c.value}</div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
-        </div>
       </div>
     </section>
-  )
+  );
 }

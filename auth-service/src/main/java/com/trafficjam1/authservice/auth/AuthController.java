@@ -82,6 +82,8 @@ public class AuthController {
             String city = isBlank(request.getCity()) ? "UNKNOWN" : request.getCity().trim();
             user.setCity(city);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setMustChangePassword(false);
+            user.setActive(true);
             userRepository.save(user);
 
             log.info("Signup succeeded for userId={} username={} email={}", user.getId(), user.getUsername(), user.getEmail());
@@ -89,6 +91,7 @@ public class AuthController {
             claims.put("uid", user.getId());
             claims.put("name", user.getFirstName() + " " + user.getLastName());
             claims.put("role", user.getRole().name());
+            claims.put("mustChangePassword", user.isMustChangePassword());
             String token = jwtService.generateToken(user.getUsername(), claims);
             return ResponseEntity.ok(new AuthResponse(token));
         } catch (Exception ex) {
@@ -155,6 +158,7 @@ public class AuthController {
                         return ResponseEntity.badRequest().body(error("Passwords do not match"));
                     }
                     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                    user.setMustChangePassword(false);
                     user.setResetCode(null);
                     user.setResetCodeExpiresAt(null);
                     userRepository.save(user);
@@ -180,9 +184,8 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(principal, request.getPassword())
             );
-            User user = principal.contains("@")
-                    ? userRepository.findByEmail(principal).orElse(null)
-                    : userRepository.findByUsername(principal).orElse(null);
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username).orElse(null);
             if (user == null) {
                 throw new IllegalStateException("Authenticated user not found");
             }
@@ -190,10 +193,15 @@ public class AuthController {
                 user.setRole(Role.USER);
                 userRepository.save(user);
             }
+            java.time.Instant now = java.time.Instant.now();
+            user.setLastLoginAt(now);
+            user.setLastActivityAt(now);
+            userRepository.save(user);
             Map<String, Object> claims = new HashMap<>();
             claims.put("uid", user.getId());
             claims.put("name", user.getFirstName() + " " + user.getLastName());
             claims.put("role", user.getRole().name());
+            claims.put("mustChangePassword", user.isMustChangePassword());
             String token = jwtService.generateToken(user.getUsername(), claims);
             log.info("Login succeeded principal={}", principal);
             return ResponseEntity.ok(new AuthResponse(token));

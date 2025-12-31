@@ -117,14 +117,14 @@ export function Contact() {
   return (
     <section
       ref={rootRef}
-      className="relative overflow-hidden bg-[#FBFBFF] py-32"
+      className="relative overflow-hidden bg-[rgb(var(--bg))] py-32"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-white" />
-        <div className="absolute inset-0 opacity-[0.32] [background-image:linear-gradient(to_right,rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:56px_56px]" />
+        <div className="absolute inset-0 bg-[rgb(var(--bg))]" />
+        <div className="absolute inset-0 opacity-[0.32] [background-image:linear-gradient(to_right,rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.05)_1px,transparent_1px)] dark:[background-image:linear-gradient(to_right,rgba(226,232,240,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(226,232,240,0.06)_1px,transparent_1px)] [background-size:56px_56px]" />
         <div className="absolute -right-48 bottom-[-200px] h-[560px] w-[560px] rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.08),transparent_62%)] blur-3xl" />
         <div
-          className="absolute inset-0 opacity-[0.06]"
+          className="absolute inset-0 opacity-[var(--noise-opacity)]"
           style={{
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
@@ -138,91 +138,97 @@ export function Contact() {
           {/* Left: Content */}
           <div
             data-contact="left"
-            className="rounded-3xl border border-slate-200/60 bg-white/70 p-10 backdrop-blur-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.10)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[2px] hover:border-slate-200/80 hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            className="rounded-3xl border border-slate-200/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] p-10 backdrop-blur-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.10)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[2px] hover:border-slate-200/80 dark:hover:border-white/14 hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.65)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
-            <h2 className="mb-6 text-5xl font-bold leading-[0.9] tracking-[-0.05em] text-slate-900 md:text-7xl">
+            <h2 className="mb-6 text-5xl font-bold leading-[0.9] tracking-[-0.05em] text-slate-900 dark:text-slate-100 md:text-7xl">
               Contact Us
             </h2>
-            <p className="mb-12 text-xl leading-relaxed text-slate-600">
+            <p className="mb-12 text-xl leading-relaxed text-slate-600 dark:text-slate-300">
               Questions about the distributed simulation platform, worker
               network, or research use cases? Reach the team directly or send a
               message.
             </p>
 
-            <div className="mb-10 inline-flex items-center rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 backdrop-blur-xl shadow-[0_12px_30px_-22px_rgba(15,23,42,0.24)]">
+            <div className="mb-10 inline-flex items-center rounded-full border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-[rgb(var(--glass)/0.65)] px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 backdrop-blur-xl shadow-[0_12px_30px_-22px_rgba(15,23,42,0.24)] dark:shadow-[0_12px_30px_-22px_rgba(0,0,0,0.55)]">
               Open to research collaboration
             </div>
 
             <div className="space-y-6">
-              <div className="group rounded-xl border border-slate-200/60 bg-white/60 p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+              <div className="group rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 dark:hover:border-white/14 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] dark:hover:shadow-[0_22px_52px_-36px_rgba(0,0,0,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
                 <div className="flex items-start gap-4">
                   <div className="rounded-xl bg-gradient-to-br from-indigo-500/40 via-violet-500/30 to-rose-500/15 p-px shadow-[0_16px_40px_-28px_rgba(99,102,241,0.35)]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 backdrop-blur-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 dark:bg-[rgb(var(--glass)/0.75)] backdrop-blur-2xl">
                       <Mail className="h-5 w-5 text-indigo-700" />
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-slate-500">Email</div>
-                    <div className="font-medium text-slate-900">
+                    <div className="text-sm text-slate-500 dark:text-slate-300">
+                      Email
+                    </div>
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
                       cpugrid.team@university.edu
                     </div>
-                    <div className="mt-1 text-sm text-slate-500">
+                    <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">
                       Best for demos, collaborations, and support.
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="group rounded-xl border border-slate-200/60 bg-white/60 p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+              <div className="group rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 dark:hover:border-white/14 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] dark:hover:shadow-[0_22px_52px_-36px_rgba(0,0,0,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
                 <div className="flex items-start gap-4">
                   <div className="rounded-xl bg-gradient-to-br from-indigo-500/40 via-violet-500/30 to-rose-500/15 p-px shadow-[0_16px_40px_-28px_rgba(99,102,241,0.35)]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 backdrop-blur-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 dark:bg-[rgb(var(--glass)/0.75)] backdrop-blur-2xl">
                       <MapPin className="h-5 w-5 text-indigo-700" />
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-slate-500">
+                    <div className="text-sm text-slate-500 dark:text-slate-300">
                       Lab / Department
                     </div>
-                    <div className="font-medium text-slate-900">
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
                       FSA Agadir — Software Engineering Lab
                     </div>
-                    <div className="mt-1 text-sm text-slate-500">
+                    <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">
                       Distributed Systems • Monte Carlo Simulation.
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="group rounded-xl border border-slate-200/60 bg-white/60 p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+              <div className="group rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 dark:hover:border-white/14 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] dark:hover:shadow-[0_22px_52px_-36px_rgba(0,0,0,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
                 <div className="flex items-start gap-4">
                   <div className="rounded-xl bg-gradient-to-br from-indigo-500/40 via-violet-500/30 to-rose-500/15 p-px shadow-[0_16px_40px_-28px_rgba(99,102,241,0.35)]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 backdrop-blur-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 dark:bg-[rgb(var(--glass)/0.75)] backdrop-blur-2xl">
                       <Clock className="h-5 w-5 text-indigo-700" />
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-slate-500">Response time</div>
-                    <div className="font-medium text-slate-900">
+                    <div className="text-sm text-slate-500 dark:text-slate-300">
+                      Response time
+                    </div>
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
                       Typically replies within 24–48h
                     </div>
-                    <div className="mt-1 text-sm text-slate-500">
+                    <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">
                       Weekdays, GMT+1.
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="group rounded-xl border border-slate-200/60 bg-white/60 p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+              <div className="group rounded-xl border border-slate-200/60 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[1px] hover:border-slate-200/80 dark:hover:border-white/14 hover:shadow-[0_22px_52px_-36px_rgba(15,23,42,0.22)] dark:hover:shadow-[0_22px_52px_-36px_rgba(0,0,0,0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
                 <div className="flex items-start gap-4">
                   <div className="rounded-xl bg-gradient-to-br from-indigo-500/40 via-violet-500/30 to-rose-500/15 p-px shadow-[0_16px_40px_-28px_rgba(99,102,241,0.35)]">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 backdrop-blur-2xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/75 dark:bg-[rgb(var(--glass)/0.75)] backdrop-blur-2xl">
                       <Github className="h-5 w-5 text-indigo-700" />
                     </div>
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm text-slate-500">GitHub</div>
-                    <div className="font-medium text-slate-900">
+                    <div className="text-sm text-slate-500 dark:text-slate-300">
+                      GitHub
+                    </div>
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
                       Follow development & issues
                     </div>
                     <div className="mt-3">
@@ -234,8 +240,9 @@ export function Contact() {
                         className="
                           inline-flex items-center gap-2
                           rounded-xl border border-slate-200/70
-                          bg-white/60 px-4 py-2
-                          text-sm font-semibold text-slate-700
+                          dark:border-white/10
+                          bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] px-4 py-2
+                          text-sm font-semibold text-slate-700 dark:text-slate-200
                           opacity-70 cursor-not-allowed
                         "
                       >
@@ -252,17 +259,17 @@ export function Contact() {
           {/* Right: Form */}
           <div
             data-contact="right"
-            className="relative overflow-hidden rounded-3xl border border-indigo-200/60 bg-gradient-to-br from-indigo-50/90 via-white/80 to-white/70 p-10 backdrop-blur-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.10)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[2px] hover:border-indigo-200/80 hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.12)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            className="relative overflow-hidden rounded-3xl border border-indigo-200/60 dark:border-white/10 bg-gradient-to-br from-indigo-50/90 via-white/80 to-white/70 dark:from-[rgb(var(--glass)/0.65)] dark:via-[rgb(var(--glass)/0.55)] dark:to-[rgb(var(--glass)/0.65)] p-10 backdrop-blur-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.10)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)] transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-[2px] hover:border-indigo-200/80 dark:hover:border-white/14 hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_50px_90px_-28px_rgba(0,0,0,0.65)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           >
             <div className="relative">
-              <h3 className="mb-2 text-2xl font-bold text-slate-900">
+              <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-slate-100">
                 Send a message
               </h3>
-              <p className="mb-3 text-slate-600">
+              <p className="mb-3 text-slate-600 dark:text-slate-300">
                 Tell us what you’re building and we’ll respond with next steps.
               </p>
-              <div className="mb-8 flex items-center gap-2 text-sm text-slate-500">
-                <ShieldCheck className="h-4 w-4 text-indigo-600" />
+              <div className="mb-8 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-300">
+                <ShieldCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-300" />
                 <span>Your message stays private.</span>
               </div>
 
@@ -274,7 +281,7 @@ export function Contact() {
                   <Input
                     id="contact-name"
                     placeholder="Full name"
-                    className="h-12 rounded-xl border-slate-200/70 bg-white/60 text-slate-900 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
+                    className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
                 </div>
 
@@ -286,7 +293,7 @@ export function Contact() {
                     id="contact-email"
                     type="email"
                     placeholder="Email"
-                    className="h-12 rounded-xl border-slate-200/70 bg-white/60 text-slate-900 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
+                    className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
                 </div>
 
@@ -297,11 +304,11 @@ export function Contact() {
                   <Select value={category} onValueChange={setCategory}>
                     <SelectTrigger
                       id="contact-category"
-                      className="h-12 w-full rounded-xl border-slate-200/70 bg-white/60 px-4 text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
+                      className="h-12 w-full rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] px-4 text-slate-900 dark:text-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                     >
                       <SelectValue placeholder="Role / Category" />
                     </SelectTrigger>
-                    <SelectContent className="border-slate-200/70 bg-white/95 backdrop-blur-2xl">
+                    <SelectContent className="border-slate-200/70 dark:border-white/10 bg-white/95 dark:bg-[rgb(var(--glass)/0.85)] backdrop-blur-2xl">
                       <SelectItem value="Student">Student</SelectItem>
                       <SelectItem value="Researcher">Researcher</SelectItem>
                       <SelectItem value="Developer">Developer</SelectItem>
@@ -318,7 +325,7 @@ export function Contact() {
                   <Input
                     id="contact-subject"
                     placeholder="Subject"
-                    className="h-12 rounded-xl border-slate-200/70 bg-white/60 text-slate-900 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
+                    className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
                 </div>
 
@@ -330,7 +337,7 @@ export function Contact() {
                     id="contact-message"
                     placeholder="Message"
                     rows={5}
-                    className="w-full resize-none rounded-xl border border-slate-200/70 bg-white/60 p-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500/40"
+                    className="w-full resize-none rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500/40"
                   />
                 </div>
 
@@ -339,7 +346,7 @@ export function Contact() {
                     <Send className="mr-2 h-4 w-4" />
                     Send Message
                   </Button>
-                  <div className="mt-3 text-sm text-slate-500">
+                  <div className="mt-3 text-sm text-slate-500 dark:text-slate-300">
                     No spam. We only use your info to reply.
                   </div>
                 </div>

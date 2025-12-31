@@ -395,10 +395,10 @@ export function Network() {
 
       <div className="relative z-10 w-full px-6">
         <div className="mx-auto mb-20 max-w-7xl text-center">
-          <h2 className="text-5xl md:text-6xl font-bold tracking-[-0.04em] text-slate-900">
+          <h2 className="text-5xl md:text-6xl font-bold tracking-[-0.04em] text-slate-900 dark:text-slate-100">
             Distributed Compute Mesh
           </h2>
-          <p className="mt-6 text-xl text-slate-500 max-w-3xl mx-auto leading-relaxed">
+          <p className="mt-6 text-xl text-slate-500 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
             A real-time orchestration layer that splits Monte Carlo workloads
             into verified task chunks—executed in parallel across dynamic
             workers.
@@ -407,9 +407,9 @@ export function Network() {
 
         <div
           ref={meshRef}
-          className="relative w-full overflow-hidden rounded-[40px] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(0,0,0,0.14)] after:absolute after:inset-x-0 after:top-0 after:h-px after:bg-white/70 after:content-['']"
+          className="relative w-full overflow-hidden rounded-[40px] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(0,0,0,0.14)] dark:shadow-[0_40px_90px_-35px_rgba(0,0,0,0.55)] after:absolute after:inset-x-0 after:top-0 after:h-px after:bg-white/70 dark:after:bg-white/10 after:content-['']"
         >
-          <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.06)_1px,transparent_1px)] [background-size:46px_46px]" />
+          <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(var(--fg),0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(var(--fg),0.06)_1px,transparent_1px)] [background-size:46px_46px]" />
 
           <div className="relative p-10 md:p-12">
             <div className="relative">
@@ -420,13 +420,13 @@ export function Network() {
                   className="relative w-full max-w-[460px]"
                 >
                   <div className="rounded-[2.75rem] bg-[linear-gradient(135deg,rgba(99,102,241,0.32),rgba(139,92,246,0.22),rgba(99,102,241,0.16))] p-px shadow-[0_22px_70px_-55px_rgba(15,23,42,0.24)]">
-                    <div className="rounded-[2.7rem] border border-white/70 bg-white/60 backdrop-blur-2xl px-8 py-7">
+                    <div className="rounded-[2.7rem] border border-white/70 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-2xl px-8 py-7">
                       <div className="flex items-center justify-between gap-6">
                         <div>
-                          <div className="text-sm font-semibold text-slate-900 tracking-[-0.01em]">
+                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-[-0.01em]">
                             Master Node
                           </div>
-                          <div className="mt-1 text-sm text-slate-600">
+                          <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                             Orchestration · Scheduling · Verification
                           </div>
                         </div>
@@ -445,7 +445,7 @@ export function Network() {
                             key={chip.label}
                             ref={chip.dispatch ? dispatchChipRef : undefined}
                             className={[
-                              "relative overflow-hidden rounded-2xl border border-white/70 bg-white/55 px-3 py-2 text-[11px] font-semibold text-slate-700",
+                              "relative overflow-hidden rounded-2xl border border-white/70 dark:border-white/10 bg-white/55 dark:bg-white/5 px-3 py-2 text-[11px] font-semibold text-slate-700 dark:text-slate-200",
                               chip.dispatch && flowsEnabled && !reduceMotion
                                 ? "shadow-[0_0_0_6px_rgba(99,102,241,0.10)]"
                                 : "",
@@ -514,7 +514,7 @@ export function Network() {
                         workerAccents[index]?.ring ?? "",
                       ].join(" ")}
                     >
-                      <div className="relative rounded-[2.75rem] border border-white/70 bg-white/60 backdrop-blur-2xl p-7 shadow-[0_22px_70px_-60px_rgba(15,23,42,0.18)] transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-[0_30px_90px_-70px_rgba(15,23,42,0.20)]">
+                      <div className="relative rounded-[2.75rem] border border-white/70 bg-white/60 backdrop-blur-2xl p-7 shadow-[0_22px_70px_-60px_rgba(15,23,42,0.18)] transition-[box-shadow,border-color] duration-300 ease-out group-hover:shadow-[0_30px_90px_-70px_rgba(15,23,42,0.20)] dark:border-white/10 dark:bg-white/5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <div className="text-sm font-semibold text-slate-900">
@@ -535,7 +535,7 @@ export function Network() {
                         </div>
 
                         <div className="mt-5 flex items-center justify-between gap-3">
-                          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/55 px-3 py-1 text-[11px] font-semibold text-slate-700">
+                          <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/55 px-3 py-1 text-[11px] font-semibold text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                             <span
                               className="relative flex size-2.5 items-center justify-center"
                               aria-hidden="true"
@@ -705,7 +705,7 @@ export function Network() {
                 <div
                   key={stat.label}
                   data-mesh="stat"
-                  className="relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/65 backdrop-blur-2xl px-6 py-6 shadow-[0_18px_60px_-55px_rgba(15,23,42,0.16)]"
+                  className="relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/65 backdrop-blur-2xl px-6 py-6 shadow-[0_18px_60px_-55px_rgba(15,23,42,0.16)] dark:border-white/10 dark:bg-white/5"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>

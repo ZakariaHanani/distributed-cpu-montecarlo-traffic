@@ -1,6 +1,7 @@
 package com.trafficjam1.authservice.user;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
 
 public class UpdateMeRequest {
     @NotBlank
@@ -10,6 +11,9 @@ public class UpdateMeRequest {
     private String lastName;
 
     private String city;
+
+    @Email
+    private String email;
 
     public UpdateMeRequest() {
     }
@@ -37,5 +41,12 @@ public class UpdateMeRequest {
     public void setCity(String city) {
         this.city = city;
     }
-}
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+}

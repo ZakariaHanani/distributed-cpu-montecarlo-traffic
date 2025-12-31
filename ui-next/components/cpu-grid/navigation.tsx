@@ -16,6 +16,58 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+function CpuRoadLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="CPU Grid"
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      >
+        <rect x="12" y="12" width="40" height="40" rx="6" />
+        <path d="M20 6v6M28 6v6M36 6v6M44 6v6" />
+        <path d="M20 52v6M28 52v6M36 52v6M44 52v6" />
+        <path d="M6 20h6M6 28h6M6 36h6M6 44h6" />
+        <path d="M52 20h6M52 28h6M52 36h6M52 44h6" />
+      </g>
+
+      <path
+        d="M14 48c10-12 16-8 22-18 6-10 11-8 26-16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 46c9-10 14-7 20-16 6-9 12-8 26-15"
+        fill="none"
+        stroke="white"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="6 6"
+      />
+
+      <g fill="white" stroke="currentColor" strokeWidth="2">
+        <rect x="25" y="24" width="12" height="8" rx="2" />
+        <circle cx="28" cy="33" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="34" cy="33" r="1.5" fill="currentColor" stroke="none" />
+        <rect x="29" y="35" width="12" height="8" rx="2" />
+        <circle cx="32" cy="44" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="38" cy="44" r="1.5" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+  );
+}
+
 interface NavigationProps {
   currentView: ViewType;
   setCurrentView: (view: ViewType) => void;
@@ -82,9 +134,9 @@ export function Navigation({
       ? "opacity-100 translate-y-0 pointer-events-auto"
       : "opacity-0 -translate-y-6 pointer-events-none",
     isScrolled
-      ? "max-w-[1320px] rounded-full bg-white/82 backdrop-blur-2xl border border-white/60 shadow-[0_14px_46px_rgba(0,0,0,0.14)]"
+      ? "max-w-[1320px] rounded-full bg-white/82 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] shadow-[0_14px_46px_rgba(0,0,0,0.14)] dark:shadow-[0_14px_46px_rgba(0,0,0,0.45)]"
       : isAuthView
-      ? "max-w-none rounded-none bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_10px_34px_rgba(0,0,0,0.08)]"
+      ? "max-w-none rounded-none bg-white/80 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl border border-white/40 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] shadow-[0_10px_34px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_34px_rgba(0,0,0,0.38)]"
       : "max-w-none rounded-none bg-transparent backdrop-blur-0 border border-transparent shadow-none",
   ].join(" ");
 
@@ -114,31 +166,19 @@ export function Navigation({
                 <div className="absolute inset-0 bg-indigo-500/20 rounded-xl blur-xl group-hover:bg-indigo-500/40 transition-[opacity,filter,background-color] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]" />
                 <div
                   className={[
-                    "relative bg-slate-900 p-2 rounded-xl",
-                    "ring-1 ring-white/10",
+                    "relative bg-white p-2 rounded-xl",
+                    "ring-1 ring-slate-900/10 dark:ring-white/10",
                     "transition-transform duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105",
                     isScrolled ? "scale-[0.96]" : "scale-100",
                   ].join(" ")}
                 >
-                  <div className="relative size-5">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex size-[10px] items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.10)]">
-                      <div className="size-[3px] rounded-full bg-white/90" />
-                    </div>
-
-                    <div className="absolute left-[9px] top-[6px] h-px w-[11px] origin-left -rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
-                    <div className="absolute left-[9px] top-1/2 h-px w-[11px] -translate-y-1/2 rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
-                    <div className="absolute left-[9px] bottom-[6px] h-px w-[11px] origin-left rotate-[26deg] rounded-full bg-gradient-to-r from-indigo-300/70 via-violet-300/70 to-violet-300/10" />
-
-                    <div className="absolute right-0 top-[2px] size-[6px] rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
-                    <div className="absolute right-0 top-1/2 size-[6px] -translate-y-1/2 rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
-                    <div className="absolute right-0 bottom-[2px] size-[6px] rounded-full bg-gradient-to-br from-indigo-300 to-violet-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)]" />
-                  </div>
+                  <CpuRoadLogo className="size-5 text-slate-900" />
                 </div>
               </div>
               <div className="flex flex-col items-start leading-none whitespace-nowrap">
                 <div
                   className={[
-                    "text-lg text-slate-900 tracking-tight leading-none whitespace-nowrap",
+                    "text-lg text-slate-900 dark:text-slate-100 tracking-tight leading-none whitespace-nowrap",
                     "transition-transform duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
                     isScrolled ? "scale-[0.985]" : "scale-100",
                   ].join(" ")}
@@ -148,7 +188,7 @@ export function Navigation({
                 </div>
                 <span
                   className={[
-                    "hidden sm:block text-[10px] text-slate-500 tracking-wide whitespace-nowrap",
+                    "hidden sm:block text-[10px] text-slate-500 dark:text-slate-300 tracking-wide whitespace-nowrap",
                     "transition-[opacity,transform] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
                     isScrolled
                       ? "opacity-75 translate-y-[0.5px]"
@@ -173,8 +213,8 @@ export function Navigation({
                       className={[
                         "relative px-2.5 lg:px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap",
                         activeLink === link.label
-                          ? "text-slate-900"
-                          : "text-slate-600 hover:text-slate-900",
+                          ? "text-slate-900 dark:text-slate-100"
+                          : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100",
                         "group",
                       ].join(" ")}
                     >
@@ -200,8 +240,8 @@ export function Navigation({
                               "ml-0.5 flex h-8 w-8 items-center justify-center rounded-full",
                               "transition-colors duration-200",
                               activeLink === link.label
-                                ? "text-slate-900"
-                                : "text-slate-500 hover:text-slate-900",
+                                ? "text-slate-900 dark:text-slate-100"
+                                : "text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100",
                               "hover:bg-slate-900/5",
                               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70",
                             ].join(" ")}
@@ -211,7 +251,7 @@ export function Navigation({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="start"
-                          className="min-w-56 rounded-xl border border-white/50 bg-white/80 p-1 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] backdrop-blur-2xl"
+                          className="min-w-56 rounded-xl border border-white/50 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/80 dark:bg-[rgb(var(--glass)/0.72)] p-1 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] dark:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
                         >
                           <DropdownMenuItem
                             onSelect={(event) => {
@@ -222,7 +262,7 @@ export function Navigation({
                           >
                             Simulation workflow
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator className="my-1 bg-white/40" />
+                          <DropdownMenuSeparator className="my-1 bg-white/40 dark:bg-white/10" />
                           <DropdownMenuItem
                             asChild
                             className="cursor-pointer rounded-lg"
@@ -250,8 +290,8 @@ export function Navigation({
                     aria-label="Open navigation menu"
                     className={[
                       "flex h-10 w-10 items-center justify-center rounded-full",
-                      "border border-white/55 bg-white/55 backdrop-blur-2xl",
-                      "text-slate-700 transition-[transform,box-shadow] duration-200 ease-out",
+                      "border border-white/55 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/55 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl",
+                      "text-slate-700 dark:text-slate-200 transition-[transform,box-shadow] duration-200 ease-out",
                       "hover:-translate-y-[1px] hover:shadow-[0_10px_26px_-18px_rgba(15,23,42,0.35)]",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70",
                       "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
@@ -262,7 +302,7 @@ export function Navigation({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="center"
-                  className="min-w-60 rounded-xl border border-white/50 bg-white/85 p-1 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] backdrop-blur-2xl"
+                  className="min-w-60 rounded-xl border border-white/50 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/85 dark:bg-[rgb(var(--glass)/0.76)] p-1 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.45)] dark:shadow-[0_30px_80px_-40px_rgba(0,0,0,0.55)] backdrop-blur-2xl"
                 >
                   {navLinks.map((link) => (
                     <DropdownMenuItem
@@ -276,7 +316,7 @@ export function Navigation({
                       {link.label}
                     </DropdownMenuItem>
                   ))}
-                  <DropdownMenuSeparator className="my-1 bg-white/40" />
+                  <DropdownMenuSeparator className="my-1 bg-white/40 dark:bg-white/10" />
                   <DropdownMenuItem
                     onSelect={(event) => {
                       event.preventDefault();
@@ -337,9 +377,9 @@ export function Navigation({
                 `}
               >
                 {theme === "dark" ? (
-                  <Moon className="h-4 w-4 text-slate-100" />
+                  <Sun className="h-4 w-4 text-amber-300" />
                 ) : (
-                  <Sun className="h-4 w-4 text-amber-400" />
+                  <Moon className="h-4 w-4 text-slate-800" />
                 )}
               </span>
               <span className="sr-only">
@@ -357,10 +397,10 @@ export function Navigation({
                   onClick={() => setCurrentView("login")}
                   className="
                     relative whitespace-nowrap
-                    px-3 sm:px-4 py-2 text-sm font-medium text-slate-600
+                    px-3 sm:px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300
                     rounded-full border border-transparent
                     transition-[transform,box-shadow,background-color,border-color,color] duration-200 ease-out
-                    hover:text-slate-900 hover:bg-slate-100 hover:border-slate-200
+                    hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-200 dark:hover:border-white/10
                     hover:-translate-y-[1px] hover:shadow-sm
                     active:translate-y-0 active:shadow-none
                     motion-reduce:transition-none motion-reduce:hover:translate-y-0

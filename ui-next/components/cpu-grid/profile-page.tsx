@@ -31,13 +31,17 @@ import {
   clearAuthMeta,
   clearDisplayName,
   clearToken,
+  deleteMe,
   deleteHistory,
   getDisplayNameFromToken,
+  getMustChangePasswordFromToken,
   getMe,
   getMyStats,
   getRoleFromToken,
   getToken,
+  setAuthMeta,
   setDisplayName,
+  setToken,
   updateMe,
   type UserStats,
 } from "@/lib/authApi";
@@ -56,6 +60,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
   const [fullName, setFullName] = useState<string>("—");
   const [role, setRole] = useState<"USER" | "ADMIN" | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTabKey>("profile");
+  const [mustChangePassword, setMustChangePassword] = useState(false);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -88,6 +93,8 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
   const [isDeleteAccountOpen, setIsDeleteAccountOpen] = useState(false);
   const [deleteAccountPhrase, setDeleteAccountPhrase] = useState("");
   const [deleteAccountConfirmed, setDeleteAccountConfirmed] = useState(false);
+  const [deleteAccountPassword, setDeleteAccountPassword] = useState("");
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   useEffect(() => {
     const token = getToken();
@@ -98,6 +105,12 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
     }
 
     setIsAllowed(true);
+    const mustChange = getMustChangePasswordFromToken(token);
+    setMustChangePassword(mustChange);
+    if (mustChange) {
+      setActiveTab("security");
+      toast("Password update required");
+    }
     const name = getDisplayNameFromToken(token) ?? "—";
     setFullName(name);
     setRole(getRoleFromToken(token));
@@ -284,8 +297,17 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
       const res = await changePassword({
         currentPassword,
         newPassword,
-        confirmPassword: confirmNewPassword,
+        confirmNewPassword,
       });
+      if (res.token) {
+        setToken(res.token);
+        const name = getDisplayNameFromToken(res.token);
+        if (name) setDisplayName(name);
+        const nextRole = getRoleFromToken(res.token);
+        setAuthMeta({ role: nextRole ?? "USER", name: name ?? "—" });
+        setMustChangePassword(getMustChangePasswordFromToken(res.token));
+        window.dispatchEvent(new Event("auth:changed"));
+      }
       setCurrentPassword("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -324,16 +346,35 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
     }
   };
 
-  const handleDeleteAccount = () => {
-    toast("Delete account placeholder (backend soon)");
-    clearToken();
-    clearAuthMeta();
-    clearDisplayName();
-    window.dispatchEvent(new Event("auth:changed"));
-    setIsDeleteAccountOpen(false);
-    setDeleteAccountPhrase("");
-    setDeleteAccountConfirmed(false);
-    setCurrentView("home");
+  const handleDeleteAccount = async () => {
+    if (isDeletingAccount) return;
+    if (deleteAccountPhrase.trim().toUpperCase() !== "DELETE") return;
+    if (!deleteAccountConfirmed) return;
+    if (!deleteAccountPassword.trim()) {
+      toast("Password is required");
+      return;
+    }
+    setIsDeletingAccount(true);
+    try {
+      await deleteMe({
+        confirmText: deleteAccountPhrase.trim(),
+        password: deleteAccountPassword,
+      });
+      clearToken();
+      clearAuthMeta();
+      clearDisplayName();
+      window.dispatchEvent(new Event("auth:changed"));
+      setIsDeleteAccountOpen(false);
+      setDeleteAccountPhrase("");
+      setDeleteAccountPassword("");
+      setDeleteAccountConfirmed(false);
+      setCurrentView("login");
+      toast("Account deleted");
+    } catch (err) {
+      handleApiError(err, "Failed to delete account");
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const isBooting = isLoadingMe;
@@ -345,7 +386,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
   }, [signedInLabel]);
 
   if (!isAllowed) {
-    return <div className="min-h-screen bg-white" />;
+    return <div className="min-h-screen bg-white dark:bg-[rgb(var(--bg))]" />;
   }
 
   const tabs = [
@@ -436,11 +477,21 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
       : "Manage your stored simulation history.";
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-white pt-24">
+    <div
+      ref={rootRef}
+      className="min-h-screen bg-white dark:bg-[rgb(var(--bg))] pt-24"
+    >
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
-          onClick={() => setCurrentView("home")}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-10"
+          onClick={() => {
+            if (mustChangePassword) {
+              toast("Password update required");
+              setActiveTab("security");
+              return;
+            }
+            setCurrentView("home");
+          }}
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
           data-profile-animate
         >
           <ArrowLeft className="w-4 h-4" />
@@ -461,8 +512,8 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/25 via-violet-500/25 to-rose-500/20 blur-xl" />
                 <div className="relative rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-rose-500 p-[2px]">
-                  <div className="flex size-16 items-center justify-center rounded-full bg-white">
-                    <span className="text-base font-bold text-slate-900 tracking-tight">
+                  <div className="flex size-16 items-center justify-center rounded-full bg-white dark:bg-slate-950">
+                    <span className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                       {isBooting ? (
                         <Skeleton className="h-6 w-6 rounded-full bg-slate-200/80" />
                       ) : (
@@ -483,9 +534,9 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                         signedInLabel
                       )}
                     </h1>
-                    <div className="mt-2 text-sm text-slate-500">
+                    <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">
                       Signed in as{" "}
-                      <span className="text-slate-900 font-medium">
+                      <span className="text-slate-900 dark:text-slate-100 font-medium">
                         {isBooting ? (
                           <Skeleton className="inline-block h-4 w-32 rounded-full bg-slate-200/80 align-middle" />
                         ) : (
@@ -500,7 +551,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                       Authenticated
                     </div>
                     {role === "ADMIN" && (
-                      <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 text-slate-900 px-3 py-1 text-xs font-semibold ring-1 ring-slate-900/10">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-slate-900/5 dark:bg-white/10 text-slate-900 dark:text-slate-100 px-3 py-1 text-xs font-semibold ring-1 ring-slate-900/10 dark:ring-white/10">
                         <Lock className="size-4" />
                         Admin
                       </div>
@@ -510,16 +561,16 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
               </div>
             </div>
 
-            <div className="mt-7 rounded-[1.75rem] border border-white/60 bg-white/60 backdrop-blur-2xl px-5 py-4 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.30)]">
+            <div className="mt-7 rounded-[1.75rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl px-5 py-4 shadow-[0_18px_55px_-40px_rgba(15,23,42,0.30)] dark:shadow-[0_18px_55px_-40px_rgba(0,0,0,0.55)]">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-rose-500/10 ring-1 ring-indigo-500/15">
                   <Sparkles className="size-5 text-indigo-600" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                     Account panel
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-500 dark:text-slate-300">
                     Identity, access, and controls
                   </span>
                 </div>
@@ -533,7 +584,14 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => {
+                      if (mustChangePassword && tab.key !== "security") {
+                        toast("Password update required");
+                        setActiveTab("security");
+                        return;
+                      }
+                      setActiveTab(tab.key);
+                    }}
                     className={`
                       group relative w-full flex items-center gap-3 px-4 py-3 rounded-[1.25rem]
                       text-left text-sm font-semibold
@@ -679,7 +737,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                         value={isBooting ? "—" : username}
                         readOnly
                         disabled
-                        className="h-12 rounded-xl bg-white/50 border-white/60 text-slate-700"
+                        className="h-12 rounded-xl bg-white/50 border-white/60 text-slate-700 dark:bg-white/10 dark:border-white/10 dark:text-slate-200"
                       />
                       <div className="text-xs text-slate-500">Read-only</div>
                     </div>
@@ -695,7 +753,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                         value={isBooting ? "—" : email}
                         readOnly
                         disabled
-                        className="h-12 rounded-xl bg-white/50 border-white/60 text-slate-700"
+                        className="h-12 rounded-xl bg-white/50 border-white/60 text-slate-700 dark:bg-white/10 dark:border-white/10 dark:text-slate-200"
                       />
                       <div className="text-xs text-slate-500">Read-only</div>
                     </div>
@@ -755,7 +813,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                     <Button
                       variant="ghost"
                       onClick={() => toast("Coming soon")}
-                      className="h-11 rounded-xl border border-white/60 bg-white/60 backdrop-blur-2xl text-slate-900 hover:bg-white/80"
+                      className="h-11 rounded-xl border border-white/60 bg-white/60 backdrop-blur-2xl text-slate-900 hover:bg-white/80 dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/15"
                     >
                       View simulations
                     </Button>
@@ -866,6 +924,16 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
               {activeTab === "security" && (
                 <div className="space-y-8">
                   <div className="rounded-[2rem] border border-white/60 bg-white/60 backdrop-blur-2xl p-7 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.35)]">
+                    {mustChangePassword && (
+                      <div className="mb-6 rounded-[1.5rem] border border-amber-500/20 bg-amber-500/10 px-5 py-4">
+                        <div className="text-sm font-semibold text-slate-900">
+                          Please change your temporary password
+                        </div>
+                        <div className="mt-1 text-sm text-slate-600">
+                          Other tabs are disabled until you update it.
+                        </div>
+                      </div>
+                    )}
                     <div className="flex items-start justify-between gap-6">
                       <div>
                         <h3 className="text-xl font-bold text-slate-900 tracking-tight">
@@ -1046,7 +1114,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                               <Button
                                 variant="outline"
                                 onClick={() => setIsDeleteOpen(false)}
-                                className="rounded-xl bg-white/70 border-white/50 hover:bg-white"
+                                className="rounded-xl bg-white/70 border-white/50 hover:bg-white/80 dark:bg-white/10 dark:border-white/10 dark:hover:bg-white/15 dark:text-slate-100"
                               >
                                 Cancel
                               </Button>
@@ -1073,10 +1141,9 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                           <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                             Danger Zone
                           </h3>
-                          <p className="text-sm text-slate-600 mt-1 max-w-xl">
+                          <p className="text-sm text-slate-600 mt-1 leading-relaxed">
                             Deleting your account permanently removes your
-                            profile and simulation history (once backend is
-                            connected).
+                            profile and simulation history.
                           </p>
                         </div>
                         <div className="flex size-12 items-center justify-center rounded-full bg-rose-500/10 ring-1 ring-rose-500/20 shadow-[0_18px_40px_-28px_rgba(244,63,94,0.35)]">
@@ -1138,6 +1205,26 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
 
                             <div className="mt-6 space-y-2">
                               <Label
+                                htmlFor="deleteAccountPassword"
+                                className="text-slate-700"
+                              >
+                                Password
+                              </Label>
+                              <Input
+                                id="deleteAccountPassword"
+                                value={deleteAccountPassword}
+                                onChange={(e) =>
+                                  setDeleteAccountPassword(e.target.value)
+                                }
+                                className="h-12 rounded-xl bg-white/70 border-white/60"
+                                placeholder="Your password"
+                                autoComplete="current-password"
+                                type="password"
+                              />
+                            </div>
+
+                            <div className="mt-6 space-y-2">
+                              <Label
                                 htmlFor="deleteAccountPhrase"
                                 className="text-slate-700"
                               >
@@ -1178,7 +1265,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                               <Button
                                 variant="outline"
                                 onClick={() => setIsDeleteAccountOpen(false)}
-                                className="rounded-xl bg-white/70 border-white/50 hover:bg-white"
+                                className="rounded-xl bg-white/70 border-white/50 hover:bg-white/80 dark:bg-white/10 dark:border-white/10 dark:hover:bg-white/15 dark:text-slate-100"
                               >
                                 Cancel
                               </Button>
@@ -1186,6 +1273,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                                 onClick={handleDeleteAccount}
                                 disabled={
                                   !deleteAccountConfirmed ||
+                                  !deleteAccountPassword.trim() ||
                                   deleteAccountPhrase.trim().toUpperCase() !==
                                     "DELETE"
                                 }

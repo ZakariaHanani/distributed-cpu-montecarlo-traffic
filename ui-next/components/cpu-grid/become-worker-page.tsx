@@ -311,12 +311,12 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
   return (
     <div
       ref={rootRef}
-      className="min-h-screen bg-gradient-to-b from-white via-slate-50/30 to-white"
+      className="min-h-screen bg-gradient-to-b from-white via-slate-50/30 to-white dark:from-[rgb(var(--bg))] dark:via-[rgb(var(--bg))] dark:to-[rgb(var(--bg))]"
     >
       {/* Ambient background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px]" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-indigo-500/5 dark:bg-indigo-500/12 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-500/5 dark:bg-violet-500/12 rounded-full blur-[100px]" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-10 pt-24">
@@ -324,10 +324,10 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
         <button
           type="button"
           onClick={() => setCurrentView("home")}
-          className="group inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-all duration-300 mb-10"
+          className="group inline-flex items-center gap-2 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 mb-10"
           data-section
         >
-          <span className="flex items-center justify-center size-8 rounded-full bg-white/80 border border-white/60 shadow-sm group-hover:-translate-x-1 transition-transform duration-300">
+          <span className="flex items-center justify-center size-8 rounded-full bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/10 shadow-sm group-hover:-translate-x-1 transition-transform duration-300">
             <ArrowLeft className="w-4 h-4" />
           </span>
           <span className="text-sm font-medium">Back to Home</span>
@@ -337,14 +337,14 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
         <header className="mb-12" data-section>
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-700 text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-700 dark:text-indigo-200 text-sm font-medium mb-6">
                 <Zap className="size-4" />
                 <span>Join the Distributed Network</span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 Become a <span className="text-gradient-flow">Worker Node</span>
               </h1>
-              <p className="mt-6 text-lg text-slate-600 leading-relaxed">
+              <p className="mt-6 text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                 Donate your idle compute power to accelerate Monte Carlo
                 simulations. Earn Compute Credits, unlock premium features, and
                 help power the grid—all while your computer sits idle.
@@ -367,31 +367,37 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
             {/* Hero visual */}
             <div className="relative">
               <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 via-violet-500/15 to-rose-500/10 blur-[40px] opacity-60" />
-              <div className="relative rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl p-8 shadow-[0_40px_100px_-50px_rgba(15,23,42,0.35)]">
+              <div className="relative rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl p-8 shadow-[0_40px_100px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.55)]">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex size-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg">
                     <Cpu className="size-6" />
                   </div>
                   <div>
-                    <div className="text-lg font-semibold text-slate-900">
+                    <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                       Worker Status
                     </div>
-                    <div className="text-sm text-slate-500">Ready to join</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-300">
+                      Ready to join
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 border border-white/60">
-                    <span className="text-sm text-slate-600">
+                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/10">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
                       Compute Credits
                     </span>
                     <Skeleton className="h-5 w-16 rounded-full" />
                   </div>
-                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 border border-white/60">
-                    <span className="text-sm text-slate-600">Current Tier</span>
+                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/10">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
+                      Current Tier
+                    </span>
                     <Skeleton className="h-5 w-20 rounded-full" />
                   </div>
-                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 border border-white/60">
-                    <span className="text-sm text-slate-600">Worker ID</span>
+                  <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/80 dark:bg-white/10 border border-white/60 dark:border-white/10">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
+                      Worker ID
+                    </span>
                     <Skeleton className="h-5 w-32 rounded-full" />
                   </div>
                 </div>
@@ -412,25 +418,25 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               }}
               className={`rounded-[3rem] border bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] overflow-hidden premium-card transition-all duration-500 ${
                 highlightedSection === "why-workers"
-                  ? "border-indigo-500/50 ring-2 ring-indigo-500/30 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]"
-                  : "border-white/60"
+                  ? "border-indigo-500/50 dark:border-indigo-400/35 ring-2 ring-indigo-500/30 dark:ring-indigo-400/20 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]"
+                  : "border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))]"
               }`}
               data-section
             >
-              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
                 <div className="flex items-start justify-between gap-5">
                   <div>
-                    <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+                    <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                       Why Workers Matter
                     </h2>
-                    <p className="mt-2 text-slate-600 leading-relaxed">
+                    <p className="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">
                       The master splits Monte Carlo jobs into independent
                       chunks. Workers process them in parallel, then return
                       results for aggregation—making final answers arrive
                       faster.
                     </p>
                   </div>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15">
+                  <div className="flex size-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-700 dark:text-indigo-200 ring-1 ring-indigo-500/15">
                     <Split className="size-5" />
                   </div>
                 </div>
@@ -492,7 +498,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                       {/* Tooltip popover */}
                       {activeTooltip === stat.id && (
                         <div className="absolute left-0 right-0 top-full mt-2 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
-                          <div className="rounded-2xl border border-white/60 bg-white/95 backdrop-blur-xl p-4 shadow-xl">
+                          <div className="rounded-2xl border border-white/60 dark:border-white/10 bg-white/95 dark:bg-white/10 backdrop-blur-xl p-4 shadow-xl">
                             <div className="flex items-start justify-between gap-2">
                               <p className="text-sm text-slate-600 leading-relaxed">
                                 {stat.explanation}
@@ -500,7 +506,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                               <button
                                 type="button"
                                 onClick={() => setActiveTooltip(null)}
-                                className="shrink-0 p-1 rounded-full hover:bg-slate-100 transition-colors"
+                                className="shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                               >
                                 <X className="size-3 text-slate-400" />
                               </button>
@@ -527,7 +533,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               }`}
               data-section
             >
-              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -537,7 +543,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                       A streamlined flow from orchestration to aggregation.
                     </p>
                   </div>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15">
+                  <div className="flex size-12 items-center justify-center rounded-full bg-violet-500/10 text-violet-700 dark:text-violet-200 ring-1 ring-violet-500/15">
                     <Layers className="size-5" />
                   </div>
                 </div>
@@ -587,7 +593,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
 
                       {idx < flowSteps.length - 1 && (
                         <div className="hidden lg:block relative w-12 h-[2px]">
-                          <div className="absolute inset-0 bg-slate-200 rounded-full" />
+                          <div className="absolute inset-0 bg-slate-200 dark:bg-white/10 rounded-full" />
                           <div
                             className={`absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500 ${
                               activeFlowStep > idx ? "opacity-100" : "opacity-0"
@@ -604,7 +610,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                             className={`absolute -right-2 top-1/2 -translate-y-1/2 size-4 transition-colors duration-300 ${
                               activeFlowStep > idx
                                 ? "text-indigo-500"
-                                : "text-slate-300"
+                                : "text-slate-300 dark:text-white/30"
                             }`}
                           />
                         </div>
@@ -624,7 +630,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                       Animated flow visualization (UI demo)
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                  <span className="text-xs text-slate-500 bg-slate-100 dark:bg-white/10 px-3 py-1 rounded-full">
                     60fps
                   </span>
                 </div>
@@ -644,7 +650,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               }`}
               data-section
             >
-              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -761,7 +767,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               }`}
               data-section
             >
-              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -772,7 +778,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                       stays protected with sandboxed, isolated worker processes.
                     </p>
                   </div>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/15">
+                  <div className="flex size-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 ring-1 ring-emerald-500/15">
                     <ShieldCheck className="size-5" />
                   </div>
                 </div>
@@ -781,7 +787,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               <div className="p-8">
                 <div className="grid gap-5 md:grid-cols-3">
                   <div className="rounded-[2.25rem] border border-white/60 bg-white/75 p-6 relative overflow-hidden">
-                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 px-2 py-0.5 text-[10px] font-semibold">
+                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-200 px-2 py-0.5 text-[10px] font-semibold">
                       Coming soon
                     </div>
                     <Label className="text-slate-700 font-medium">
@@ -807,7 +813,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                   </div>
 
                   <div className="rounded-[2.25rem] border border-white/60 bg-white/75 p-6 relative overflow-hidden">
-                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 px-2 py-0.5 text-[10px] font-semibold">
+                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-200 px-2 py-0.5 text-[10px] font-semibold">
                       Coming soon
                     </div>
                     <Label
@@ -829,7 +835,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                   </div>
 
                   <div className="rounded-[2.25rem] border border-white/60 bg-white/75 p-6 relative overflow-hidden">
-                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 px-2 py-0.5 text-[10px] font-semibold">
+                    <div className="absolute top-4 right-4 inline-flex items-center rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-200 px-2 py-0.5 text-[10px] font-semibold">
                       Coming soon
                     </div>
                     <Label className="text-slate-700 font-medium">
@@ -855,7 +861,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
               className="rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] overflow-hidden premium-card"
               data-section
             >
-              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+              <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
                 <div className="flex items-start justify-between gap-5">
                   <div>
                     <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
@@ -882,8 +888,8 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                         key={step.title}
                         className={`rounded-[2rem] border transition-all duration-300 overflow-hidden ${
                           isExpanded
-                            ? "border-indigo-500/30 bg-gradient-to-br from-indigo-500/5 via-white/80 to-violet-500/5 shadow-lg"
-                            : "border-white/60 bg-white/75 hover:border-white/80 hover:shadow-md"
+                            ? "border-indigo-500/30 bg-gradient-to-br from-indigo-500/5 via-white/80 to-violet-500/5 dark:from-indigo-500/14 dark:via-white/5 dark:to-violet-500/14 shadow-lg"
+                            : "border-white/60 bg-white/75 hover:border-white/80 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-white/14"
                         }`}
                       >
                         <button
@@ -899,13 +905,13 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                               className={`flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${
                                 isExpanded
                                   ? "bg-slate-900 text-white shadow-lg"
-                                  : "bg-slate-100 text-slate-600"
+                                  : "bg-slate-100 dark:bg-white/10 text-slate-600"
                               }`}
                             >
                               {idx + 1}
                             </div>
                             {idx < gettingStartedSteps.length - 1 && (
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 w-0.5 h-4 bg-slate-200" />
+                              <div className="absolute top-full left-1/2 -translate-x-1/2 w-0.5 h-4 bg-slate-200 dark:bg-white/10" />
                             )}
                           </div>
 
@@ -926,11 +932,11 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                               <span
                                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                                   step.statusColor === "amber"
-                                    ? "bg-amber-500/10 text-amber-700"
+                                    ? "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-200"
                                     : step.statusColor === "slate"
-                                    ? "bg-slate-500/10 text-slate-600"
+                                    ? "bg-slate-500/10 text-slate-600 dark:bg-white/10 dark:text-slate-200"
                                     : step.statusColor === "indigo"
-                                    ? "bg-indigo-500/10 text-indigo-700"
+                                    ? "bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-200"
                                     : "bg-emerald-500/10 text-emerald-700"
                                 }`}
                               >
@@ -1038,12 +1044,12 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                     flex size-11 items-center justify-center rounded-full
                     bg-white/70 ring-1 ring-white/60 shadow-sm
                     transition-all duration-300
-                    hover:ring-2 hover:ring-indigo-500/30 hover:bg-white/80
+                    hover:ring-2 hover:ring-indigo-500/30 hover:bg-white/80 dark:hover:bg-white/10
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70
                   "
                 >
                   <ChevronDown
-                    className={`size-5 text-indigo-700 transition-transform duration-300 ${
+                    className={`size-5 text-indigo-700 dark:text-indigo-200 transition-transform duration-300 ${
                       isQuickSummaryOpen ? "rotate-180" : "rotate-0"
                     }`}
                   />
@@ -1069,14 +1075,14 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                         className={`w-full flex items-start gap-3 p-4 rounded-2xl text-left transition-all duration-300 group hover:-translate-y-0.5 hover:shadow-md ${
                           isActive
                             ? "bg-white/80 border-2 border-indigo-500/40 shadow-md"
-                            : "bg-white/50 border border-white/60 hover:bg-white/70"
+                            : "bg-white/50 dark:bg-white/10 border border-white/60 hover:bg-white/70 dark:hover:bg-white/15"
                         }`}
                       >
                         <div
                           className={`relative flex size-9 items-center justify-center rounded-full shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg ${
                             isActive
                               ? "bg-indigo-500 text-white"
-                              : "bg-indigo-500/10 text-indigo-700 group-hover:bg-indigo-500/20"
+                              : "bg-indigo-500/10 text-indigo-700 dark:text-indigo-200 group-hover:bg-indigo-500/20"
                           }`}
                         >
                           <item.icon className="size-4" />
@@ -1087,7 +1093,9 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                         <div className="flex-1 min-w-0">
                           <div
                             className={`text-sm font-semibold transition-colors ${
-                              isActive ? "text-indigo-700" : "text-slate-900"
+                              isActive
+                                ? "text-indigo-700 dark:text-indigo-200"
+                                : "text-slate-900"
                             }`}
                           >
                             {item.title}

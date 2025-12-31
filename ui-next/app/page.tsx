@@ -79,7 +79,7 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-white">
+    <main className="relative min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
       {/* Global layers */}
       <NoiseOverlay />
       <AmbientLight />
@@ -102,10 +102,10 @@ export default function Home() {
           className="
             fixed top-5 left-4 z-50
             flex h-11 w-11 items-center justify-center
-            rounded-full border border-white/60
-            bg-white/70 backdrop-blur-2xl
-            shadow-[0_18px_55px_-44px_rgba(15,23,42,0.35)]
-            text-slate-900
+            rounded-full border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))]
+            bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl
+            shadow-[0_18px_55px_-44px_rgba(15,23,42,0.35)] dark:shadow-[0_18px_55px_-44px_rgba(0,0,0,0.55)]
+            text-slate-900 dark:text-slate-100
             transition-all duration-200 ease-out
             hover:-translate-y-[1px]
             hover:shadow-[0_22px_70px_-44px_rgba(99,102,241,0.35)]

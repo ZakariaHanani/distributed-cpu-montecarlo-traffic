@@ -118,7 +118,7 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
         {/* Back Button */}
         <button
           onClick={() => setCurrentView("home")}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-12"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-12"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
@@ -132,7 +132,7 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
               <div className="bg-slate-900 p-2 rounded-xl">
                 <Cpu className="w-5 h-5 text-indigo-400" />
               </div>
-              <span className="text-xl font-bold text-slate-900 tracking-tight">CPU Grid</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">CPU Grid</span>
             </div>
 
             {/* Navigation */}
@@ -142,7 +142,9 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
                   key={item.key}
                   onClick={() => setCurrentView(item.key)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
-                    type === item.key ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
+                    type === item.key
+                      ? "bg-slate-900 text-white dark:bg-white/10"
+                      : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5"
                   }`}
                 >
                   {item.label}
@@ -153,25 +155,25 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
 
           {/* Content */}
           <main className="glass card-super-lg p-12 shadow-deep">
-            <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">{content.title}</h1>
-            <p className="text-slate-500 mb-12">Last updated: {content.lastUpdated}</p>
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-2">{content.title}</h1>
+            <p className="text-slate-500 dark:text-slate-300 mb-12">Last updated: {content.lastUpdated}</p>
 
             <div className="space-y-10">
               {content.sections.map((section, i) => (
                 <section key={i}>
-                  <h2 className="text-xl font-bold text-slate-900 mb-4">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-4">
                     {i + 1}. {section.title}
                   </h2>
-                  <p className="text-slate-600 leading-relaxed">{section.content}</p>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{section.content}</p>
                 </section>
               ))}
             </div>
 
             {/* Contact */}
-            <div className="mt-12 pt-8 border-t border-slate-200">
-              <p className="text-slate-500">
+            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-white/10">
+              <p className="text-slate-500 dark:text-slate-300">
                 If you have any questions about this policy, please contact us at{" "}
-                <a href="mailto:legal@cpugrid.dev" className="text-indigo-600 hover:text-indigo-700">
+                <a href="mailto:legal@cpugrid.dev" className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200">
                   legal@cpugrid.dev
                 </a>
               </p>

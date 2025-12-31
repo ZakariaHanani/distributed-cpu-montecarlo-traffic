@@ -1,5 +1,7 @@
 package com.trafficjam1.authservice.security;
 
+import com.trafficjam1.authservice.user.User;
+import com.trafficjam1.authservice.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,16 +17,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import io.jsonwebtoken.JwtException;
 
 import java.io.IOException;
+import java.time.Instant;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, UserRepository userRepository) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
 /*   @Override
@@ -76,6 +81,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    User user = userRepository.findByUsername(username).orElse(null);
+                    if (user != null) {
+                        if (!user.isActive()) {
+                            SecurityContextHolder.clearContext();
+                            writeJsonError(response, 403, "Account disabled");
+                            return;
+                        }
+
+                        Instant now = Instant.now();
+                        userRepository.touchLastActivity(username, now, now.minusSeconds(60));
+
+                        if (user.isMustChangePassword() && !isAllowedDuringMustChange(request)) {
+                            writeJsonError(response, 403, "Password change required");
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -86,6 +108,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-}
 
+    private boolean isAllowedDuringMustChange(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        if (uri == null) return false;
+
+        if (uri.startsWith("/api/auth/")) return true;
+        if (uri.equals("/api/me") && "GET".equalsIgnoreCase(method)) return true;
+        if (uri.equals("/api/me/password") && "PUT".equalsIgnoreCase(method)) return true;
+        if (uri.startsWith("/error")) return true;
+        return false;
+    }
+
+    private void writeJsonError(HttpServletResponse response, int status, String message) throws IOException {
+        response.resetBuffer();
+        response.setStatus(status);
+        response.setHeader("Content-Type", "application/json");
+        response.getWriter().write("{\"error\":\"" + escapeJson(message) + "\"}");
+        response.flushBuffer();
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+}
 

@@ -99,16 +99,16 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
             shadow-none
             overflow-hidden
             transition-all duration-500
-            hover:border-white/45
+            hover:border-white/45 dark:border-white/10 dark:hover:border-white/14
           "
         >
           <div className="px-10 py-10">
             <div className="text-center">
               <div data-worker-teaser="header" className="mx-auto max-w-6xl">
-                <h2 className="whitespace-nowrap text-[clamp(1.25rem,3.6vw,3rem)] font-bold tracking-[-0.04em] leading-[1.05] text-slate-900">
+                <h2 className="whitespace-nowrap text-[clamp(1.25rem,3.6vw,3rem)] font-bold tracking-[-0.04em] leading-[1.05] text-slate-900 dark:text-slate-100">
                   A Global Network, Powered by People
                 </h2>
-                <p className="mt-6 text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+                <p className="mt-6 text-xl text-slate-500 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   Contribute idle compute power, accelerate large-scale
                   simulations, and earn credits that unlock advanced
                   capabilities.
@@ -122,7 +122,7 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               <div
                 className="
                   group rounded-[2.5rem]
-                  border border-white/60 bg-white/70 backdrop-blur-2xl
+                  border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl
                   p-7 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)]
                   transition-[transform,box-shadow,border-color] duration-300 ease-out
                   hover:-translate-y-[3px]
@@ -134,10 +134,10 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-lg font-semibold text-slate-900">
+                    <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                       Accelerate the Grid
                     </div>
-                    <div className="mt-2 text-sm text-slate-600 leading-relaxed">
+                    <div className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       Workers execute independent simulation tasks in parallel,
                       dramatically reducing execution time and increasing system
                       throughput as the network grows.
@@ -152,7 +152,7 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               <div
                 className="
                   group rounded-[2.5rem]
-                  border border-white/60 bg-white/70 backdrop-blur-2xl
+                  border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl
                   p-7 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)]
                   transition-[transform,box-shadow,border-color] duration-300 ease-out
                   hover:-translate-y-[3px]
@@ -164,10 +164,10 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-lg font-semibold text-slate-900">
+                    <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                       Earn Compute Credits
                     </div>
-                    <div className="mt-2 text-sm text-slate-600 leading-relaxed">
+                    <div className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       Active workers earn compute credits based on uptime and
                       completed tasks. Credits unlock higher iteration limits,
                       priority scheduling, and advanced analytics.
@@ -182,7 +182,7 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               <div
                 className="
                   group rounded-[2.5rem]
-                  border border-white/60 bg-white/70 backdrop-blur-2xl
+                  border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl
                   p-7 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)]
                   transition-[transform,box-shadow,border-color] duration-300 ease-out
                   hover:-translate-y-[3px]
@@ -194,10 +194,10 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-lg font-semibold text-slate-900">
+                    <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                       Safe & Controlled
                     </div>
-                    <div className="mt-2 text-sm text-slate-600 leading-relaxed">
+                    <div className="mt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                       Worker execution is sandboxed with strict resource limits,
                       no file access, and full opt-out control at any time.
                     </div>
