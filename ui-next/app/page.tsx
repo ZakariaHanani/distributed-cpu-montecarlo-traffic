@@ -51,6 +51,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isNavVisible, setIsNavVisible] = useState(false);
 
+  const isAuthView = currentView === "login" || currentView === "signup";
   const isFocusedOnboarding =
     currentView === "become_worker" ||
     currentView === "eligibility" ||
@@ -78,18 +79,20 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-white">
+    <main className="relative min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
       {/* Global layers */}
       <NoiseOverlay />
       <AmbientLight />
       <WebGLBackground />
 
       {/* Navigation */}
-      <Navigation
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        isVisible={!isFocusedOnboarding || isNavVisible}
-      />
+      {!isAuthView && (
+        <Navigation
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          isVisible={!isFocusedOnboarding || isNavVisible}
+        />
+      )}
 
       {isFocusedOnboarding && (
         <button
@@ -99,10 +102,10 @@ export default function Home() {
           className="
             fixed top-5 left-4 z-50
             flex h-11 w-11 items-center justify-center
-            rounded-full border border-white/60
-            bg-white/70 backdrop-blur-2xl
-            shadow-[0_18px_55px_-44px_rgba(15,23,42,0.35)]
-            text-slate-900
+            rounded-full border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))]
+            bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl
+            shadow-[0_18px_55px_-44px_rgba(15,23,42,0.35)] dark:shadow-[0_18px_55px_-44px_rgba(0,0,0,0.55)]
+            text-slate-900 dark:text-slate-100
             transition-all duration-200 ease-out
             hover:-translate-y-[1px]
             hover:shadow-[0_22px_70px_-44px_rgba(99,102,241,0.35)]
@@ -125,16 +128,21 @@ export default function Home() {
       {/* View Router */}
       {currentView === "home" && (
         <div className="relative z-10">
+          <div id="home" className="scroll-mt-28" />
           <Hero setCurrentView={setCurrentView} />
+          <div id="workers" className="scroll-mt-28" />
           <WorkerTeaser setCurrentView={setCurrentView} />
           <CoreCapabilities />
           <Network />
+          <div id="simulations" className="scroll-mt-28" />
           <Process />
           <Integration />
+          <div id="architecture" className="scroll-mt-28" />
           <Architecture />
           <DataVis />
           <Showcase />
           <Insights />
+          <div id="team" className="scroll-mt-28" />
           <Team />
           <Contact />
           <Footer setCurrentView={setCurrentView} />

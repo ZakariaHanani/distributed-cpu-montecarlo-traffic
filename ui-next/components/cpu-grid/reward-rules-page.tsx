@@ -291,10 +291,10 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
       <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.10),transparent_55%),radial-gradient(circle_at_bottom,rgba(139,92,246,0.10),transparent_55%)]" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.30] [background-image:linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.06)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.10),transparent_55%),radial-gradient(circle_at_bottom,rgba(139,92,246,0.10),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.22),transparent_60%),radial-gradient(circle_at_bottom,rgba(244,63,94,0.10),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-[0.30] dark:opacity-[0.42] [background-image:linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.06)_1px,transparent_1px)] dark:[background-image:linear-gradient(to_right,rgba(226,232,240,0.09)_1px,transparent_1px),linear-gradient(to_bottom,rgba(226,232,240,0.09)_1px,transparent_1px)] [background-size:44px_44px]" />
 
         <div
           ref={rootRef}
@@ -303,14 +303,14 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
           <div className="flex flex-col gap-8" data-animate>
             <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-700 text-sm font-medium">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-700 dark:text-indigo-200 text-sm font-medium">
                   <Zap className="size-4" />
                   <span>Compute Credits Policy</span>
                 </div>
-                <h1 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
+                <h1 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
                   Reward <span className="text-gradient-flow">Rules</span>
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg text-slate-600 leading-relaxed">
+                <p className="mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                   Compute Credits are internal points earned by contributing
                   compute — not cash, not crypto.
                 </p>
@@ -323,9 +323,9 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                   ].map((badge) => (
                     <div
                       key={badge.label}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 text-slate-700 ring-1 ring-white/60 shadow-sm backdrop-blur-2xl"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] text-slate-700 dark:text-slate-200 ring-1 ring-white/60 dark:ring-white/10 shadow-sm backdrop-blur-2xl"
                     >
-                      <badge.icon className="size-4 text-indigo-700" />
+                      <badge.icon className="size-4 text-indigo-700 dark:text-indigo-200" />
                       <span className="text-sm font-medium">{badge.label}</span>
                     </div>
                   ))}
@@ -334,16 +334,16 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
 
               <div className="relative">
                 <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-500/20 via-violet-500/15 to-rose-500/10 blur-[40px] opacity-60" />
-                <div className="relative rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl p-8 shadow-[0_40px_100px_-50px_rgba(15,23,42,0.35)]">
+                <div className="relative rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl p-8 shadow-[0_40px_100px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_40px_100px_-50px_rgba(0,0,0,0.55)]">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="flex size-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg">
                       <BookText className="size-6" />
                     </div>
                     <div>
-                      <div className="text-lg font-semibold text-slate-900">
+                      <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                         Credits Ledger
                       </div>
-                      <div className="text-sm text-slate-500">
+                      <div className="text-sm text-slate-500 dark:text-slate-300">
                         Policy preview (UI-only)
                       </div>
                     </div>
@@ -353,14 +353,14 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                     {earnCards.map((card) => (
                       <div
                         key={card.title}
-                        className="rounded-[1.75rem] border border-white/60 bg-white/75 px-5 py-4"
+                        className="rounded-[1.75rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/75 dark:bg-white/5 px-5 py-4"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <div className="text-xs text-slate-500">
+                            <div className="text-xs text-slate-500 dark:text-slate-300">
                               {card.title}
                             </div>
-                            <div className="mt-1 text-sm font-semibold text-slate-900">
+                            <div className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                               {card.value}
                             </div>
                           </div>
@@ -377,16 +377,16 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
           </div>
 
           <section
-            className="mt-10 rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] premium-card"
+            className="mt-10 rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_30px_90px_-50px_rgba(0,0,0,0.55)] premium-card"
             data-animate
           >
-            <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+            <div className="px-8 py-8 border-b border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/8">
               <div className="flex items-start justify-between gap-6">
                 <div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+                  <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                     How credits are earned
                   </h2>
-                  <p className="mt-2 text-slate-600 leading-relaxed">
+                  <p className="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">
                     Credits are internal points (not money). Earn them by
                     keeping your worker online and completing tasks.
                   </p>
@@ -424,7 +424,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                     <div key={card.title} className="group relative">
                       <div
                         className={[
-                          "relative rounded-[2.5rem] border border-white/60 bg-white/70 backdrop-blur-2xl",
+                          "relative rounded-[2.5rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-white/5 backdrop-blur-2xl",
                           "shadow-[0_22px_70px_-55px_rgba(15,23,42,0.45)]",
                           "p-7 transition-all duration-300",
                           "hover:-translate-y-1.5 hover:shadow-[0_28px_90px_-58px_rgba(15,23,42,0.55)]",
@@ -433,13 +433,13 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
-                            <div className="text-xs font-semibold text-slate-500">
+                            <div className="text-xs font-semibold text-slate-500 dark:text-slate-300">
                               {card.title}
                             </div>
-                            <div className="mt-2 text-base font-semibold text-slate-900">
+                            <div className="mt-2 text-base font-semibold text-slate-900 dark:text-slate-100">
                               {card.value}
                             </div>
-                            <div className="mt-2 text-xs text-slate-600 leading-relaxed">
+                            <div className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                               {meta?.helper}
                             </div>
                           </div>
@@ -453,7 +453,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                           </div>
                         </div>
 
-                        <div className="mt-5 flex items-center gap-2 text-xs text-slate-500">
+                        <div className="mt-5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-300">
                           <div
                             className="relative inline-flex"
                             onMouseEnter={() => setOpenEarnTooltip(card.title)}
@@ -476,10 +476,10 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                                   current === card.title ? null : card.title
                                 )
                               }
-                              className="inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
+                              className="inline-flex items-center gap-2 rounded-full px-2 py-1 transition-colors hover:text-slate-700 dark:hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60"
                             >
                               <Info className="size-3.5" />
-                              <span className="underline underline-offset-4 decoration-slate-200">
+                              <span className="underline underline-offset-4 decoration-slate-200 dark:decoration-white/20">
                                 Details
                               </span>
                             </button>
@@ -489,7 +489,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                               role="tooltip"
                               className={[
                                 "absolute left-0 top-full z-20 mt-2 w-[min(320px,calc(100vw-3.5rem))]",
-                                "rounded-2xl border border-white/70 bg-white/90 px-4 py-3 text-xs text-slate-700",
+                                "rounded-2xl border border-white/70 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/90 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] px-4 py-3 text-xs text-slate-700 dark:text-slate-200",
                                 "shadow-[0_25px_70px_-55px_rgba(15,23,42,0.55)] backdrop-blur-2xl",
                                 "transition-[opacity,transform] duration-150 ease-out origin-top-left",
                                 isTooltipOpen
@@ -522,293 +522,175 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                     setExampleSeed((v) => v + 1);
                   }
                 }}
-                className="group mt-6 rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl px-6 py-6 shadow-[0_22px_70px_-55px_rgba(15,23,42,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 md:px-7 md:py-7"
+                className="group mt-6 rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl px-6 py-6 shadow-[0_22px_70px_-55px_rgba(15,23,42,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60 md:px-7 md:py-7 dark:border-white/10 dark:bg-white/5"
                 aria-label="Quick example: click to replay the credit calculator demo"
               >
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-1 text-center">
-                    <div className="text-lg font-semibold tracking-tight text-slate-900">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/65 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
+                      <span className="size-1.5 rounded-full bg-indigo-500" />
                       Quick example
                     </div>
-                    <div className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-600 dark:text-slate-300">
                       See exactly how credits are computed
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 1
-                          ? "border-indigo-500/40 ring-1 ring-indigo-500/25 shadow-[0_18px_70px_-60px_rgba(99,102,241,0.45)]"
-                          : exampleStage > 1
-                          ? "border-indigo-500/25"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
+                  <div className="relative w-full max-w-3xl">
+                    <div className="pointer-events-none absolute inset-0 rounded-[2.25rem] bg-gradient-to-r from-indigo-500/14 via-violet-500/10 to-rose-500/10 blur-[22px] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                    <div className="relative mx-auto flex flex-wrap items-center justify-center gap-2 rounded-[2.25rem] border border-white/60 bg-white/70 px-4 py-3 shadow-sm dark:border-white/10 dark:bg-white/5">
                       <div
                         className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 1 ? "opacity-100" : "opacity-55",
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 1
+                            ? "border-indigo-500/35"
+                            : "border-white/60",
+                          exampleStage >= 1
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
                         ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(99,102,241,0.10)]">
-                            <Clock className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step A
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Uptime
-                              </span>
-                            </div>
-                            <div className="mt-2 text-xs text-slate-600">
-                              3 hours × 10 credits/hour
-                            </div>
-                          </div>
-                        </div>
+                      >
+                        <Clock className="size-4 text-indigo-700" />
+                        <span className="font-semibold">Uptime</span>
+                        <span className="text-slate-500">3h × 10</span>
+                        <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 font-semibold text-indigo-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.uptime}
+                        </span>
+                        <span className="text-slate-500">credits</span>
+                      </div>
 
-                        <span
-                          className={[
-                            "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-indigo-500/10 text-indigo-800 border-indigo-500/20",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 1
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.uptime}
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 2
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        +
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 2
+                            ? "border-violet-500/35"
+                            : "border-white/60",
+                          exampleStage >= 2
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <CheckCircle2 className="size-4 text-violet-700" />
+                        <span className="font-semibold">Tasks completed</span>
+                        <span className="text-slate-500">12 × 5</span>
+                        <span className="rounded-full bg-violet-500/10 px-2 py-0.5 font-semibold text-violet-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.tasks}
+                        </span>
+                        <span className="text-slate-500">credits</span>
+                      </div>
+
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 3
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        =
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 3
+                            ? "border-slate-900/15"
+                            : "border-white/60",
+                          exampleStage >= 3
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <Sigma className="size-4 text-slate-700" />
+                        <span className="font-semibold">Base credits</span>
+                        <span className="text-slate-500">30 + 60</span>
+                        <span className="rounded-full bg-slate-900/5 px-2 py-0.5 font-semibold text-slate-800 tabular-nums min-w-[3ch] text-center">
+                          {exampleValues.base}
+                        </span>
+                        <span className="text-slate-500">Base credits</span>
+                      </div>
+
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        →
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1.5 text-xs text-slate-700 shadow-sm",
+                          "transition-[opacity,transform,border-color] duration-500 ease-out",
+                          exampleStage === 4
+                            ? "border-rose-500/25"
+                            : "border-white/60",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <Sparkles className="size-4 text-rose-700" />
+                        <span className="font-semibold">
+                          Weekly bonus multiplier
+                        </span>
+                        <span className="rounded-full bg-rose-500/10 px-2 py-0.5 font-semibold text-rose-700 tabular-nums">
+                          1.5×
+                        </span>
+                      </div>
+
+                      <span
+                        className={[
+                          "text-slate-400 transition-[opacity,transform] duration-500",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        =
+                      </span>
+
+                      <div
+                        className={[
+                          "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold tabular-nums shadow-sm",
+                          "bg-gradient-to-r from-rose-600/12 via-amber-500/10 to-indigo-600/10 text-slate-900 dark:text-slate-100 border-rose-500/20 dark:border-rose-500/30",
+                          "shadow-[0_16px_60px_-55px_rgba(244,63,94,0.55)]",
+                          "transition-[opacity,transform] duration-500 ease-out",
+                          exampleStage >= 4
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-2",
+                        ].join(" ")}
+                      >
+                        <span className="min-w-[4ch] text-center">
+                          {exampleValues.final}
+                        </span>
+                        <span className="text-slate-700 dark:text-slate-200">
+                          Final credits
                         </span>
                       </div>
                     </div>
 
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 2
-                          ? "border-violet-500/40 ring-1 ring-violet-500/25 shadow-[0_18px_70px_-60px_rgba(139,92,246,0.45)]"
-                          : exampleStage > 2
-                          ? "border-violet-500/25"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
-                      <div
-                        className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-500/10 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 2 ? "opacity-100" : "opacity-55",
-                        ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(139,92,246,0.10)]">
-                            <CheckCircle2 className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step B
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Tasks completed
-                              </span>
-                            </div>
-                            <div className="mt-2 text-xs text-slate-600">
-                              12 tasks × 5 credits/task
-                            </div>
-                          </div>
-                        </div>
-
-                        <span
-                          className={[
-                            "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-violet-500/10 text-violet-800 border-violet-500/20",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 2
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.tasks}
-                        </span>
-                      </div>
+                    <div className="mt-2 text-[11px] font-medium text-slate-500 dark:text-slate-300">
+                      Tap to replay
                     </div>
-
-                    <div
-                      className={[
-                        "group/step relative overflow-hidden rounded-[2.25rem] border bg-white/75 backdrop-blur-2xl p-5 shadow-sm",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_18px_60px_-55px_rgba(15,23,42,0.40)]",
-                        exampleStage === 3
-                          ? "border-slate-400/40 ring-1 ring-slate-900/10 shadow-[0_18px_70px_-60px_rgba(15,23,42,0.25)]"
-                          : exampleStage > 3
-                          ? "border-slate-300/35"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
-                      <div
-                        className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-slate-900/5 via-white/0 to-white/0",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 3 ? "opacity-100" : "opacity-55",
-                        ].join(" ")}
-                      />
-                      <div className="relative flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-3">
-                          <div className="relative flex size-10 items-center justify-center rounded-2xl bg-slate-900/5 text-slate-700 ring-1 ring-slate-900/10 transition-shadow duration-300 group-hover/step:shadow-[0_0_0_6px_rgba(15,23,42,0.06)]">
-                            <Sigma className="size-5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full border border-white/60 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
-                                Step C
-                              </span>
-                              <span className="text-sm font-semibold text-slate-900">
-                                Base credits
-                              </span>
-                            </div>
-                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                              <span className="rounded-full border border-white/70 bg-white/80 px-2 py-0.5 font-semibold text-slate-700 tabular-nums">
-                                30
-                              </span>
-                              <span className="text-slate-400">+</span>
-                              <span className="rounded-full border border-white/70 bg-white/80 px-2 py-0.5 font-semibold text-slate-700 tabular-nums">
-                                60
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <span
-                          className={[
-                            "inline-flex min-w-[9.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-semibold tabular-nums shadow-sm",
-                            "bg-slate-900/5 text-slate-800 border-slate-900/10",
-                            "transition-[opacity,transform] duration-300 ease-out",
-                            exampleStage >= 3
-                              ? "opacity-100 translate-y-0 scale-100 delay-150"
-                              : "opacity-0 translate-y-1 scale-[0.98]",
-                          ].join(" ")}
-                        >
-                          = {exampleValues.base} Base credits
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      className={[
-                        "relative overflow-hidden rounded-[2.5rem] border bg-white/75 backdrop-blur-2xl p-6 shadow-sm md:col-span-3",
-                        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
-                        "hover:-translate-y-0.5 hover:shadow-[0_22px_70px_-60px_rgba(15,23,42,0.42)]",
-                        exampleStage === 4
-                          ? "border-rose-500/30 ring-1 ring-rose-500/15 shadow-[0_26px_90px_-70px_rgba(244,63,94,0.35)]"
-                          : "border-white/60",
-                      ].join(" ")}
-                    >
-                      <div
-                        className={[
-                          "pointer-events-none absolute inset-0 bg-gradient-to-br from-rose-500/10 via-white/0 to-amber-500/8",
-                          "opacity-60 transition-opacity duration-300",
-                          exampleStage >= 4 ? "opacity-100" : "opacity-55",
-                        ].join(" ")}
-                      />
-
-                      <div
-                        className={[
-                          "pointer-events-none absolute -inset-10 rounded-[3rem] bg-rose-500/10 blur-[34px]",
-                          "opacity-0 transition-opacity duration-300",
-                          exampleStage === 4 ? "opacity-100 animate-pulse" : "",
-                        ].join(" ")}
-                      />
-
-                      <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-3">
-                            <div className="relative flex size-11 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/15">
-                              <Sparkles className="size-5" />
-                            </div>
-
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2">
-                                <div className="text-sm font-semibold text-slate-900">
-                                  Weekly bonus multiplier
-                                </div>
-                                <div className="group/tooltip relative">
-                                  <button
-                                    type="button"
-                                    aria-label="Weekly bonus multiplier details"
-                                    onClick={(event) => event.stopPropagation()}
-                                    onKeyDown={(event) => {
-                                      if (
-                                        event.key === "Enter" ||
-                                        event.key === " "
-                                      ) {
-                                        event.stopPropagation();
-                                      }
-                                    }}
-                                    className="inline-flex size-7 items-center justify-center rounded-full border border-white/70 bg-white/70 text-slate-600 shadow-sm transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40"
-                                  >
-                                    <Info className="size-3.5" />
-                                  </button>
-                                  <div
-                                    role="tooltip"
-                                    className={[
-                                      "pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-[min(340px,calc(100vw-3.5rem))] -translate-x-1/2",
-                                      "rounded-2xl border border-white/70 bg-white/90 px-4 py-3 text-xs text-slate-700",
-                                      "shadow-[0_25px_70px_-55px_rgba(15,23,42,0.55)] backdrop-blur-2xl",
-                                      "opacity-0 translate-y-1.5 scale-[0.98] transition-[opacity,transform] duration-150 ease-out",
-                                      "group-hover/tooltip:opacity-100 group-hover/tooltip:translate-y-0 group-hover/tooltip:scale-100",
-                                      "group-focus-within/tooltip:opacity-100 group-focus-within/tooltip:translate-y-0 group-focus-within/tooltip:scale-100",
-                                    ].join(" ")}
-                                  >
-                                    Bonus depends on reliability (uptime +
-                                    completed tasks). Example uses 1.5×.
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                                <span className="font-medium text-slate-700">
-                                  Base credits ×
-                                </span>
-                                <span className="inline-flex items-center rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-[11px] font-semibold text-rose-700 tabular-nums shadow-sm">
-                                  1.5×
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-start md:justify-end">
-                          <span
-                            className={[
-                              "inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold tabular-nums",
-                              "bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-indigo-500/10 text-slate-900 border-rose-500/20",
-                              "shadow-[0_16px_60px_-55px_rgba(244,63,94,0.55)]",
-                              "transition-[opacity,transform] duration-300 ease-out",
-                              exampleStage >= 4
-                                ? "opacity-100 translate-y-0 scale-100"
-                                : "opacity-0 translate-y-1 scale-[0.98]",
-                            ].join(" ")}
-                          >
-                            = {exampleValues.final} Final credits
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center text-[11px] font-medium text-slate-500">
-                    Tap to replay
                   </div>
                 </div>
               </div>
@@ -816,20 +698,20 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
           </section>
 
           <section
-            className="mt-12 rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] overflow-hidden premium-card"
+            className="mt-12 rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_30px_90px_-50px_rgba(0,0,0,0.6)] overflow-hidden premium-card"
             data-animate
           >
-            <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+            <div className="px-8 py-8 border-b border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-violet-500/10">
               <div className="flex items-start justify-between gap-6">
                 <div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+                  <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                     Tiers & unlocks
                   </h2>
-                  <p className="mt-2 text-slate-600 leading-relaxed">
+                  <p className="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">
                     Credits unlock higher throughput and premium tooling.
                   </p>
                 </div>
-                <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-700 ring-1 ring-amber-500/15">
+                <div className="flex size-12 items-center justify-center rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-200 ring-1 ring-amber-500/15 dark:ring-amber-500/25">
                   <Activity className="size-5" />
                 </div>
               </div>
@@ -853,10 +735,10 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
 
                   const surface =
                     tier.name === "Gold"
-                      ? "border-amber-500/20 bg-gradient-to-br from-amber-500/12 via-white/82 to-yellow-500/14 shadow-[0_0_55px_-20px_rgba(245,158,11,0.55)]"
+                      ? "border-amber-500/20 bg-gradient-to-br from-amber-500/12 via-white/82 to-yellow-500/14 dark:from-amber-500/18 dark:via-white/5 dark:to-yellow-500/16 shadow-[0_0_55px_-20px_rgba(245,158,11,0.55)]"
                       : tier.name === "Silver"
-                      ? "border-slate-400/20 bg-gradient-to-br from-slate-900/3 via-white/82 to-zinc-900/5 shadow-[0_0_55px_-25px_rgba(148,163,184,0.60)]"
-                      : "border-orange-700/20 bg-gradient-to-br from-orange-500/12 via-white/82 to-amber-700/14 shadow-[0_0_55px_-25px_rgba(180,83,9,0.55)]";
+                      ? "border-slate-400/20 bg-gradient-to-br from-slate-900/3 via-white/82 to-zinc-900/5 dark:from-white/5 dark:via-white/4 dark:to-white/6 shadow-[0_0_55px_-25px_rgba(148,163,184,0.60)]"
+                      : "border-orange-700/20 bg-gradient-to-br from-orange-500/12 via-white/82 to-amber-700/14 dark:from-orange-500/18 dark:via-white/5 dark:to-amber-500/14 shadow-[0_0_55px_-25px_rgba(180,83,9,0.55)]";
 
                   const swirl =
                     tier.name === "Gold"
@@ -902,7 +784,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                           />
                           <div
                             className={[
-                              "relative rounded-[2.75rem] border backdrop-blur-2xl bg-white/70",
+                              "relative rounded-[2.75rem] border backdrop-blur-2xl bg-white/70 dark:bg-white/10",
                               "shadow-[0_25px_80px_-60px_rgba(15,23,42,0.40)] transition-shadow duration-300",
                               "group-hover:shadow-[0_34px_95px_-70px_rgba(15,23,42,0.45)]",
                               surface,
@@ -932,10 +814,10 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                                       </span>
                                     )}
                                   </div>
-                                  <div className="mt-3 text-sm text-slate-600">
+                                  <div className="mt-3 text-sm text-slate-600 dark:text-slate-300">
                                     Credits range
                                   </div>
-                                  <div className="mt-1 text-lg font-semibold text-slate-900">
+                                  <div className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                                     {tier.range}
                                   </div>
                                 </div>
@@ -954,13 +836,13 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                                 {tier.perks.map((perk) => (
                                   <li
                                     key={perk.label}
-                                    className="flex items-start gap-3 text-sm text-slate-700"
+                                    className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200"
                                   >
                                     <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
                                     <span className="min-w-0">
                                       {perk.label}
                                       {perk.comingSoon && (
-                                        <span className="ml-2 inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                                        <span className="ml-2 inline-flex items-center rounded-full border border-amber-500/20 dark:border-amber-500/25 bg-amber-500/10 dark:bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:text-amber-200">
                                           Coming soon
                                         </span>
                                       )}
@@ -980,18 +862,18 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
           </section>
 
           <section className="mt-12" data-animate>
-            <div className="rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] overflow-hidden">
-              <div className="px-9 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+            <div className="rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_30px_90px_-50px_rgba(0,0,0,0.6)] overflow-hidden">
+              <div className="px-9 py-8 border-b border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-violet-500/10">
                 <div className="flex items-start justify-between gap-6">
                   <div>
-                    <h2 className="text-xl font-semibold tracking-tight text-slate-900">
+                    <h2 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                       Fairness & anti-abuse rules
                     </h2>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                       Official policy tone for predictable rewards.
                     </p>
                   </div>
-                  <div className="flex size-12 items-center justify-center rounded-full bg-slate-900/10 text-slate-700 ring-1 ring-slate-900/10">
+                  <div className="flex size-12 items-center justify-center rounded-full bg-slate-900/10 text-slate-700 ring-1 ring-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10">
                     <Lock className="size-5" />
                   </div>
                 </div>
@@ -1008,9 +890,9 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                   ].map((rule) => (
                     <li
                       key={rule}
-                      className="flex items-start gap-3 text-sm text-slate-700"
+                      className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-200"
                     >
-                      <div className="mt-1 size-2 rounded-full bg-slate-400" />
+                      <div className="mt-1 size-2 rounded-full bg-slate-400 dark:bg-slate-500" />
                       <span>{rule}</span>
                     </li>
                   ))}
@@ -1020,18 +902,18 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
           </section>
 
           <section className="mt-12" data-animate>
-            <div className="rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] overflow-hidden premium-card">
-              <div className="px-9 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+            <div className="rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)] dark:shadow-[0_30px_90px_-50px_rgba(0,0,0,0.6)] overflow-hidden premium-card">
+              <div className="px-9 py-8 border-b border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-violet-500/10">
                 <div className="flex items-start justify-between gap-6">
                   <div>
-                    <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+                    <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                       Privacy & safety
                     </h2>
-                    <p className="mt-2 text-slate-600 leading-relaxed">
+                    <p className="mt-2 text-slate-600 dark:text-slate-300 leading-relaxed">
                       Built to be safe by default — and easy to stop.
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm backdrop-blur-2xl">
+                  <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[11px] font-semibold text-slate-600 shadow-sm backdrop-blur-2xl dark:border-white/10 dark:bg-white/10 dark:text-slate-200">
                     <ShieldCheck className="size-3.5 text-emerald-600" />
                     Safety-first
                   </div>
@@ -1059,18 +941,18 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                   ].map((item) => (
                     <div
                       key={item.title}
-                      className="rounded-[2.5rem] border border-white/60 bg-white/75 backdrop-blur-2xl shadow-[0_22px_70px_-55px_rgba(15,23,42,0.40)] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-slate-300/70"
+                      className="rounded-[2.5rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/75 dark:bg-[rgb(var(--glass)/0.45)] backdrop-blur-2xl shadow-[0_22px_70px_-55px_rgba(15,23,42,0.40)] dark:shadow-[0_22px_70px_-55px_rgba(0,0,0,0.6)] p-7 transition-all duration-300 hover:-translate-y-1 hover:border-slate-300/70 dark:hover:border-white/14"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
-                          <div className="text-sm font-semibold text-slate-900">
+                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                             {item.title}
                           </div>
-                          <div className="mt-2 text-sm text-slate-600">
+                          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                             {item.desc}
                           </div>
                         </div>
-                        <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/15">
+                        <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-200 ring-1 ring-emerald-500/15 dark:ring-emerald-500/25">
                           <item.icon className="size-5" />
                         </div>
                       </div>
@@ -1078,7 +960,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                   ))}
                 </div>
 
-                <div className="mt-5 rounded-[2.25rem] border border-white/60 bg-white/75 backdrop-blur-2xl px-7 py-5 text-sm text-slate-600 shadow-[0_18px_60px_-50px_rgba(15,23,42,0.35)]">
+                <div className="mt-5 rounded-[2.25rem] border border-white/60 bg-white/75 backdrop-blur-2xl px-7 py-5 text-sm text-slate-600 shadow-[0_18px_60px_-50px_rgba(15,23,42,0.35)] dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:shadow-[0_18px_60px_-50px_rgba(0,0,0,0.6)]">
                   We only collect minimal telemetry: uptime, task count,
                   performance.
                 </div>
@@ -1094,7 +976,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
                 type="button"
                 variant="ghost"
                 onClick={handleBack}
-                className="h-11 px-5 rounded-full text-slate-700 hover:bg-white/70 transition-all duration-300 hover:-translate-y-0.5"
+                className="h-11 px-5 rounded-full text-slate-700 hover:bg-white/70 dark:text-slate-200 dark:hover:bg-white/10 transition-all duration-300 hover:-translate-y-0.5"
               >
                 <ArrowLeft className="size-4 mr-2" />
                 Back

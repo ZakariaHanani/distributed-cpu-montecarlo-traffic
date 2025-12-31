@@ -83,32 +83,32 @@ export default function NewSimulationPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
                 {/* Header */}
-                <div className="mb-12">
+                <div className="mb-8 lg:mb-12 text-center lg:text-left">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-8"
+                        className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-6 lg:mb-8"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Back to Home
                     </Link>
-                    <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">Start New Simulation</h1>
-                    <p className="text-slate-500 text-lg">
+                    <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-2">Start New Simulation</h1>
+                    <p className="text-slate-500 dark:text-slate-300 text-base lg:text-lg">
                         Configure your distributed Monte Carlo traffic simulation parameters.
                     </p>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start lg:items-stretch justify-center">
                     {/* Configuration Panel */}
-                    <div className="space-y-8">
+                    <div className="w-full lg:w-1/2 lg:max-w-md space-y-8">
                         {/* Grid Size */}
                         <div className="space-y-3">
-                            <Label htmlFor="gridSize" className="text-slate-900 font-medium">
+                            <Label htmlFor="gridSize" className="text-slate-900 dark:text-slate-100 font-medium">
                                 Grid Size
                             </Label>
-                            <p className="text-sm text-slate-500">Generates a grid of N × N intersections (1-20)</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-300">Generates a grid of N × N intersections (1-20)</p>
                             <Input
                                 id="gridSize"
                                 type="number"
@@ -122,11 +122,11 @@ export default function NewSimulationPage() {
 
                         {/* Number of Cars */}
                         <div className="space-y-3">
-                            <Label htmlFor="numberOfCars" className="text-slate-900 font-medium">
+                            <Label htmlFor="numberOfCars" className="text-slate-900 dark:text-slate-100 font-medium">
                                 Number of Cars
                             </Label>
-                            <p className="text-sm text-slate-500">Total vehicles in the simulation (1-2000)</p>
-                            <div className="flex items-center gap-6">
+                            <p className="text-sm text-slate-500 dark:text-slate-300">Total vehicles in the simulation (1-2000)</p>
+                            <div className="flex items-center gap-4 lg:gap-6">
                                 <Slider
                                     value={[config.numberOfCars]}
                                     onValueChange={handleCarsChange}
@@ -149,10 +149,10 @@ export default function NewSimulationPage() {
 
                         {/* Monte Carlo Iterations */}
                         <div className="space-y-3">
-                            <Label htmlFor="iterations" className="text-slate-900 font-medium">
+                            <Label htmlFor="iterations" className="text-slate-900 dark:text-slate-100 font-medium">
                                 Monte Carlo Iterations
                             </Label>
-                            <p className="text-sm text-slate-500">Number of simulation iterations to run</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-300">Number of simulation iterations to run</p>
                             <Input
                                 id="iterations"
                                 type="number"
@@ -165,8 +165,8 @@ export default function NewSimulationPage() {
 
                         {/* Weather */}
                         <div className="space-y-3">
-                            <Label className="text-slate-900 font-medium">Weather</Label>
-                            <p className="text-sm text-slate-500">Environmental conditions for the simulation</p>
+                            <Label className="text-slate-900 dark:text-slate-100 font-medium">Weather</Label>
+                            <p className="text-sm text-slate-500 dark:text-slate-300">Environmental conditions for the simulation</p>
                             <Select value={config.weather} onValueChange={(value: Weather) => updateConfig("weather", value)}>
                                 <SelectTrigger className="h-12 rounded-xl w-[180px]">
                                     <SelectValue />
@@ -198,10 +198,10 @@ export default function NewSimulationPage() {
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <Label htmlFor="trafficLights" className="text-slate-900 font-medium">
+                                    <Label htmlFor="trafficLights" className="text-slate-900 dark:text-slate-100 font-medium">
                                         Enable Traffic Lights
                                     </Label>
-                                    <p className="text-sm text-slate-500">Include traffic light signals at intersections</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-300">Include traffic light signals at intersections</p>
                                 </div>
                                 <Switch
                                     id="trafficLights"
@@ -212,11 +212,11 @@ export default function NewSimulationPage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-4 pt-6 border-t border-slate-200">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-6 border-t border-slate-200 dark:border-white/10">
                             <Button
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className="h-12 px-8 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                                className="h-12 px-8 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                             >
                                 {isSubmitting ? (
                                     <span className="flex items-center gap-2">
@@ -237,22 +237,30 @@ export default function NewSimulationPage() {
                         </div>
                     </div>
 
-                    {/* Grid Preview Panel */}
-                    <div className="lg:sticky lg:top-12 h-fit">
-                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                    <div className="w-full lg:w-1/2 lg:max-w-lg">
+                        {/* Simulation Grid Preview */}
+                        <div className="bg-slate-50 dark:bg-[rgb(var(--glass)/0.35)] rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/10 lg:sticky lg:top-8">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="bg-slate-900 p-2 rounded-xl">
                                     <TrafficCone className="w-5 h-5 text-indigo-400" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-semibold text-slate-900">Simulation Grid Preview</h2>
-                                    <p className="text-sm text-slate-500">
+                                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Simulation Grid Preview</h2>
+                                    <p className="text-sm text-slate-500 dark:text-slate-300">
                                         {config.gridSize} × {config.gridSize} intersections
                                     </p>
                                 </div>
                             </div>
-                            <SimulationGridPreview gridSize={config.gridSize} trafficLightsEnabled={config.trafficLightsEnabled} />
-                            <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
+                            <div className="flex justify-center">
+                                <div className="w-full max-w-[400px]">
+                                    <SimulationGridPreview
+                                        gridSize={config.gridSize}
+                                        numberOfCars={config.numberOfCars}
+                                        trafficLightsEnabled={config.trafficLightsEnabled}
+                                    />
+                                </div>
+                            </div>
+                            <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-300">
                                 <span>{config.gridSize * config.gridSize} total intersections</span>
                                 <span className="flex items-center gap-1">
                   {weatherIcons[config.weather]}

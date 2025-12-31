@@ -29,9 +29,14 @@ public class CustomUserDetailsService implements UserDetailsService {
                 ? userRepository.findByEmail(usernameOrEmail)
                 : userRepository.findByUsername(usernameOrEmail);
         User user = userOpt.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        boolean enabled = user.isActive();
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
+                enabled,
+                true,
+                true,
+                true,
                 getAuthorities(user)
         );
     }
@@ -46,4 +51,3 @@ public class CustomUserDetailsService implements UserDetailsService {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 }
-

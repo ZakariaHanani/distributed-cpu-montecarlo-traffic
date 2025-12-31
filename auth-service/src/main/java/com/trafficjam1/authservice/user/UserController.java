@@ -65,11 +65,12 @@ public class UserController {
             return ResponseEntity.badRequest().body(error("Password must be at least 8 characters, contain one lowercase letter and one digit"));
         }
 
-        if (!newPassword.equals(request.getConfirmPassword())) {
+        if (!newPassword.equals(request.getConfirmNewPassword())) {
             return ResponseEntity.badRequest().body(error("Passwords do not match"));
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setMustChangePassword(false);
         userRepository.save(user);
         return ResponseEntity.ok(Map.of("message", "Password updated"));
     }
@@ -100,16 +101,7 @@ public class UserController {
     }
 
     private UserMeResponse toMeResponse(User user) {
-        String city = user.getCity();
-        String cityOrNull = "UNKNOWN".equalsIgnoreCase(city) ? null : city;
-        return new UserMeResponse(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getUsername(),
-                user.getEmail(),
-                cityOrNull
-        );
+        return UserMeResponse.from(user);
     }
 
     private boolean isBlank(String s) {

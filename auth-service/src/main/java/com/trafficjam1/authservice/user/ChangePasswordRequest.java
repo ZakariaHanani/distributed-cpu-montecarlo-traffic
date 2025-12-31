@@ -10,7 +10,7 @@ public class ChangePasswordRequest {
     private String newPassword;
 
     @NotBlank
-    private String confirmPassword;
+    private String confirmNewPassword;
 
     public ChangePasswordRequest() {
     }
@@ -31,12 +31,11 @@ public class ChangePasswordRequest {
         this.newPassword = newPassword;
     }
 
-    public String getConfirmPassword() {
-        return confirmPassword;
+    public String getConfirmNewPassword() {
+        return confirmNewPassword;
     }
 
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
+    public void setConfirmNewPassword(String confirmNewPassword) {
+        this.confirmNewPassword = confirmNewPassword;
     }
 }
-

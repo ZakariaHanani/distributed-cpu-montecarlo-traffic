@@ -41,10 +41,10 @@ export function CoreCapabilities() {
       <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 mb-6">
+          <h2 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-[0.9] text-slate-900 dark:text-slate-100 mb-6">
             Core Capabilities
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-500 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
             Everything you need to run complex traffic simulations at scale
           </p>
         </div>
@@ -58,12 +58,12 @@ export function CoreCapabilities() {
             >
               <div className="relative mb-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-violet-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative bg-slate-100 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-violet-500 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300">
-                  <cap.icon className="w-8 h-8 text-slate-600 group-hover:text-white transition-colors" />
+                <div className="relative bg-slate-100 dark:bg-white/10 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-violet-500 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300">
+                  <cap.icon className="w-8 h-8 text-slate-600 dark:text-slate-200 group-hover:text-white transition-colors" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">{cap.title}</h3>
-              <p className="text-slate-500 leading-relaxed">{cap.description}</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-3">{cap.title}</h3>
+              <p className="text-slate-500 dark:text-slate-300 leading-relaxed">{cap.description}</p>
             </div>
           ))}
         </div>

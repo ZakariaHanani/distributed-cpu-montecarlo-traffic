@@ -223,12 +223,15 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
   if (!isAllowed) return null;
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-white pt-24">
+    <div
+      ref={rootRef}
+      className="min-h-screen bg-white dark:bg-[rgb(var(--bg))] pt-24"
+    >
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
           type="button"
           onClick={() => setCurrentView("home")}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
           data-audit-animate
         >
           <ArrowLeft className="w-4 h-4" />
@@ -236,17 +239,17 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
         </button>
 
         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.42)] overflow-hidden">
-            <div className="px-8 py-8 border-b border-white/60 bg-gradient-to-br from-white/90 via-white/65 to-white/80">
+          <div className="rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl shadow-[0_30px_90px_-50px_rgba(15,23,42,0.42)] dark:shadow-[0_30px_90px_-50px_rgba(0,0,0,0.62)] overflow-hidden">
+            <div className="px-8 py-8 border-b border-white/60 dark:border-white/10 bg-gradient-to-br from-white/90 via-white/65 to-white/80 dark:from-white/10 dark:via-white/5 dark:to-white/10">
               <div
                 className="flex items-start justify-between gap-6"
                 data-audit-animate
               >
                 <div>
-                  <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+                  <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                     System Logs
                   </h1>
-                  <p className="text-slate-500 mt-2">
+                  <p className="text-slate-500 dark:text-slate-300 mt-2">
                     Recent security events, sign-ins, and worker registrations.
                   </p>
                 </div>
@@ -256,7 +259,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
               </div>
 
               <div
-                className="mt-7 rounded-[2.25rem] border border-white/60 bg-white/70 backdrop-blur-2xl p-4 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.22)]"
+                className="mt-7 rounded-[2.25rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 backdrop-blur-2xl p-4 shadow-[0_18px_55px_-42px_rgba(15,23,42,0.22)] dark:shadow-[0_18px_55px_-42px_rgba(0,0,0,0.55)]"
                 data-audit-animate
               >
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -272,7 +275,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                             "h-9 px-4 rounded-full text-sm font-semibold transition-all duration-200 ease-out",
                             active
                               ? "bg-slate-900 text-white shadow-[0_18px_55px_-42px_rgba(15,23,42,0.30)]"
-                              : "bg-white/75 text-slate-800 ring-1 ring-slate-900/10 hover:bg-white",
+                              : "bg-white/75 dark:bg-white/5 text-slate-800 dark:text-slate-100 ring-1 ring-slate-900/10 dark:ring-white/10 hover:bg-white dark:hover:bg-white/10",
                           ].join(" ")}
                         >
                           {pill.label}
@@ -288,7 +291,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search events…"
-                        className="h-11 rounded-full bg-white/80 border-white/60 pl-11 text-slate-800 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.25)]"
+                        className="h-11 rounded-full bg-white/80 dark:bg-white/5 border-white/60 dark:border-white/10 pl-11 text-slate-800 dark:text-slate-100 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.25)]"
                       />
                     </div>
 
@@ -296,7 +299,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                       value={range}
                       onValueChange={(v) => setRange(v as "24H" | "7D" | "30D")}
                     >
-                      <SelectTrigger className="h-11 w-full sm:w-[160px] rounded-full bg-white/80 border-white/60 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.25)]">
+                      <SelectTrigger className="h-11 w-full sm:w-[160px] rounded-full bg-white/80 dark:bg-white/5 border-white/60 dark:border-white/10 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.25)]">
                         <SelectValue placeholder="Range" />
                       </SelectTrigger>
                       <SelectContent>
@@ -310,14 +313,14 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
               </div>
             </div>
 
-            <div className="p-8">
-              <div className="rounded-[2.5rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)] overflow-hidden">
-                <div className="px-7 py-5 border-b border-white/60">
+          <div className="p-8">
+              <div className="rounded-[2.5rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)] dark:shadow-[0_22px_60px_-44px_rgba(0,0,0,0.55)] overflow-hidden">
+                <div className="px-7 py-5 border-b border-white/60 dark:border-white/10">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                       Audit stream
                     </span>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-slate-500 dark:text-slate-300">
                       UI placeholder — backend wiring later
                     </span>
                   </div>
@@ -353,7 +356,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                       {visibleEvents.map((evt) => (
                         <div
                           key={evt.id}
-                          className="rounded-[1.6rem] border border-white/60 bg-white/70 px-5 py-4 transition-colors hover:bg-white/80"
+                          className="rounded-[1.6rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 px-5 py-4 transition-colors hover:bg-white/80 dark:hover:bg-white/10"
                           data-audit-row
                         >
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -368,10 +371,10 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                               </div>
 
                               <div className="min-w-0">
-                                <div className="text-sm font-semibold text-slate-900 truncate">
+                                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                                   {evt.message}
                                 </div>
-                                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-300">
                                   <span>{evt.timestamp}</span>
                                   <span className="text-slate-300">•</span>
                                   <span className="truncate max-w-[280px] sm:max-w-[340px]">
@@ -396,7 +399,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
                       ))}
 
                       {!visibleEvents.length && (
-                        <div className="rounded-[1.6rem] border border-white/60 bg-white/70 px-6 py-8 text-center text-sm text-slate-600">
+                        <div className="rounded-[1.6rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5 px-6 py-8 text-center text-sm text-slate-600 dark:text-slate-300">
                           No events match your filters yet.
                         </div>
                       )}
@@ -408,17 +411,17 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[2.5rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_26px_80px_-55px_rgba(15,23,42,0.40)] overflow-hidden">
-              <div className="px-7 py-6 border-b border-white/60 bg-gradient-to-br from-white/85 via-white/60 to-white/75">
+            <div className="rounded-[2.5rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl shadow-[0_26px_80px_-55px_rgba(15,23,42,0.40)] dark:shadow-[0_26px_80px_-55px_rgba(0,0,0,0.62)] overflow-hidden">
+              <div className="px-7 py-6 border-b border-white/60 dark:border-white/10 bg-gradient-to-br from-white/85 via-white/60 to-white/75 dark:from-white/10 dark:via-white/5 dark:to-white/10">
                 <div
                   className="flex items-start justify-between gap-4"
                   data-audit-animate
                 >
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                       Admin audit
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">
                       Control Center placeholders
                     </p>
                   </div>
@@ -429,32 +432,32 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
               </div>
 
               <div className="p-7 space-y-5" data-audit-animate>
-                <div className="rounded-[1.75rem] border border-white/60 bg-white/75 px-6 py-5">
-                  <div className="text-xs text-slate-500">Last login</div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                <div className="rounded-[1.75rem] border border-white/60 dark:border-white/10 bg-white/75 dark:bg-white/5 px-6 py-5">
+                  <div className="text-xs text-slate-500 dark:text-slate-300">Last login</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     —
                   </div>
                 </div>
 
-                <div className="rounded-[1.75rem] border border-white/60 bg-white/75 px-6 py-5">
-                  <div className="text-xs text-slate-500">Last seen</div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                <div className="rounded-[1.75rem] border border-white/60 dark:border-white/10 bg-white/75 dark:bg-white/5 px-6 py-5">
+                  <div className="text-xs text-slate-500 dark:text-slate-300">Last seen</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     —
                   </div>
                 </div>
 
-                <div className="rounded-[1.75rem] border border-white/60 bg-white/75 px-6 py-5">
-                  <div className="text-xs text-slate-500">Active sessions</div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                <div className="rounded-[1.75rem] border border-white/60 dark:border-white/10 bg-white/75 dark:bg-white/5 px-6 py-5">
+                  <div className="text-xs text-slate-500 dark:text-slate-300">Active sessions</div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                     —
                   </div>
                 </div>
 
-                <div className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-rose-500/10 px-6 py-6">
-                  <div className="text-sm font-semibold text-slate-900">
+                <div className="rounded-[2rem] border border-white/60 dark:border-white/10 bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-rose-500/10 px-6 py-6">
+                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                     Pro controls
                   </div>
-                  <div className="mt-1 text-xs text-slate-600">
+                  <div className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                     Correlation IDs, export pipelines, and retention rules land
                     here later.
                   </div>

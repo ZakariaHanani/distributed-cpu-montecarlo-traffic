@@ -7,24 +7,25 @@ import {
   useState,
   type FormEvent,
 } from "react";
-import Image from "next/image";
 import { gsap } from "gsap";
 import {
   AlertTriangle,
   ArrowLeft,
-  CheckCircle,
-  Cpu,
+  CheckCircle2,
   Eye,
   EyeOff,
   Github,
   Mail,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { ViewType } from "@/app/page";
+import { AuthHeroPanel } from "@/components/cpu-grid/AuthHeroPanel";
 import {
   decodeJwtPayload,
   getDisplayNameFromToken,
+  getMustChangePasswordFromToken,
   login,
   reset,
   setAuthMeta,
@@ -39,11 +40,25 @@ interface AuthPageProps {
   setCurrentView: (view: ViewType) => void;
 }
 
+type ToastType = "error" | "success";
+
+type ToastPayload = {
+  type: ToastType;
+  title: string;
+  message?: string;
+};
+
+type ToastState = ToastPayload & {
+  id: number;
+  isOpen: boolean;
+};
+
 export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const contentRef = useRef<HTMLDivElement>(null);
-  const successBannerRef = useRef<HTMLDivElement>(null);
-  const errorBannerRef = useRef<HTMLDivElement>(null);
   const redirectTimeoutRef = useRef<number | null>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
+  const toastClearTimeoutRef = useRef<number | null>(null);
+  const toastIdRef = useRef(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showRepeatPassword, setShowRepeatPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -52,8 +67,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [flow, setFlow] = useState<"auth" | "forgot" | "reset">("auth");
   const [forgotEmail, setForgotEmail] = useState("");
@@ -67,6 +81,12 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
     return () => {
       if (redirectTimeoutRef.current !== null) {
         window.clearTimeout(redirectTimeoutRef.current);
+      }
+      if (toastTimeoutRef.current !== null) {
+        window.clearTimeout(toastTimeoutRef.current);
+      }
+      if (toastClearTimeoutRef.current !== null) {
+        window.clearTimeout(toastClearTimeoutRef.current);
       }
     };
   }, []);
@@ -94,62 +114,66 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
     return () => ctx.revert();
   }, [mode, flow]);
 
-  useLayoutEffect(() => {
-    if (!successMessage || !successBannerRef.current) return;
-    const ctx = gsap.context(() => {
-      gsap.killTweensOf(successBannerRef.current);
-      gsap.fromTo(
-        successBannerRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
-      );
-      gsap.fromTo(
-        successBannerRef.current,
-        { boxShadow: "0 0 0 rgba(99, 102, 241, 0)" },
-        {
-          boxShadow: "0 0 34px rgba(99, 102, 241, 0.22)",
-          duration: 0.7,
-          ease: "sine.inOut",
-          repeat: 1,
-          yoyo: true,
-        }
-      );
-    }, successBannerRef);
-    return () => ctx.revert();
-  }, [successMessage]);
+  const hideToast = () => {
+    if (toastTimeoutRef.current !== null) {
+      window.clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
+    setToast((current) => {
+      if (!current) return null;
+      return { ...current, isOpen: false };
+    });
+  };
 
-  useLayoutEffect(() => {
-    if (!apiError || !errorBannerRef.current) return;
-    const ctx = gsap.context(() => {
-      gsap.killTweensOf(errorBannerRef.current);
-      gsap.fromTo(
-        errorBannerRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.32, ease: "power2.out" }
-      );
-      gsap.fromTo(
-        errorBannerRef.current,
-        { boxShadow: "0 0 0 rgba(244, 63, 94, 0)" },
-        {
-          boxShadow: "0 0 28px rgba(244, 63, 94, 0.18)",
-          duration: 0.65,
-          ease: "sine.inOut",
-          repeat: 1,
-          yoyo: true,
-        }
-      );
-    }, errorBannerRef);
-    return () => ctx.revert();
-  }, [apiError]);
+  const showToast = ({ type, title, message }: ToastPayload) => {
+    if (toastTimeoutRef.current !== null) {
+      window.clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
+    if (toastClearTimeoutRef.current !== null) {
+      window.clearTimeout(toastClearTimeoutRef.current);
+      toastClearTimeoutRef.current = null;
+    }
+
+    toastIdRef.current += 1;
+    const next: ToastState = {
+      id: toastIdRef.current,
+      type,
+      title,
+      message,
+      isOpen: true,
+    };
+    setToast(next);
+
+    toastTimeoutRef.current = window.setTimeout(() => {
+      hideToast();
+    }, 6000);
+  };
+
+  useEffect(() => {
+    if (!toast || toast.isOpen) return;
+    toastClearTimeoutRef.current = window.setTimeout(() => {
+      setToast(null);
+    }, 220);
+    return () => {
+      if (toastClearTimeoutRef.current !== null) {
+        window.clearTimeout(toastClearTimeoutRef.current);
+        toastClearTimeoutRef.current = null;
+      }
+    };
+  }, [toast]);
 
   const handleAuthSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setApiError(null);
-    setSuccessMessage(null);
+    hideToast();
 
     if (!isLogin) {
       if (password !== confirmPassword) {
-        setApiError("Passwords do not match");
+        showToast({
+          type: "error",
+          title: "Password mismatch",
+          message: "Passwords do not match.",
+        });
         return;
       }
       if (
@@ -159,12 +183,20 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         !email.trim() ||
         !password
       ) {
-        setApiError("All fields are required");
+        showToast({
+          type: "error",
+          title: "Missing details",
+          message: "All fields are required.",
+        });
         return;
       }
     } else {
       if (!username.trim() || !password) {
-        setApiError("Username and password are required");
+        showToast({
+          type: "error",
+          title: "Missing details",
+          message: "Username and password are required.",
+        });
         return;
       }
     }
@@ -192,8 +224,19 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         const displayName = getDisplayNameFromToken(token);
         if (displayName) setDisplayName(displayName);
         window.dispatchEvent(new Event("auth:changed"));
-        setSuccessMessage("Success. Redirecting…");
+        const mustChange = getMustChangePasswordFromToken(token);
+        showToast({
+          type: "success",
+          title: "Signed in",
+          message: mustChange
+            ? "Password update required. Redirecting…"
+            : "Success. Redirecting…",
+        });
         redirectTimeoutRef.current = window.setTimeout(() => {
+          if (mustChange) {
+            setCurrentView(role === "ADMIN" ? "admin_profile" : "profile");
+            return;
+          }
           setCurrentView("home");
         }, 380);
       } else {
@@ -209,12 +252,20 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         setConfirmPassword("");
         setFirstName("");
         setLastName("");
-        setSuccessMessage("Account created. Please sign in.");
+        showToast({
+          type: "success",
+          title: "Account created",
+          message: "Please sign in.",
+        });
         setFlow("auth");
         setCurrentView("login");
       }
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Request failed");
+      showToast({
+        type: "error",
+        title: "Request failed",
+        message: err instanceof Error ? err.message : "Request failed",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -222,22 +273,29 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
   const handleForgotSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setApiError(null);
-    setSuccessMessage(null);
+    hideToast();
 
     if (!forgotEmail.trim()) {
-      setApiError("Email is required");
+      showToast({
+        type: "error",
+        title: "Missing details",
+        message: "Email is required.",
+      });
       return;
     }
 
     setIsSubmitting(true);
     try {
       const message = await forgot(forgotEmail);
-      setSuccessMessage(message);
+      showToast({ type: "success", title: "Email sent", message });
       setResetEmail(forgotEmail);
       setFlow("reset");
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Request failed");
+      showToast({
+        type: "error",
+        title: "Request failed",
+        message: err instanceof Error ? err.message : "Request failed",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -245,8 +303,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
   const handleResetSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setApiError(null);
-    setSuccessMessage(null);
+    hideToast();
 
     if (
       !resetEmail.trim() ||
@@ -254,11 +311,19 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
       !newPassword ||
       !resetConfirmPassword
     ) {
-      setApiError("All fields are required");
+      showToast({
+        type: "error",
+        title: "Missing details",
+        message: "All fields are required.",
+      });
       return;
     }
     if (newPassword !== resetConfirmPassword) {
-      setApiError("Passwords do not match");
+      showToast({
+        type: "error",
+        title: "Password mismatch",
+        message: "Passwords do not match.",
+      });
       return;
     }
 
@@ -270,11 +335,15 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         newPassword,
         confirmPassword: resetConfirmPassword,
       });
-      setSuccessMessage(message);
+      showToast({ type: "success", title: "Password reset", message });
       setFlow("auth");
       setPassword("");
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Request failed");
+      showToast({
+        type: "error",
+        title: "Request failed",
+        message: err instanceof Error ? err.message : "Request failed",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -286,25 +355,16 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         <div className="max-w-md mx-auto w-full">
           <button
             onClick={() => setCurrentView("home")}
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-12"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </button>
 
-          <div className="flex items-center gap-3 mb-8">
-            <div className="bg-slate-900 p-2 rounded-xl">
-              <Cpu className="w-6 h-6 text-indigo-400" />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 tracking-tight">
-              CPU Grid
-            </span>
-          </div>
-
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 tracking-tight mb-2">
             {isLogin ? "Welcome back" : "Create an account"}
           </h1>
-          <p className="text-slate-500 mb-8">
+          <p className="text-slate-500 dark:text-slate-300 mb-8">
             {isLogin
               ? "Sign in to access your simulations and results."
               : "Get started with CPU Grid for free."}
@@ -327,47 +387,73 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             </Button>
           </div>
 
-          <div className="flex items-center gap-4 mb-8">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-slate-400 text-sm">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+            <span className="text-slate-400 dark:text-slate-400 text-sm">
               or continue with email
             </span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
           </div>
 
           <div className="relative">
-            <div className="h-[76px] relative mb-4">
-              {successMessage && (
+            {toast && (
+              <div className="pointer-events-none absolute left-3 right-3 -top-3 z-20 flex justify-center">
                 <div
-                  ref={successBannerRef}
-                  className="absolute inset-0 flex items-center gap-3 rounded-[2.5rem] bg-white/80 backdrop-blur-2xl border border-white/50 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.35)] px-5"
-                >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/15 to-violet-500/15 ring-1 ring-indigo-500/25">
-                    <CheckCircle className="size-5 text-indigo-600" />
-                  </div>
-                  <div className="text-sm font-medium text-slate-800">
-                    {successMessage}
-                  </div>
-                </div>
-              )}
-
-              {apiError && (
-                <div
-                  ref={errorBannerRef}
                   role="alert"
-                  className="absolute inset-0 flex items-center gap-3 rounded-[2.5rem] bg-rose-50/80 backdrop-blur-2xl border border-rose-200/60 shadow-[0_20px_60px_-35px_rgba(244,63,94,0.15)] px-5"
+                  aria-live="polite"
+                  className={[
+                    "pointer-events-auto w-full max-w-[520px]",
+                    "rounded-2xl border bg-white/80 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-xl",
+                    "shadow-[0_30px_80px_-30px_rgba(0,0,0,0.18)]",
+                    "px-4 py-3",
+                    "transition-[opacity,transform] duration-200 ease-out",
+                    toast.isOpen
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 -translate-y-[6px]",
+                    toast.type === "error"
+                      ? "border-rose-200/70 shadow-[0_30px_80px_-30px_rgba(244,63,94,0.18)]"
+                      : "border-emerald-200/70 shadow-[0_30px_80px_-30px_rgba(16,185,129,0.14)]",
+                  ].join(" ")}
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-rose-500/15 to-rose-600/15 ring-1 ring-rose-500/25">
-                    <AlertTriangle className="size-5 text-rose-600" />
-                  </div>
-                  <div className="text-sm font-medium text-rose-700">
-                    {apiError}
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={[
+                        "mt-0.5 flex size-10 items-center justify-center rounded-full ring-1",
+                        toast.type === "error"
+                          ? "bg-gradient-to-br from-rose-500/12 to-rose-600/12 ring-rose-500/20"
+                          : "bg-gradient-to-br from-emerald-500/12 to-emerald-600/12 ring-emerald-500/20",
+                      ].join(" ")}
+                    >
+                      {toast.type === "error" ? (
+                        <AlertTriangle className="size-5 text-rose-600" />
+                      ) : (
+                        <CheckCircle2 className="size-5 text-emerald-600" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                        {toast.title}
+                      </div>
+                      {toast.message ? (
+                        <div className="mt-0.5 text-sm text-slate-600 dark:text-slate-300">
+                          {toast.message}
+                        </div>
+                      ) : null}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={hideToast}
+                      aria-label="Close alert"
+                      className="mt-0.5 inline-flex size-9 items-center justify-center rounded-full text-slate-500 dark:text-slate-300 transition-colors hover:bg-slate-900/5 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
+                    >
+                      <X className="size-4" />
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            <div ref={contentRef} className="min-h-[440px]">
+            <div ref={contentRef}>
               {flow === "auth" && (
                 <form className="space-y-4" onSubmit={handleAuthSubmit}>
                   {!isLogin && (
@@ -418,7 +504,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
                     >
                       {showPassword ? (
                         <EyeOff className="w-5 h-5" />
@@ -443,7 +529,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                         onClick={() =>
                           setShowRepeatPassword(!showRepeatPassword)
                         }
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-300 dark:hover:text-slate-100"
                       >
                         {showRepeatPassword ? (
                           <EyeOff className="w-5 h-5" />
@@ -458,12 +544,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        setApiError(null);
-                        setSuccessMessage(null);
+                        hideToast();
                         setForgotEmail("");
                         setFlow("forgot");
                       }}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
                     >
                       Forgot password?
                     </button>
@@ -471,7 +556,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting
                       ? "Please wait..."
@@ -497,23 +582,21 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                     <button
                       type="button"
                       onClick={() => {
-                        setApiError(null);
-                        setSuccessMessage(null);
+                        hideToast();
                         setFlow("auth");
                       }}
-                      className="text-sm text-slate-600 hover:text-slate-900"
+                      className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
                     >
                       Back to sign in
                     </button>
                     <button
                       type="button"
                       onClick={() => {
-                        setApiError(null);
-                        setSuccessMessage(null);
+                        hideToast();
                         setResetEmail(forgotEmail);
                         setFlow("reset");
                       }}
-                      className="text-sm text-indigo-600 hover:text-indigo-700"
+                      className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
                     >
                       I have a code
                     </button>
@@ -521,7 +604,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting ? "Sending..." : "Send reset code"}
                   </Button>
@@ -565,18 +648,17 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                   <button
                     type="button"
                     onClick={() => {
-                      setApiError(null);
-                      setSuccessMessage(null);
+                      hideToast();
                       setFlow("auth");
                     }}
-                    className="text-sm text-slate-600 hover:text-slate-900"
+                    className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
                   >
                     Back to sign in
                   </button>
 
                   <Button
                     disabled={isSubmitting}
-                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl"
+                    className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 rounded-xl"
                   >
                     {isSubmitting ? "Resetting..." : "Reset password"}
                   </Button>
@@ -585,18 +667,17 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             </div>
           </div>
 
-          <p className="text-center text-slate-500 mt-8">
+          <p className="text-center text-slate-500 dark:text-slate-300 mt-6">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={() => {
-                setApiError(null);
-                setSuccessMessage(null);
+                hideToast();
                 setFlow("auth");
                 setPassword("");
                 setConfirmPassword("");
                 setCurrentView(isLogin ? "signup" : "login");
               }}
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200 font-medium"
             >
               {isLogin ? "Sign up" : "Sign in"}
             </button>
@@ -604,45 +685,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         </div>
       </div>
 
-      <div className="relative hidden md:flex md:w-1/2 min-h-screen bg-[url('/images/hero-bg-light.png')] bg-cover bg-center">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-[520px] h-[520px] rounded-full bg-indigo-500/25 blur-3xl opacity-80" />
-        </div>
-
-        <div className="relative z-10 flex w-full items-center justify-center px-8">
-          <div className="flex flex-col items-center text-center gap-8 max-w-md">
-            <div className="group">
-              <div
-                className="
-                  flex items-center justify-center
-                  rounded-2xl bg-white/10 backdrop-blur-md border border-white/10
-                  shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]
-                  p-5 transition-transform duration-300 ease-out
-                  group-hover:scale-105
-                "
-              >
-                <Image
-                  src="/images/logo-auth.png"
-                  alt="CPU Grid logo"
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 object-contain"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-                Accelerate Your Research
-              </h2>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-md mx-auto">
-                Join thousands of researchers using CPU Grid to power their
-                traffic simulations and Monte Carlo analysis.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AuthHeroPanel />
     </div>
   );
 }

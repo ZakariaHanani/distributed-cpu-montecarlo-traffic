@@ -321,25 +321,25 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
   if (!isAllowed) return null;
 
   return (
-    <div className="min-h-screen bg-white pt-24">
+    <div className="min-h-screen bg-white dark:bg-[rgb(var(--bg))] pt-24">
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
           onClick={() => setCurrentView("home")}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Home
         </button>
 
-        <div className="relative overflow-hidden rounded-[3rem] border border-white/60 bg-white/70 backdrop-blur-2xl shadow-[0_24px_70px_-40px_rgba(15,23,42,0.35)]">
-          <div className="absolute inset-0 opacity-50 bg-[linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.06)_1px,transparent_1px)] bg-[size:44px_44px]" />
+        <div className="relative overflow-hidden rounded-[3rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/0.55)] backdrop-blur-2xl shadow-[0_24px_70px_-40px_rgba(15,23,42,0.35)] dark:shadow-[0_24px_70px_-40px_rgba(0,0,0,0.55)]">
+          <div className="absolute inset-0 opacity-50 bg-[linear-gradient(to_right,rgba(15,23,42,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px]" />
           <div className="relative p-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+                <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
                   Workers Monitoring
                 </h1>
-                <p className="text-slate-500 mt-2">
+                <p className="text-slate-500 dark:text-slate-300 mt-2">
                   Observe worker health, load, and throughput across the
                   cluster.
                 </p>
@@ -350,7 +350,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                   type="button"
                   variant="outline"
                   onClick={addWorker}
-                  className="h-11 rounded-full bg-white/70"
+                  className="h-11 rounded-full bg-white/70 dark:bg-white/5 dark:border-white/10 text-slate-900 dark:text-slate-100"
                 >
                   <Wrench className="size-4 mr-2" />
                   Register worker
@@ -359,7 +359,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                   type="button"
                   variant="outline"
                   onClick={refresh}
-                  className="h-11 rounded-full bg-white/70"
+                  className="h-11 rounded-full bg-white/70 dark:bg-white/5 dark:border-white/10 text-slate-900 dark:text-slate-100"
                 >
                   <RefreshCcw className="size-4 mr-2" />
                   Refresh
@@ -370,7 +370,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                     setStatusFilter(v as "ALL" | WorkerStatus)
                   }
                 >
-                  <SelectTrigger className="h-11 rounded-full bg-white/70 w-[220px]">
+                  <SelectTrigger className="h-11 rounded-full bg-white/70 dark:bg-white/5 dark:border-white/10 w-[220px]">
                     <SelectValue placeholder="Filter status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -410,7 +410,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                         <Gauge className="size-4" />
                       </span>
                     </div>
-                    <div className="mt-3 text-3xl font-semibold text-slate-900">
+                    <div className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">
                       {kpis.active}
                     </div>
                   </div>
@@ -424,7 +424,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                         <Gauge className="size-4" />
                       </span>
                     </div>
-                    <div className="mt-3 text-3xl font-semibold text-slate-900">
+                    <div className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">
                       {kpis.busy}
                     </div>
                   </div>
@@ -438,7 +438,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                         <Gauge className="size-4" />
                       </span>
                     </div>
-                    <div className="mt-3 text-3xl font-semibold text-slate-900">
+                    <div className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">
                       {kpis.totalTasks}
                     </div>
                   </div>
@@ -452,7 +452,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                         <Gauge className="size-4" />
                       </span>
                     </div>
-                    <div className="mt-3 text-3xl font-semibold text-slate-900">
+                    <div className="mt-3 text-3xl font-semibold text-slate-900 dark:text-slate-100">
                       {kpis.avgLatency}ms
                     </div>
                   </div>
@@ -467,7 +467,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search by worker ID"
-                  className="h-12 pl-11 rounded-full bg-white/80 border-white/60"
+                  className="h-12 pl-11 rounded-full bg-white/80 dark:bg-white/5 border-white/60 dark:border-white/10 text-slate-900 dark:text-slate-100"
                 />
               </div>
 
@@ -475,7 +475,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                 value={sortKey}
                 onValueChange={(v) => setSortKey(v as SortKey)}
               >
-                <SelectTrigger className="h-12 rounded-full bg-white/70 w-[240px]">
+                <SelectTrigger className="h-12 rounded-full bg-white/70 dark:bg-white/5 dark:border-white/10 w-[240px]">
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
                 <SelectContent>
@@ -487,19 +487,19 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
               </Select>
             </div>
 
-            <div className="mt-6 rounded-[2.5rem] border border-white/60 bg-white/80 shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)] overflow-hidden">
+            <div className="mt-6 rounded-[2.5rem] border border-white/60 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/80 dark:bg-[rgb(var(--glass)/0.55)] shadow-[0_22px_60px_-44px_rgba(15,23,42,0.28)] dark:shadow-[0_22px_60px_-44px_rgba(0,0,0,0.55)] overflow-hidden">
               {isBooting ? (
                 <div className="p-6 grid gap-3">
                   {Array.from({ length: 6 }).map((_, idx) => (
                     <Skeleton
                       key={idx}
-                      className="h-16 rounded-[1.75rem] border border-white/60 bg-white/70"
+                      className="h-16 rounded-[1.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/5"
                     />
                   ))}
                 </div>
               ) : (
                 <Table className="w-full">
-                  <TableHeader className="bg-white/70">
+                  <TableHeader className="bg-white/70 dark:bg-white/5">
                     <TableRow>
                       <TableHead className="px-6">Worker</TableHead>
                       <TableHead>Status</TableHead>
@@ -520,10 +520,10 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
                         >
                           <TableCell className="px-6">
                             <div className="flex flex-col">
-                              <span className="text-sm font-semibold text-slate-900">
+                              <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                                 {w.id}
                               </span>
-                              <span className="text-xs text-slate-500">
+                              <span className="text-xs text-slate-500 dark:text-slate-300">
                                 latency {w.latencyMs ? `${w.latencyMs}ms` : "—"}
                               </span>
                             </div>
