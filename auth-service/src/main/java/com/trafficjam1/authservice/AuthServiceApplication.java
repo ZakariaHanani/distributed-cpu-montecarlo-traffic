@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -19,10 +20,15 @@ public class AuthServiceApplication {
     }
 
     @Bean
-    ApplicationRunner logOauthClientRegistrations(ClientRegistrationRepository clientRegistrationRepository) {
+    ApplicationRunner logOauthClientRegistrations(ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository) {
         return args -> {
-            if (!(clientRegistrationRepository instanceof InMemoryClientRegistrationRepository repo)) {
-                log.info("OAuth2 client registrations repository type={}", clientRegistrationRepository.getClass().getName());
+            ClientRegistrationRepository repoBean = clientRegistrationRepository.getIfAvailable();
+            if (repoBean == null) {
+                return;
+            }
+
+            if (!(repoBean instanceof InMemoryClientRegistrationRepository repo)) {
+                log.info("OAuth2 client registrations repository type={}", repoBean.getClass().getName());
                 return;
             }
 

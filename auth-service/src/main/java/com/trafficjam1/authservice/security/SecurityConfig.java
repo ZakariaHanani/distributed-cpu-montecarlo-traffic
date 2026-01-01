@@ -5,6 +5,7 @@ import com.trafficjam1.authservice.oauth.OAuthLoginException;
 import com.trafficjam1.authservice.oauth.OAuthUserProvisioningService;
 import com.trafficjam1.authservice.user.AuthProvider;
 import com.trafficjam1.authservice.user.User;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -52,29 +54,36 @@ public class SecurityConfig {
             JwtService jwtService,
             OAuthUserProvisioningService oAuthUserProvisioningService,
             GitHubEmailClient gitHubEmailClient,
-            OAuth2AuthorizedClientService authorizedClientService
+            ObjectProvider<OAuth2AuthorizedClientService> authorizedClientService
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtService = jwtService;
         this.oAuthUserProvisioningService = oAuthUserProvisioningService;
         this.gitHubEmailClient = gitHubEmailClient;
-        this.authorizedClientService = authorizedClientService;
+        this.authorizedClientService = authorizedClientService.getIfAvailable();
     }
 
     @Bean
     @Order(1)
-    public SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain oauth2SecurityFilterChain(
+            HttpSecurity http,
+            ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository
+    ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
                 .securityMatcher("/oauth2/**", "/login/oauth2/**")
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oauth2SuccessHandler())
-                        .failureHandler(oauth2FailureHandler())
-                );
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
+        if (clientRegistrationRepository.getIfAvailable() != null) {
+            http.oauth2Login(oauth2 -> oauth2
+                    .successHandler(oauth2SuccessHandler())
+                    .failureHandler(oauth2FailureHandler())
+            );
+        }
+
         return http.build();
     }
 
@@ -166,6 +175,15 @@ public class SecurityConfig {
         return source;
     }
 
+    @Bean
+    @Order(3)
+    public SecurityFilterChain permitAllFallbackSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        return http.build();
+    }
+
     private String buildFrontendRedirect(String path) {
         String base = frontendUrl == null ? "http://localhost:3000" : frontendUrl.trim();
         if (base.endsWith("/")) base = base.substring(0, base.length() - 1);
@@ -206,6 +224,7 @@ public class SecurityConfig {
         String email = raw == null ? null : raw.toString().trim();
         if (email != null && !email.isBlank()) return email;
         if (provider != AuthProvider.GITHUB) throw new OAuthLoginException();
+        if (authorizedClientService == null) throw new OAuthLoginException();
 
         String accessToken = null;
         if (authentication instanceof org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken token) {
