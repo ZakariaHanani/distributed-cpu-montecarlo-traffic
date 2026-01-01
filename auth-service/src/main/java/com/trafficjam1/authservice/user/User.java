@@ -26,14 +26,21 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false, length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'LOCAL'")
+    private AuthProvider provider = AuthProvider.LOCAL;
+
+    @Column(name = "provider_id", length = 128)
+    private String providerId;
+
+    @Column(name = "avatar_url", length = 512)
+    private String avatarUrl;
+
     @Column
     private String city;
 
     @Column(name = "password_hash")
     private String passwordHash;
-
-    @Column(name = "password")
-    private String passwordLegacy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -116,6 +123,30 @@ public class User {
         this.email = email;
     }
 
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
     public String getCity() {
         return city;
     }
@@ -125,15 +156,11 @@ public class User {
     }
 
     public String getPassword() {
-        if (passwordHash != null && !passwordHash.trim().isEmpty()) {
-            return passwordHash;
-        }
-        return passwordLegacy;
+        return passwordHash;
     }
 
     public void setPassword(String password) {
         this.passwordHash = password;
-        this.passwordLegacy = password;
     }
 
     public Instant getCreatedAt() {

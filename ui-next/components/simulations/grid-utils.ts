@@ -28,7 +28,7 @@ export interface TrafficLightState {
 // Generate initial car positions distributed across the grid
 export function generateCars(count: number, gridSize: number): Car[] {
     const cars: Car[] = []
-    const colors = ["#64748b", "#3b82f6", "#6366f1", "#8b5cf6", "#0ea5e9"]
+    const carColor = "#3b82f6"
 
     // Limit visible cars for performance
     const visibleCount = Math.min(count, gridSize * gridSize * 2)
@@ -36,7 +36,7 @@ export function generateCars(count: number, gridSize: number): Car[] {
     for (let i = 0; i < visibleCount; i++) {
         const direction = Math.random() > 0.5 ? "horizontal" : "vertical"
         const gridPos = Math.floor(Math.random() * gridSize)
-        const offset = Math.random()
+        const offset = pickRoadOffset(gridSize)
 
         let x: number, y: number
         if (direction === "horizontal") {
@@ -55,13 +55,34 @@ export function generateCars(count: number, gridSize: number): Car[] {
             targetY: y,
             direction,
             speed: 0.002 + Math.random() * 0.003,
-            color: colors[Math.floor(Math.random() * colors.length)],
+            color: carColor,
             waiting: false,
             waitTime: 0,
         })
     }
 
     return cars
+}
+
+function pickRoadOffset(gridSize: number): number {
+    const intersectionHalf = 0.22 / gridSize
+    const attempts = 40
+
+    for (let i = 0; i < attempts; i++) {
+        const candidate = Math.random()
+        let valid = true
+        for (let k = 0; k < gridSize; k++) {
+            const intersectionCoord = (k + 0.5) / gridSize
+            if (Math.abs(candidate - intersectionCoord) < intersectionHalf) {
+                valid = false
+                break
+            }
+        }
+        if (valid) return candidate
+    }
+
+    const fallback = Math.random()
+    return Math.min(1 - intersectionHalf, Math.max(intersectionHalf, fallback))
 }
 
 // Generate initial traffic light states
