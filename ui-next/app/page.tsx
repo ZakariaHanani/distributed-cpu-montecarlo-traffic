@@ -58,9 +58,44 @@ export default function Home() {
     currentView === "reward_rules";
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const rawView = url.searchParams.get("view");
+    if (!rawView) return;
+
+    const view = rawView as ViewType;
+    const allowed: ViewType[] = [
+      "home",
+      "login",
+      "signup",
+      "profile",
+      "simulations",
+      "become_worker",
+      "eligibility",
+      "reward_rules",
+      "admin_profile",
+      "admin_audit",
+      "admin_workers",
+      "privacy",
+      "terms",
+      "cookies",
+    ];
+    if (allowed.includes(view)) {
+      setCurrentView(view);
+    }
+
+    url.searchParams.delete("view");
+    const nextQuery = url.searchParams.toString();
+    window.history.replaceState(
+      {},
+      "",
+      url.pathname + (nextQuery ? `?${nextQuery}` : "") + url.hash
+    );
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2500);
+    }, 3500);
     return () => clearTimeout(timer);
   }, []);
 

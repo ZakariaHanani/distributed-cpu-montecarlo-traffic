@@ -9,7 +9,8 @@ import {
   Layers,
   LogOut,
   ShieldAlert,
-  Sparkles,
+  ShieldCheck,
+  User,
   UserCircle,
   Workflow,
 } from "lucide-react";
@@ -36,6 +37,7 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
   const isAdmin = tokenRole === "ADMIN";
   const [isPresent, setIsPresent] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const AccountAvatarIcon = isAdmin ? ShieldCheck : UserCircle;
 
   const close = () => {
     setIsOpen(false);
@@ -165,7 +167,13 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
         "
       >
         <span className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500/10 via-violet-500/10 to-rose-500/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-        <UserCircle className="relative size-4 text-slate-700 dark:text-slate-100" />
+        <AccountAvatarIcon
+          className={`relative size-4 ${
+            isAdmin
+              ? "text-amber-700 dark:text-amber-200"
+              : "text-slate-700 dark:text-slate-100"
+          }`}
+        />
         <ChevronDown
           className={`relative size-4 text-slate-500 dark:text-slate-300 transition-transform duration-200 ${
             isPresent && isOpen ? "rotate-180" : "rotate-0"
@@ -191,13 +199,17 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
           <div className="px-3 py-2">
             {displayName ? (
               <div className="flex flex-col">
-                <span className="text-xs text-slate-500 dark:text-slate-300">Signed in as</span>
+                <span className="text-xs text-slate-500 dark:text-slate-300">
+                  Signed in as
+                </span>
                 <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                   {displayName}
                 </span>
               </div>
             ) : (
-              <div className="text-xs text-slate-500 dark:text-slate-300">Signed in</div>
+              <div className="text-xs text-slate-500 dark:text-slate-300">
+                Signed in
+              </div>
             )}
           </div>
 
@@ -212,7 +224,7 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
             "
           >
             <span className="flex size-9 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15">
-              <Sparkles className="size-4" />
+              <User className="size-4" />
             </span>
             <span className="flex flex-col">
               <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-tight">

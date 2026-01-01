@@ -76,6 +76,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const [newPassword, setNewPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
   const isLogin = mode === "login";
+  const authBaseUrl = (() => {
+    const raw =
+      process.env.NEXT_PUBLIC_AUTH_BASE_URL ?? "http://localhost:8081";
+    return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+  })();
 
   useEffect(() => {
     return () => {
@@ -100,6 +105,27 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
       el?.focus();
       el?.select();
     });
+  }, [mode, flow]);
+
+  useEffect(() => {
+    if (mode !== "login" || flow !== "auth") return;
+    const url = new URL(window.location.href);
+    const error = url.searchParams.get("error");
+    if (error !== "oauth_failed") return;
+
+    showToast({
+      type: "error",
+      title: "Sign-in failed",
+      message: "Please try again.",
+    });
+
+    url.searchParams.delete("error");
+    const nextQuery = url.searchParams.toString();
+    window.history.replaceState(
+      {},
+      "",
+      url.pathname + (nextQuery ? `?${nextQuery}` : "") + url.hash
+    );
   }, [mode, flow]);
 
   useLayoutEffect(() => {
@@ -148,6 +174,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
     toastTimeoutRef.current = window.setTimeout(() => {
       hideToast();
     }, 6000);
+  };
+
+  const startOAuth = (provider: "google" | "github") => {
+    hideToast();
+    window.location.href = `${authBaseUrl}/oauth2/authorization/${provider}`;
   };
 
   useEffect(() => {
@@ -374,6 +405,9 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             <Button
               variant="outline"
               className="h-12 rounded-xl bg-transparent"
+              type="button"
+              onClick={() => startOAuth("github")}
+              disabled={isSubmitting}
             >
               <Github className="w-5 h-5 mr-2" />
               GitHub
@@ -381,6 +415,9 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             <Button
               variant="outline"
               className="h-12 rounded-xl bg-transparent"
+              type="button"
+              onClick={() => startOAuth("google")}
+              disabled={isSubmitting}
             >
               <Mail className="w-5 h-5 mr-2" />
               Google

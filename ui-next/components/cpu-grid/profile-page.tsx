@@ -498,7 +498,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
           Back to Home
         </button>
 
-        <div className="grid lg:grid-cols-[360px_1fr] gap-8 items-start">
+        <div className="grid lg:grid-cols-[500px_1fr] gap-8 items-start">
           <aside
             className="glass card-super-lg shadow-deep p-8 relative overflow-hidden lg:sticky lg:top-28"
             data-profile-animate
@@ -666,7 +666,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
 
             <div
               ref={panelRef}
-              className="glass card-super-lg shadow-deep p-8 min-h-[640px] relative overflow-hidden"
+              className="glass card-super-lg shadow-deep p-8 min-h-[460px] relative overflow-hidden"
             >
               {activeTab === "profile" && (
                 <div className="space-y-8">

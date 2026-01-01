@@ -74,7 +74,7 @@ public class WorkerRegistry {
         }
     }
 
-    private static final long TIMEOUT_MS = 10_000;
+    private static final long TIMEOUT_MS = 30_000;
 
     public synchronized void cleanupDeadWorkers() {
         long now = System.currentTimeMillis();
@@ -97,4 +97,3 @@ public class WorkerRegistry {
 
 
 }
-

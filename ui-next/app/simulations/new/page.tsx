@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Link from "next/link"
 import { ArrowLeft, Play, RotateCcw, Cloud, Sun, CloudFog, TrafficCone } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,8 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SimulationGridPreview } from "@/components/simulations/simulation-grid-preview"
+import { SimulationProgressModal } from "@/components/simulations/simulation-progress-modal"
+
 
 type Weather = "SUNNY" | "RAINY" | "FOGGY"
 
@@ -34,6 +36,20 @@ const DEFAULT_CONFIG: SimulationConfig = {
 export default function NewSimulationPage() {
     const [config, setConfig] = useState<SimulationConfig>(DEFAULT_CONFIG)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [jobId, setJobId] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null)
+    const [workerCount, setWorkerCount] = useState<number | null>(null)
+    const [showResults, setShowResults] = useState(false)
+    const [finalResult, setFinalResult] = useState<any | null>(null)
+    const [workerResults, setWorkerResults] = useState<Record<string, any[]> | null>(null)
+
+    // Check worker count on mount
+    useEffect(() => {
+        fetch('http://localhost:8081/api/simulations/workers')
+            .then(res => res.json())
+            .then(data => setWorkerCount(data.count))
+            .catch(err => console.error("Failed to fetch worker count", err))
+    }, [])
 
     const updateConfig = useCallback(<K extends keyof SimulationConfig>(key: K, value: SimulationConfig[K]) => {
         setConfig((prev) => ({ ...prev, [key]: value }))
@@ -66,15 +82,86 @@ export default function NewSimulationPage() {
 
     const handleReset = () => {
         setConfig(DEFAULT_CONFIG)
+        setJobId(null)
+        setError(null)
+        setShowResults(false)
+        setFinalResult(null)
+        setWorkerResults(null)
     }
 
     const handleSubmit = async () => {
         setIsSubmitting(true)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-        setIsSubmitting(false)
-        // Here you would typically redirect or show success state
+        setJobId(null)
+        setError(null)
+        
+        try {
+            // Generate a random seed
+            const seed = Math.floor(Math.random() * 1_000_000_000)
+            
+            // Map frontend config to backend SimulationParams
+            const payload = {
+                numberOfCars: config.numberOfCars,
+                iterations: config.monteCarloIterations,
+                weather: config.weather,
+                trafficLightsEnabled: config.trafficLightsEnabled,
+                seed: seed,
+                gridSize: config.gridSize
+            }
+
+            const response = await fetch('http://localhost:8081/api/simulations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.error || 'Failed to submit simulation')
+            }
+
+            const data = await response.json()
+            setJobId(data.jobId)
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
+
+    // Poll for job completion and fetch results
+    useEffect(() => {
+        if (!jobId) return
+        let isCancelled = false
+        const poll = async () => {
+            try {
+                const res = await fetch(`http://localhost:8081/api/simulations/${jobId}`)
+                if (!res.ok) throw new Error("Failed to fetch job status")
+                const jr = await res.json()
+                if (jr.status === "COMPLETED") {
+                    const finalRes = jr.result
+                    const wrRes = await fetch(`http://localhost:8081/api/simulations/${jobId}/worker-results`)
+                    const wr = wrRes.ok ? await wrRes.json() : {}
+                    if (!isCancelled) {
+                        setFinalResult(finalRes)
+                        setWorkerResults(wr)
+                        setShowResults(true)
+                    }
+                } else if (jr.status === "FAILED") {
+                    if (!isCancelled) {
+                        setError(jr.errorMessage || "Simulation failed")
+                    }
+                } else {
+                    setTimeout(poll, 1000)
+                }
+            } catch (e: any) {
+                setTimeout(poll, 1500)
+            }
+        }
+        poll()
+        return () => { isCancelled = true }
+    }, [jobId])
 
     const weatherIcons: Record<Weather, React.ReactNode> = {
         SUNNY: <Sun className="w-4 h-4" />,
@@ -234,10 +321,31 @@ export default function NewSimulationPage() {
                                 <RotateCcw className="w-4 h-4 mr-2" />
                                 Reset Configuration
                             </Button>
+                            {workerCount !== null && (
+                                <div className="text-sm text-slate-500 sm:ml-4 self-center">
+                                    Active Workers: <span className="font-bold text-slate-900">{workerCount}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="w-full lg:w-1/2 lg:max-w-lg">
+                        {/* Status Messages */}
+                        {jobId && (
+                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                                <h3 className="text-green-800 font-semibold mb-1">Simulation Started Successfully!</h3>
+                                <p className="text-green-700 text-sm">
+                                    Job ID: <span className="font-mono font-bold">{jobId}</span>
+                                </p>
+                            </div>
+                        )}
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                                <h3 className="text-red-800 font-semibold mb-1">Error Starting Simulation</h3>
+                                <p className="text-red-700 text-sm">{error}</p>
+                            </div>
+                        )}
+
                         {/* Simulation Grid Preview */}
                         <div className="bg-slate-50 dark:bg-[rgb(var(--glass)/0.35)] rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/10 lg:sticky lg:top-8">
                             <div className="flex items-center gap-3 mb-6">
@@ -271,6 +379,71 @@ export default function NewSimulationPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Results Popup */}
+            {showResults && finalResult && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="w-full max-w-2xl mx-4 bg-white dark:bg-[rgb(var(--glass)/0.9)] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl">
+                        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Monte Carlo Results</h3>
+                            <button
+                                onClick={() => setShowResults(false)}
+                                className="text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
+                            >
+                                Close
+                            </button>
+                        </div>
+                        <div className="px-6 py-5 space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                                    <div className="text-sm text-slate-500 dark:text-slate-300">Total Jams</div>
+                                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{finalResult.totalJamsDetected}</div>
+                                </div>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                                    <div className="text-sm text-slate-500 dark:text-slate-300">Average Speed</div>
+                                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{Number(finalResult.averageSpeed).toFixed(2)}</div>
+                                </div>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                                    <div className="text-sm text-slate-500 dark:text-slate-300">Min Speed</div>
+                                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{Number(finalResult.minSpeedObserved).toFixed(2)}</div>
+                                </div>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                                    <div className="text-sm text-slate-500 dark:text-slate-300">Max Speed</div>
+                                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{Number(finalResult.maxSpeedObserved).toFixed(2)}</div>
+                                </div>
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                                    <div className="text-sm text-slate-500 dark:text-slate-300">Accident Probability</div>
+                                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{Number(finalResult.accidentProbability).toFixed(2)}%</div>
+                                </div>
+                            </div>
+                            {workerResults && (
+                                <div>
+                                    <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Per-Worker Results</div>
+                                    <div className="space-y-2 max-h-64 overflow-auto pr-2">
+                                        {Object.entries(workerResults).map(([wid, results]) => (
+                                            <div key={wid} className="p-3 rounded-xl border border-slate-200 dark:border-white/10">
+                                                <div className="text-sm text-slate-600 dark:text-slate-300 mb-1">Worker: <span className="font-mono">{wid}</span></div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {results.map((r: any, idx: number) => (
+                                                        <div key={idx} className="text-xs text-slate-600 dark:text-slate-300">
+                                                            <span className="font-semibold">Task:</span> {r.taskId || "N/A"} •
+                                                            <span className="ml-1 font-semibold">Avg:</span> {Number(r.averageSpeed).toFixed(2)} •
+                                                            <span className="ml-1 font-semibold">Jams:</span> {r.totalJamsDetected}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+                            <Button onClick={() => setShowResults(false)} className="rounded-xl">Close</Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
