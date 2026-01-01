@@ -14,6 +14,10 @@ public class SimulationResult implements Result {
 
     // Map pour la Heatmap : "R01" -> 0.85 (85% de congestion)
     private Map<String, Double> congestionMap;
+    private UUID taskId;
+    private String workerId;
+    private Map<String, Object> metrics;
+    private long executionTimeMs;
 
     public SimulationResult
             (int totalJams, double avgSpeed, Map<String, Double> congestionMap,
@@ -37,21 +41,37 @@ public class SimulationResult implements Result {
 
     @Override
     public UUID getTaskId() {
-        return null;
+        return taskId;
     }
 
     @Override
     public String getWorkerId() {
-        return "";
+        return workerId;
     }
 
     @Override
     public Map<String, Object> getMetrics() {
-        return Map.of();
+        return metrics;
     }
 
     @Override
     public long getExecutionTimeMs() {
-        return 0;
+        return executionTimeMs;
+    }
+
+    public void setTaskId(UUID taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setWorkerId(String workerId) {
+        this.workerId = workerId;
+    }
+
+    public void setMetrics(Map<String, Object> metrics) {
+        this.metrics = metrics;
+    }
+
+    public void setExecutionTimeMs(long executionTimeMs) {
+        this.executionTimeMs = executionTimeMs;
     }
 }

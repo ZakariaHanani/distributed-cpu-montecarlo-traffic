@@ -108,12 +108,19 @@ public class WorkerImpl extends UnicastRemoteObject implements IWorker, Runnable
             if (taskToExecute != null) {
                 Result result = null;
                 Exception executionException = null;
+                long startTimeMs = System.currentTimeMillis();
                 try {
                     result = taskToExecute.execute();
                     System.out.println("LOG: Task " + taskToExecute.getTaskId() + " completed.");
                 } catch (Exception e) {
                     executionException = e;
                     System.err.println("CRITICAL: Error during task execution: " + e.getMessage());
+                }
+                long elapsedMs = System.currentTimeMillis() - startTimeMs;
+                if (result instanceof com.grid.common.model.SimulationResult simRes) {
+                    simRes.setWorkerId(this.workerId);
+                    simRes.setTaskId(taskToExecute.getTaskId());
+                    simRes.setExecutionTimeMs(elapsedMs);
                 }
                 MasterCallback masterCallback = taskToExecute.getMasterCallback();
                 UUID job_Id = taskToExecute.getJobId();

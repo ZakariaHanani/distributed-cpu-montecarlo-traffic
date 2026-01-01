@@ -2,9 +2,11 @@ package com.grid.common.Interfaces;
 
 import com.grid.common.dto.JobResult;
 import com.grid.common.model.SimulationParams;
+import com.grid.common.model.SimulationResult;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,9 +24,16 @@ public interface IMaster extends Remote {
 
     // API for client ; depends only on common.
     JobResult getJobResult(UUID jobId) throws RemoteException;
+
     /**
-     * Return the final aggregated result for a task.
+     * Get the number of registered workers.
      */
+    int getWorkerCount() throws RemoteException;
+
+    /**
+     * Return partial results computed by workers for a given job.
+     */
+    List<SimulationResult> getJobPartials(UUID jobId) throws RemoteException;
 
 
 }
