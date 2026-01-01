@@ -27,7 +27,8 @@ const AUTH_ROLE_KEY = "auth_role";
 const AUTH_NAME_KEY = "auth_name";
 
 function getBaseUrl() {
-  const raw = process.env.NEXT_PUBLIC_AUTH_BASE_URL ?? "http://localhost:8081";
+  const raw =
+    process.env.NEXT_PUBLIC_AUTH_API_BASE_URL ?? "http://localhost:8082";
   return raw.endsWith("/") ? raw.slice(0, -1) : raw;
 }
 

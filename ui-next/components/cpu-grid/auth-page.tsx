@@ -78,7 +78,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const isLogin = mode === "login";
   const authBaseUrl = (() => {
     const raw =
-      process.env.NEXT_PUBLIC_AUTH_BASE_URL ?? "http://localhost:8081";
+      process.env.NEXT_PUBLIC_AUTH_API_BASE_URL ?? "http://localhost:8082";
     return raw.endsWith("/") ? raw.slice(0, -1) : raw;
   })();
 

@@ -33,6 +33,12 @@ const DEFAULT_CONFIG: SimulationConfig = {
     trafficLightsEnabled: true,
 }
 
+const apiBaseUrl = (() => {
+    const raw =
+        process.env.NEXT_PUBLIC_AUTH_API_BASE_URL ?? "http://localhost:8082"
+    return raw.endsWith("/") ? raw.slice(0, -1) : raw
+})()
+
 export default function NewSimulationPage() {
     const [config, setConfig] = useState<SimulationConfig>(DEFAULT_CONFIG)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -45,7 +51,7 @@ export default function NewSimulationPage() {
 
     // Check worker count on mount
     useEffect(() => {
-        fetch('http://localhost:8081/api/simulations/workers')
+        fetch(`${apiBaseUrl}/api/simulations/workers`)
             .then(res => res.json())
             .then(data => setWorkerCount(data.count))
             .catch(err => console.error("Failed to fetch worker count", err))
@@ -108,7 +114,7 @@ export default function NewSimulationPage() {
                 gridSize: config.gridSize
             }
 
-            const response = await fetch('http://localhost:8081/api/simulations', {
+            const response = await fetch(`${apiBaseUrl}/api/simulations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,12 +142,12 @@ export default function NewSimulationPage() {
         let isCancelled = false
         const poll = async () => {
             try {
-                const res = await fetch(`http://localhost:8081/api/simulations/${jobId}`)
+                const res = await fetch(`${apiBaseUrl}/api/simulations/${jobId}`)
                 if (!res.ok) throw new Error("Failed to fetch job status")
                 const jr = await res.json()
                 if (jr.status === "COMPLETED") {
                     const finalRes = jr.result
-                    const wrRes = await fetch(`http://localhost:8081/api/simulations/${jobId}/worker-results`)
+                    const wrRes = await fetch(`${apiBaseUrl}/api/simulations/${jobId}/worker-results`)
                     const wr = wrRes.ok ? await wrRes.json() : {}
                     if (!isCancelled) {
                         setFinalResult(finalRes)
