@@ -1,7 +1,6 @@
 package com.grid.common.logic;
 
 import com.grid.common.model.*;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-@Service
-public class
-TrafficSimulationEngine {
+public class TrafficSimulationEngine {
 
     private List<Road> roads;
     private List<Car> cars;
