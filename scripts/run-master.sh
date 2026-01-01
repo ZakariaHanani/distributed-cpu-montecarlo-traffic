@@ -8,6 +8,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # -----------------------------
+# CONFIG
+# -----------------------------
+MASTER_IP="192.168.10.131"   # <-- CHANGE to Master machine IP
+RMI_PORT=1099
+
+# -----------------------------
 # Function to find Java
 # -----------------------------
 resolve_java() {
@@ -49,4 +55,10 @@ echo "[run-master.sh] Using classpath:"
 echo "  $CP"
 echo
 
-exec "$JAVA_CMD" -cp "$CP" com.grid.master.MasterNode
+exec "$JAVA_CMD" \
+  -Djava.rmi.server.hostname="$MASTER_IP" \
+  -Djava.rmi.registry.port="$RMI_PORT" \
+  -cp "$CP" \
+  com.grid.master.MasterApp
+
+

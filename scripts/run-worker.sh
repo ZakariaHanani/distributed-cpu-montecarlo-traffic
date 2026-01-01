@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+WORKER_IP="192.168.10.131"  # <-- CHANGE to this machine's IP
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 ROOT_DIR="${SCRIPT_DIR}/.."
 
 echo "[run-worker.sh] Project root: ${ROOT_DIR}"
@@ -22,9 +25,8 @@ CP="${ROOT_DIR}/common/target/classes:${ROOT_DIR}/worker/target/classes"
 echo "[run-worker.sh] Using classpath:"
 echo "  ${CP}"
 echo
-WORKER_IP="192.168.10.131"
 echo "[run-worker.sh] Starting Worker node..."
-#java -cp "${CP}" com.grid.worker.workerApp
+
 exec "$JAVA_CMD" \
   -Djava.rmi.server.hostname="$WORKER_IP" \
   -cp "$CP" \

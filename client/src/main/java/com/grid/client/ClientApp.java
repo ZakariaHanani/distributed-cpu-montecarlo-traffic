@@ -199,7 +199,7 @@ public class ClientApp {
         System.out.printf("Average speed: %.2f%n", result.getAverageSpeed());
         System.out.printf("Min speed observed: %.2f%n", result.getMinSpeedObserved());
         System.out.printf("Max speed observed: %.2f%n", result.getMaxSpeedObserved());
-        System.out.printf("Accident probability: %.2f%%%n", result.getAccidentProbability() * 100);
+        System.out.printf("Accident probability: %.2f%%%n", result.getAccidentProbability() );
 
         System.out.println("Congestion map (road -> congestion%):");
         if (result.getCongestionMap() == null || result.getCongestionMap().isEmpty()) {
