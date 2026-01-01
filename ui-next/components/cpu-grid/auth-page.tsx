@@ -268,10 +268,21 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             setCurrentView(role === "ADMIN" ? "admin_profile" : "profile");
             return;
           }
-          setCurrentView("home");
+          const url = new URL(window.location.href);
+          const next =
+            url.searchParams.get("returnTo") ?? url.searchParams.get("next");
+          const fromLocalStorage = window.localStorage.getItem("return_to");
+          const target =
+            (next && next.startsWith("/") ? next : null) ??
+            (fromLocalStorage && fromLocalStorage.startsWith("/")
+              ? fromLocalStorage
+              : null) ??
+            "/simulations/new";
+          if (fromLocalStorage) window.localStorage.removeItem("return_to");
+          window.location.assign(target);
         }, 380);
       } else {
-        await signup({
+        const token = await signup({
           firstName,
           lastName,
           username,
@@ -283,13 +294,39 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         setConfirmPassword("");
         setFirstName("");
         setLastName("");
+        setToken(token);
+        const payload = decodeJwtPayload(token);
+        const rawRole = typeof payload?.role === "string" ? payload.role : "";
+        const normalizedRole = rawRole.trim().toUpperCase();
+        const role =
+          normalizedRole === "ADMIN" || normalizedRole === "ROLE_ADMIN"
+            ? "ADMIN"
+            : "USER";
+        const authedName =
+          typeof payload?.name === "string" ? payload.name : "—";
+        setAuthMeta({ role, name: authedName });
+        const displayName = getDisplayNameFromToken(token);
+        if (displayName) setDisplayName(displayName);
+        window.dispatchEvent(new Event("auth:changed"));
         showToast({
           type: "success",
           title: "Account created",
-          message: "Please sign in.",
+          message: "Signed in. Redirecting…",
         });
-        setFlow("auth");
-        setCurrentView("login");
+        redirectTimeoutRef.current = window.setTimeout(() => {
+          const url = new URL(window.location.href);
+          const next =
+            url.searchParams.get("returnTo") ?? url.searchParams.get("next");
+          const fromLocalStorage = window.localStorage.getItem("return_to");
+          const target =
+            (next && next.startsWith("/") ? next : null) ??
+            (fromLocalStorage && fromLocalStorage.startsWith("/")
+              ? fromLocalStorage
+              : null) ??
+            "/simulations/new";
+          if (fromLocalStorage) window.localStorage.removeItem("return_to");
+          window.location.assign(target);
+        }, 380);
       }
     } catch (err) {
       showToast({

@@ -29,6 +29,14 @@ function OAuthCallbackInner() {
     window.dispatchEvent(new Event("auth:changed"));
 
     const mustChangePassword = getMustChangePasswordFromToken(token);
+    if (!mustChangePassword) {
+      const returnTo = window.localStorage.getItem("return_to");
+      if (returnTo && returnTo.startsWith("/")) {
+        window.localStorage.removeItem("return_to");
+        window.location.replace(returnTo);
+        return;
+      }
+    }
     const view = mustChangePassword
       ? role === "ADMIN"
         ? "admin_profile"

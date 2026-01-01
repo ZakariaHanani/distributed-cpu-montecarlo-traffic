@@ -144,6 +144,18 @@ export function getToken(): string | null {
   return window.localStorage.getItem(TOKEN_KEY);
 }
 
+export function isAuthenticated(): boolean {
+  const token = getToken();
+  if (!token) return false;
+  const payload = decodeJwtPayload(token);
+  if (!payload) return false;
+  if (typeof payload.exp === "number") {
+    const nowSeconds = Date.now() / 1000;
+    return nowSeconds < payload.exp - 5;
+  }
+  return true;
+}
+
 export function clearToken() {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(TOKEN_KEY);
@@ -154,6 +166,7 @@ export function decodeJwtPayload(token: string): {
   name?: string;
   uid?: number;
   sub?: string;
+  exp?: number;
   mustChangePassword?: boolean;
 } | null {
   if (typeof window === "undefined") return null;
@@ -175,11 +188,12 @@ export function decodeJwtPayload(token: string): {
       typeof record["name"] === "string" ? record["name"] : undefined;
     const uid = typeof record["uid"] === "number" ? record["uid"] : undefined;
     const sub = typeof record["sub"] === "string" ? record["sub"] : undefined;
+    const exp = typeof record["exp"] === "number" ? record["exp"] : undefined;
     const mustChangePassword =
       typeof record["mustChangePassword"] === "boolean"
         ? record["mustChangePassword"]
         : undefined;
-    return { role, name, uid, sub, mustChangePassword };
+    return { role, name, uid, sub, exp, mustChangePassword };
   } catch {
     return null;
   }
