@@ -121,6 +121,16 @@ public class MasterImpl implements IMaster, Heartbeat {
 
         return new JobResult(mapped, result, error);
     }
+    @Override
+    public int getWorkerCount() throws RemoteException {
+        return workerRegistry.size();
+    }
+
+    @Override
+    public List<SimulationResult> getJobPartials(UUID jobId) throws RemoteException {
+        return collector.getResults(jobId);
+    }
+
     /**
      * explicit mapping
      */
