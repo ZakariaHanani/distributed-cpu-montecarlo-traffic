@@ -282,7 +282,7 @@ worker.pool.size=10
 ## **📞 Contact**
 
 ### **Project Maintainer**
-👨‍💻 **Zakaria Hanani**
+👨‍💻 **Zakaria HANANI**
 
 | Platform | Link |
 |----------|------|
@@ -290,13 +290,13 @@ worker.pool.size=10
 | **Email** | zakarhanani@gmail.com |
 | **LinkedIn** | [linkedin.com/in/zakaria-hanani](https://linkedin.com/in/zakaria-hanani) |
 
-👨‍💻 **Mohamed ouijjane**
+👨‍💻 **Mohamed OUIJJANE**
 
 | Platform | Link |
 |----------|------|
 | **GitHub** | [github.com/MohamedOuijjane](https://github.com/MohamedOuijjane) |
 | **Email** | ouijjane22@gmail.com |
-| **LinkedIn** | [linkedin.com/in/mohamedouijjane](http://mohamedouijjane.me/) |
+| **LinkedIn** | [[linkedin.com/in/mohamedouijjane](http://mohamedouijjane.me/](https://ma.linkedin.com/in/mohamed-ouijjane-2882a2395)) |
 
 👨‍💻 **Ayoub Karkouri**
 
@@ -307,7 +307,7 @@ worker.pool.size=10
 | **LinkedIn** | [linkedin.com/in/ayoubkarkouri](https://www.linkedin.com/in/ayoubkarkouri/) |
 
 
-👨‍💻 **ahmed Lcasawi**
+👨‍💻 **ahmed LAHMAINE**
 
 | Platform | Link |
 |----------|------|
@@ -315,7 +315,7 @@ worker.pool.size=10
 | **Email** | ahmedlahmain@gmail.com |
 
 
-👨‍💻 **Ali Halla**
+👨‍💻 **Ali HALLA**
 
 | Platform | Link |
 |----------|------|
@@ -323,7 +323,7 @@ worker.pool.size=10
 | **Email** | hallaali841@gmail.com |
 
 
-👨‍💻 **Hmad aitlahmous**
+👨‍💻 **Hmad AIT LAHMOUSS**
 
 | Platform | Link |
 |----------|------|
@@ -331,7 +331,7 @@ worker.pool.size=10
 | **Email** | aitlahmous.hmad@gmail.com|
 
 
-👨‍💻 **Mohamed ouadra**
+👨‍💻 **Mohamed OUADRA**
 
 | Platform | Link |
 |----------|------|
@@ -393,5 +393,5 @@ cd frontend && npm run dev
 
 <div align="center">
   <sub>Built with ❤️ by the distributed computing community</sub><br>
-  <sup>Last updated: March 2025</sup>
+  <sup>Last updated: December 2025</sup>
 </div>
