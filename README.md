@@ -307,11 +307,11 @@ worker.pool.size=10
 | **LinkedIn** | [linkedin.com/in/ayoubkarkouri](https://www.linkedin.com/in/ayoubkarkouri/) |
 
 
-👨‍💻 **ahmed LAHMAINE**
+👨‍💻 **Ahmed LAHMAINE**
 
 | Platform | Link |
 |----------|------|
-| **GitHub** | [github.com/MohamedOuijjane](https://github.com/ahmed-la14) |
+| **GitHub** | [github.com/ahmed-la14](https://github.com/ahmed-la14) |
 | **Email** | ahmedlahmain@gmail.com |
 
 
@@ -393,5 +393,4 @@ cd frontend && npm run dev
 
 <div align="center">
   <sub>Built with ❤️ by the distributed computing community</sub><br>
-  <sup>Last updated: December 2025</sup>
 </div>
