@@ -1,15 +1,29 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Github, GitPullRequest, Linkedin, Twitter } from "lucide-react";
+import Image from "next/image";
 
-const team = [
+type TeamMember = {
+  name: string;
+  role: string;
+  bio: string;
+  avatar: string;
+  avatarSrc?: string;
+  tag: {
+    label: string;
+    className: string;
+  };
+};
+
+const team: TeamMember[] = [
   {
     name: "Mohamed Ouijjane",
     role: "Full-Stack Contributor (Frontend + Coordination)",
     bio: "UI architecture in Next.js + Tailwind, UX flow, integration planning, and project coordination.",
     avatar: "MO",
+    avatarSrc: "/images/team/mohamed-ouijjane.jpeg",
     tag: {
       label: "Frontend",
       className:
@@ -21,6 +35,7 @@ const team = [
     role: "Backend Developer",
     bio: "Distributed services, orchestration endpoints, and core backend implementation for the compute mesh.",
     avatar: "ZH",
+    avatarSrc: undefined,
     tag: {
       label: "Backend",
       className:
@@ -32,6 +47,7 @@ const team = [
     role: "Backend Developer",
     bio: "Worker/master runtime features, task execution flow, and reliability improvements.",
     avatar: "AH",
+    avatarSrc: "/images/team/ali-halla.jpeg",
     tag: {
       label: "Backend",
       className:
@@ -43,6 +59,7 @@ const team = [
     role: "Backend Developer",
     bio: "API foundations, simulation job lifecycle, and system integration support.",
     avatar: "AK",
+    avatarSrc: undefined,
     tag: {
       label: "Backend",
       className:
@@ -54,6 +71,7 @@ const team = [
     role: "Authentication & Security Engineer",
     bio: "Auth logic, JWT handling, role gating, and security best practices across services.",
     avatar: "AL",
+    avatarSrc: "/images/team/ahmed-lahmaine.jpeg",
     tag: {
       label: "Security",
       className:
@@ -65,6 +83,7 @@ const team = [
     role: "Architecture & Conception",
     bio: "System design, UML/sequence flows, and distributed architecture documentation.",
     avatar: "HL",
+    avatarSrc: undefined,
     tag: {
       label: "Architecture",
       className:
@@ -76,13 +95,45 @@ const team = [
     role: "Frontend Developer",
     bio: "UI components, animations, and user flows for simulations, worker onboarding, and dashboards.",
     avatar: "MO",
+    avatarSrc: "/images/team/mohamed-ouadra.jpeg",
     tag: {
       label: "Frontend",
       className:
         "bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/25",
     },
   },
-] as const;
+];
+
+function TeamAvatar({
+  name,
+  initials,
+  src,
+}: {
+  name: string;
+  initials: string;
+  src?: string;
+}) {
+  const [errored, setErrored] = useState(false);
+
+  return (
+    <div className="relative w-24 h-24 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full overflow-hidden flex items-center justify-center">
+      {src && !errored ? (
+        <Image
+          src={src}
+          alt={name}
+          fill
+          sizes="96px"
+          className="object-cover object-center"
+          onError={() => setErrored(true)}
+        />
+      ) : (
+        <span className="text-2xl leading-none font-semibold text-white">
+          {initials}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export function Team() {
   const rootRef = useRef<HTMLElement>(null);
@@ -202,81 +253,151 @@ export function Team() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {team.map((member) => (
-            <div
-              key={member.name}
-              data-team="card"
-              className="
-                group glass card-super-lg p-8 shadow-deep rounded-3xl
-                border border-white/40 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-xl
-                text-center
-                transition-all duration-200 ease-out
-                hover:-translate-y-1 hover:shadow-glow hover:border-white/75 dark:hover:border-white/10
-                focus-within:-translate-y-1 focus-within:shadow-glow focus-within:border-white/75 dark:focus-within:border-white/10
-                liquid-hover
-              "
-            >
-              <div className="flex items-center justify-between gap-4">
-                <span
-                  className={[
-                    "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
-                    member.tag.className,
-                  ].join(" ")}
-                >
-                  {member.tag.label}
-                </span>
-                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-300">
-                  v0.1
-                </span>
-              </div>
-
-              <div className="relative mx-auto mt-6 mb-6 w-fit">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
-                <div className="relative w-24 h-24 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
-                  {member.avatar}
-                </div>
-              </div>
-
-              <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
-                {member.name}
-              </h3>
-              <div className="text-indigo-700 dark:text-indigo-300 font-semibold mb-3">
-                {member.role}
-              </div>
-              <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed mb-6">
-                {member.bio}
-              </p>
-
-              <div className="flex items-center justify-center gap-3">
-                {[
-                  { Icon: Github, label: "GitHub", primary: true },
-                  { Icon: Linkedin, label: "LinkedIn", primary: false },
-                  { Icon: Twitter, label: "X/Twitter", primary: false },
-                ].map(({ Icon, label, primary }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    disabled
-                    aria-label={`${label} link coming soon`}
-                    title="Link coming soon"
-                    className={[
-                      "w-9 h-9 rounded-full flex items-center justify-center transition-all",
-                      primary
-                        ? "bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15"
-                        : "bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-400 ring-1 ring-slate-900/10 dark:ring-white/10",
-                      "opacity-50 cursor-not-allowed",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60",
-                    ].join(" ")}
+        <div
+          className="team-marquee relative overflow-x-auto md:overflow-hidden"
+          aria-label="Core contributors live conveyor"
+        >
+          <div className="team-marquee__track flex w-max flex-nowrap py-2">
+            {[0, 1].map((copyIndex) => (
+              <div
+                key={copyIndex}
+                aria-hidden={copyIndex === 1}
+                className="flex flex-nowrap gap-6 pr-6"
+              >
+                {team.map((member) => (
+                  <div
+                    key={`${member.name}-${copyIndex}`}
+                    className="shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]"
                   >
-                    <Icon className="w-4 h-4" />
-                  </button>
+                    <div
+                      data-team="card"
+                      className="group glass card-super-lg p-8 shadow-deep rounded-3xl border border-white/40 dark:border-[rgb(var(--border)/var(--glass-border-alpha))] bg-white/70 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-xl text-center transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-glow hover:border-white/75 dark:hover:border-white/10 focus-within:-translate-y-1 focus-within:shadow-glow focus-within:border-white/75 dark:focus-within:border-white/10 liquid-hover"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <span
+                          className={[
+                            "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+                            member.tag.className,
+                          ].join(" ")}
+                        >
+                          {member.tag.label}
+                        </span>
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-300">
+                          v0.1
+                        </span>
+                      </div>
+
+                      <div className="relative mx-auto mt-6 mb-6 w-fit">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-200" />
+                        <TeamAvatar
+                          name={member.name}
+                          initials={member.avatar}
+                          src={member.avatarSrc}
+                        />
+                      </div>
+
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">
+                        {member.name}
+                      </h3>
+                      <div className="text-indigo-700 dark:text-indigo-300 font-semibold mb-3">
+                        {member.role}
+                      </div>
+                      <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed mb-6">
+                        {member.bio}
+                      </p>
+
+                      <div className="flex items-center justify-center gap-3">
+                        {[
+                          { Icon: Github, label: "GitHub", primary: true },
+                          { Icon: Linkedin, label: "LinkedIn", primary: false },
+                          { Icon: Twitter, label: "X/Twitter", primary: false },
+                        ].map(({ Icon, label, primary }) => (
+                          <button
+                            key={label}
+                            type="button"
+                            disabled
+                            aria-label={`${label} link coming soon`}
+                            title="Link coming soon"
+                            className={[
+                              "w-9 h-9 rounded-full flex items-center justify-center transition-all",
+                              primary
+                                ? "bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15"
+                                : "bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-400 ring-1 ring-slate-900/10 dark:ring-white/10",
+                              "opacity-50 cursor-not-allowed",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60",
+                            ].join(" ")}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
+      <style jsx>{`
+        .team-marquee {
+          --marquee-duration: 38s;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 6%,
+            black 94%,
+            transparent
+          );
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            black 6%,
+            black 94%,
+            transparent
+          );
+        }
+
+        .team-marquee::-webkit-scrollbar {
+          display: none;
+        }
+
+        .team-marquee__track {
+          animation: team-marquee-scroll var(--marquee-duration) linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+        }
+
+        .team-marquee:hover .team-marquee__track,
+        .team-marquee:focus-within .team-marquee__track {
+          animation-play-state: paused;
+        }
+
+        @keyframes team-marquee-scroll {
+          from {
+            transform: translate3d(0, 0, 0);
+          }
+          to {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+
+        @media (max-width: 640px) {
+          .team-marquee {
+            --marquee-duration: 56s;
+            mask-image: none;
+            -webkit-mask-image: none;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .team-marquee__track {
+            animation: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }

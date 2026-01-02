@@ -6,6 +6,7 @@ import com.grid.common.Interfaces.Heartbeat;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.RemoteException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +16,7 @@ public class workerApp {
     public static void main(String[] args) {
         final String registryHost = configLoader.get("registry.host");
         final int registryPort = configLoader.getInt("registry.port");
+        final String masterServiceName = configLoader.get("master.service.name");
         final int maxRetries = configLoader.getInt("worker.max.retries");
         final long waitTimeMs = configLoader.getLong("worker.wait.time.ms");
         final long heartbeatIntervalMs = configLoader.getLong("worker.heartbeat.interval.ms");
@@ -30,7 +32,9 @@ public class workerApp {
 
         try {
             // Lookup the Master service (must implement Heartbeat interface)
-            Heartbeat master = (Heartbeat) registry.lookup("MasterService");
+            Heartbeat master = (Heartbeat) registry.lookup(masterServiceName);
+            AtomicReference<Heartbeat> masterRef = new AtomicReference<>(master);
+            AtomicReference<Registry> registryRef = new AtomicReference<>(registry);
 
             // Create WorkerImpl
             WorkerImpl workerImpl = new WorkerImpl(registry);
@@ -48,9 +52,20 @@ public class workerApp {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.scheduleAtFixedRate(() -> {
                 try {
-                    master.heartbeat(workerId);
+                    masterRef.get().heartbeat(workerId);
                 } catch (RemoteException e) {
                     System.err.println("[Worker] Failed to send heartbeat: " + e.getMessage());
+                    try {
+                        Registry refreshedRegistry = connectToRegistry(registryHost, registryPort, maxRetries, waitTimeMs);
+                        if (refreshedRegistry == null) {
+                            return;
+                        }
+                        Heartbeat refreshedMaster = (Heartbeat) refreshedRegistry.lookup(masterServiceName);
+                        registryRef.set(refreshedRegistry);
+                        masterRef.set(refreshedMaster);
+                        refreshedMaster.registerWorker(workerId, workerImpl);
+                    } catch (Exception ignored) {
+                    }
                 }
             }, 0, heartbeatIntervalMs, TimeUnit.MILLISECONDS);
 
@@ -62,7 +77,7 @@ public class workerApp {
             // Shutdown hook to unregister worker
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
-                    master.unregisterWorker(workerId);
+                    masterRef.get().unregisterWorker(workerId);
                     scheduler.shutdown();
                     System.out.println("[Worker] Successfully unregistered on shutdown.");
                 } catch (RemoteException e) {

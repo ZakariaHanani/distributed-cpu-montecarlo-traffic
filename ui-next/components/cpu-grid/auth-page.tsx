@@ -76,6 +76,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
   const [newPassword, setNewPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
   const isLogin = mode === "login";
+  const authBaseUrl = (() => {
+    const raw =
+      process.env.NEXT_PUBLIC_AUTH_API_BASE_URL ?? "http://localhost:8082";
+    return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+  })();
 
   useEffect(() => {
     return () => {
@@ -100,6 +105,27 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
       el?.focus();
       el?.select();
     });
+  }, [mode, flow]);
+
+  useEffect(() => {
+    if (mode !== "login" || flow !== "auth") return;
+    const url = new URL(window.location.href);
+    const error = url.searchParams.get("error");
+    if (error !== "oauth_failed") return;
+
+    showToast({
+      type: "error",
+      title: "Sign-in failed",
+      message: "Please try again.",
+    });
+
+    url.searchParams.delete("error");
+    const nextQuery = url.searchParams.toString();
+    window.history.replaceState(
+      {},
+      "",
+      url.pathname + (nextQuery ? `?${nextQuery}` : "") + url.hash
+    );
   }, [mode, flow]);
 
   useLayoutEffect(() => {
@@ -148,6 +174,11 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
     toastTimeoutRef.current = window.setTimeout(() => {
       hideToast();
     }, 6000);
+  };
+
+  const startOAuth = (provider: "google" | "github") => {
+    hideToast();
+    window.location.href = `${authBaseUrl}/oauth2/authorization/${provider}`;
   };
 
   useEffect(() => {
@@ -237,10 +268,21 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             setCurrentView(role === "ADMIN" ? "admin_profile" : "profile");
             return;
           }
-          setCurrentView("home");
+          const url = new URL(window.location.href);
+          const next =
+            url.searchParams.get("returnTo") ?? url.searchParams.get("next");
+          const fromLocalStorage = window.localStorage.getItem("return_to");
+          const target =
+            (next && next.startsWith("/") ? next : null) ??
+            (fromLocalStorage && fromLocalStorage.startsWith("/")
+              ? fromLocalStorage
+              : null) ??
+            "/simulations/new";
+          if (fromLocalStorage) window.localStorage.removeItem("return_to");
+          window.location.assign(target);
         }, 380);
       } else {
-        await signup({
+        const token = await signup({
           firstName,
           lastName,
           username,
@@ -252,13 +294,39 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         setConfirmPassword("");
         setFirstName("");
         setLastName("");
+        setToken(token);
+        const payload = decodeJwtPayload(token);
+        const rawRole = typeof payload?.role === "string" ? payload.role : "";
+        const normalizedRole = rawRole.trim().toUpperCase();
+        const role =
+          normalizedRole === "ADMIN" || normalizedRole === "ROLE_ADMIN"
+            ? "ADMIN"
+            : "USER";
+        const authedName =
+          typeof payload?.name === "string" ? payload.name : "—";
+        setAuthMeta({ role, name: authedName });
+        const displayName = getDisplayNameFromToken(token);
+        if (displayName) setDisplayName(displayName);
+        window.dispatchEvent(new Event("auth:changed"));
         showToast({
           type: "success",
           title: "Account created",
-          message: "Please sign in.",
+          message: "Signed in. Redirecting…",
         });
-        setFlow("auth");
-        setCurrentView("login");
+        redirectTimeoutRef.current = window.setTimeout(() => {
+          const url = new URL(window.location.href);
+          const next =
+            url.searchParams.get("returnTo") ?? url.searchParams.get("next");
+          const fromLocalStorage = window.localStorage.getItem("return_to");
+          const target =
+            (next && next.startsWith("/") ? next : null) ??
+            (fromLocalStorage && fromLocalStorage.startsWith("/")
+              ? fromLocalStorage
+              : null) ??
+            "/simulations/new";
+          if (fromLocalStorage) window.localStorage.removeItem("return_to");
+          window.location.assign(target);
+        }, 380);
       }
     } catch (err) {
       showToast({
@@ -374,6 +442,9 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             <Button
               variant="outline"
               className="h-12 rounded-xl bg-transparent"
+              type="button"
+              onClick={() => startOAuth("github")}
+              disabled={isSubmitting}
             >
               <Github className="w-5 h-5 mr-2" />
               GitHub
@@ -381,6 +452,9 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
             <Button
               variant="outline"
               className="h-12 rounded-xl bg-transparent"
+              type="button"
+              onClick={() => startOAuth("google")}
+              disabled={isSubmitting}
             >
               <Mail className="w-5 h-5 mr-2" />
               Google
