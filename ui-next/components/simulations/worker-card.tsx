@@ -1,36 +1,46 @@
-"use client"
+"use client";
 
-import { Clock, Loader2, CheckCircle2 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Clock, Loader2, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export type WorkerStatus = "PENDING" | "RUNNING" | "COMPLETED"
+export type WorkerStatus = "PENDING" | "RUNNING" | "COMPLETED";
 
 interface WorkerCardProps {
-  name: string
-  status: WorkerStatus
-  progress: number
-  accentColor: string
+  name: string;
+  status: WorkerStatus;
+  progress: number;
+  accentColor: string;
 }
 
-export function WorkerCard({ name, status, progress, accentColor }: WorkerCardProps) {
+export function WorkerCard({
+  name,
+  status,
+  progress,
+  accentColor,
+}: WorkerCardProps) {
   const statusIcons = {
     PENDING: <Clock className="w-4 h-4 text-slate-400" />,
-    RUNNING: <Loader2 className="w-4 h-4 animate-spin" style={{ color: accentColor }} />,
+    RUNNING: (
+      <Loader2
+        className="w-4 h-4 animate-spin"
+        style={{ color: accentColor }}
+      />
+    ),
     COMPLETED: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
-  }
+  };
 
   const statusLabels = {
     PENDING: "Waiting",
     RUNNING: "Processing",
     COMPLETED: "Done",
-  }
+  };
 
   return (
     <div
       className={cn(
         "relative bg-slate-50 border border-slate-200 rounded-xl p-4 transition-all duration-500",
         status === "RUNNING" && "border-slate-300 shadow-md",
-        status === "COMPLETED" && "border-emerald-200 bg-emerald-50/50",
+        status === "COMPLETED" && "border-emerald-200 bg-emerald-50/50"
       )}
     >
       {/* Pulse effect for running workers */}
@@ -48,8 +58,10 @@ export function WorkerCard({ name, status, progress, accentColor }: WorkerCardPr
             <div
               className="w-2 h-2 rounded-full"
               style={{
-                backgroundColor: status === "COMPLETED" ? "#10b981" : accentColor,
-                boxShadow: status === "RUNNING" ? `0 0 8px ${accentColor}` : "none",
+                backgroundColor:
+                  status === "COMPLETED" ? "#10b981" : accentColor,
+                boxShadow:
+                  status === "RUNNING" ? `0 0 8px ${accentColor}` : "none",
               }}
             />
             <span className="text-sm font-medium text-slate-900">{name}</span>
@@ -65,7 +77,14 @@ export function WorkerCard({ name, status, progress, accentColor }: WorkerCardPr
           <div className="relative w-12 h-12">
             <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
               {/* Background circle */}
-              <circle cx="24" cy="24" r="20" fill="none" stroke="#e2e8f0" strokeWidth="4" />
+              <circle
+                cx="24"
+                cy="24"
+                r="20"
+                fill="none"
+                stroke="#e2e8f0"
+                strokeWidth="4"
+              />
               {/* Progress circle */}
               <circle
                 cx="24"
@@ -78,12 +97,17 @@ export function WorkerCard({ name, status, progress, accentColor }: WorkerCardPr
                 strokeDasharray={`${(progress / 100) * 125.6} 125.6`}
                 className="transition-all duration-300"
                 style={{
-                  filter: status === "RUNNING" ? `drop-shadow(0 0 4px ${accentColor})` : "none",
+                  filter:
+                    status === "RUNNING"
+                      ? `drop-shadow(0 0 4px ${accentColor})`
+                      : "none",
                 }}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-semibold text-slate-700">{Math.round(progress)}%</span>
+              <span className="text-xs font-semibold text-slate-700">
+                {Math.round(progress)}%
+              </span>
             </div>
           </div>
 
@@ -94,8 +118,10 @@ export function WorkerCard({ name, status, progress, accentColor }: WorkerCardPr
                 className="h-full rounded-full transition-all duration-300"
                 style={{
                   width: `${progress}%`,
-                  backgroundColor: status === "COMPLETED" ? "#10b981" : accentColor,
-                  boxShadow: status === "RUNNING" ? `0 0 8px ${accentColor}` : "none",
+                  backgroundColor:
+                    status === "COMPLETED" ? "#10b981" : accentColor,
+                  boxShadow:
+                    status === "RUNNING" ? `0 0 8px ${accentColor}` : "none",
                 }}
               />
             </div>
@@ -108,5 +134,5 @@ export function WorkerCard({ name, status, progress, accentColor }: WorkerCardPr
         </div>
       </div>
     </div>
-  )
+  );
 }

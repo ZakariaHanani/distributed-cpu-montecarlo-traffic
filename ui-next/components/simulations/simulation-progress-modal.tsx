@@ -81,19 +81,19 @@ export function SimulationProgressModal({
       }}
     >
       <DialogContent
-        className="left-[calc(50%+5cm)] max-w-[calc(100%-4cm)] max-h-[calc(100vh-4cm)] overflow-y-auto p-5 sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-[80rem]"
+        className="max-w-[calc(100%-4cm)] max-h-[calc(100vh-4cm)] overflow-y-auto p-5 sm:max-w-2xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-[80rem]"
         showCloseButton={false}
       >
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-900 p-2.5 rounded-xl">
+          <div className="relative flex items-center">
+            <div className="absolute left-0 bg-slate-900 p-2.5 rounded-xl">
               {isCompleted ? (
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               ) : (
                 <Server className="w-5 h-5 text-indigo-400" />
               )}
             </div>
-            <div>
+            <div className="w-full flex flex-col items-center text-center">
               <DialogTitle className="text-xl">
                 {isCompleted
                   ? "Simulation Completed"
