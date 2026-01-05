@@ -355,7 +355,7 @@ We welcome contributions! Please:
 
 ```bash
 # 1. Clone & Build
-git clone <repo-url> && cd repo
+git clone https://github.com/ZakariaHanani/distributed-cpu-montecarlo-traffic && cd repo
 mvn clean install
 
 # 2. Start Services (in separate terminals)
