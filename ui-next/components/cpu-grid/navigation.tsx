@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronDown, Menu, Moon, Sun } from "lucide-react";
-import { useTheme } from "@/hooks/use-theme";
+import { ChevronDown, Menu } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { ProfileMenu } from "@/components/ui/profile-menu";
 import { useAuth } from "@/hooks/useAuth";
@@ -81,7 +80,6 @@ export function Navigation({
 }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
-  const { theme, toggleTheme } = useTheme();
   const { isAuthed } = useAuth();
   const isAuthView = currentView === "login" || currentView === "signup";
 
@@ -141,7 +139,7 @@ export function Navigation({
   ].join(" ");
 
   const innerClassName = [
-    "flex w-full items-center justify-between gap-5 min-w-0",
+    "flex w-full items-center gap-5 min-w-0",
     "transition-[padding,height] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
     isScrolled ? "h-14 px-4 sm:px-6" : "h-[60px] px-5 sm:px-7",
   ].join(" ");
@@ -157,7 +155,7 @@ export function Navigation({
       <Toaster richColors position="top-center" />
       <nav className={containerClassName}>
         <div className={innerClassName}>
-          <div className="flex items-center shrink-0 whitespace-nowrap">
+          <div className="flex-1 flex items-center justify-start min-w-0">
             <button
               onClick={() => setCurrentView("home")}
               className="flex items-center gap-3 group shrink-0 whitespace-nowrap"
@@ -201,8 +199,8 @@ export function Navigation({
             </button>
           </div>
 
-          <div className="flex-1 min-w-0 flex items-center justify-center">
-            <div className="hidden lg:flex items-center min-w-0">
+          <div className="flex-none flex items-center justify-center">
+            <div className="hidden lg:flex items-center">
               <div className="flex items-center gap-1 lg:gap-2 min-w-0">
                 {navLinks.map((link) => (
                   <div key={link.href} className="flex items-center">
@@ -342,53 +340,7 @@ export function Navigation({
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 lg:gap-3 shrink-0 whitespace-nowrap">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              title={theme === "dark" ? "Light mode" : "Dark mode"}
-              className="
-                relative flex h-9 w-9 items-center justify-center
-                rounded-full border border-slate-200 bg-white/80
-                transition-[transform,box-shadow,background-color,border-color] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                hover:-translate-y-[1px] hover:shadow-glow
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70
-                motion-reduce:transition-none motion-reduce:hover:translate-y-0
-                dark:bg-slate-900 dark:border-slate-700
-              "
-            >
-              <span
-                className={`
-                  absolute inset-0 rounded-full bg-gradient-to-br
-                  from-indigo-500/15 via-violet-500/15 to-rose-500/15
-                  transition-opacity duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${theme === "dark" ? "opacity-100" : "opacity-0"}
-                `}
-              />
-              <span
-                className={`
-                  relative flex items-center justify-center
-                  transition-transform duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                  ${
-                    theme === "dark"
-                      ? "rotate-180 scale-110"
-                      : "rotate-0 scale-100"
-                  }
-                `}
-              >
-                {theme === "dark" ? (
-                  <Sun className="h-4 w-4 text-amber-300" />
-                ) : (
-                  <Moon className="h-4 w-4 text-slate-800" />
-                )}
-              </span>
-              <span className="sr-only">
-                {theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"}
-              </span>
-            </button>
-
+          <div className="flex-1 flex items-center justify-end gap-2 lg:gap-3 shrink-0 whitespace-nowrap">
             {isAuthed && <ProfileMenu setCurrentView={setCurrentView} />}
 
             {!isAuthed && (
