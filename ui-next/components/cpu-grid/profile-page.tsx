@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import {
+  AlertTriangle,
   ArrowLeft,
   BadgeCheck,
   Calendar,
@@ -10,6 +11,7 @@ import {
   Cpu,
   Database,
   Gauge,
+  Hourglass,
   KeyRound,
   Lock,
   Sparkles,
@@ -430,6 +432,14 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
     ? formatAvgExecution(stats.avgExecutionMs)
     : "—";
   const lastRunValue = stats ? formatLastRun(stats.lastRunAt) : "—";
+  const pendingSimulationsValue =
+    stats && Number.isFinite(stats.pendingSimulations)
+      ? stats.pendingSimulations.toLocaleString()
+      : "—";
+  const failedSimulationsValue =
+    stats && Number.isFinite(stats.failedSimulations)
+      ? stats.failedSimulations.toLocaleString()
+      : "—";
 
   const statCards = [
     {
@@ -455,6 +465,18 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
       label: "Last run date",
       value: lastRunValue,
       accent: "from-rose-500 via-fuchsia-500 to-violet-500",
+    },
+    {
+      icon: Hourglass,
+      label: "Pending simulations",
+      value: pendingSimulationsValue,
+      accent: "from-amber-500 via-orange-500 to-yellow-500",
+    },
+    {
+      icon: AlertTriangle,
+      label: "Failed simulations",
+      value: failedSimulationsValue,
+      accent: "from-red-500 via-pink-500 to-rose-500",
     },
   ] as const;
 
@@ -819,36 +841,40 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
                     </Button>
                   </div>
 
-                  <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {statCards.map((stat) => (
                       <div
                         key={stat.label}
                         className="
-                          rounded-[1.75rem] border border-white/60 bg-white/60 backdrop-blur-2xl
-                          p-7 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.35)]
+                          group relative overflow-hidden
+                          rounded-[2rem] border border-white/60 bg-white/60 backdrop-blur-2xl
+                          p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.35)]
                           transition-all duration-200 ease-out
                           hover:-translate-y-[2px] hover:shadow-[0_30px_80px_-45px_rgba(15,23,42,0.45)]
+                          flex flex-col
                         "
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="flex size-10 items-center justify-center rounded-full bg-slate-900">
-                            <stat.icon className="size-5 text-indigo-300" />
+                        <div className="flex items-start justify-between mb-8">
+                          <div className="text-sm font-semibold text-slate-500 uppercase tracking-wider pr-4">
+                            {stat.label}
                           </div>
-                          <div className="min-w-0">
-                            <div className="text-sm text-slate-500 truncate">
-                              {stat.label}
-                            </div>
-                            <div className="text-3xl font-bold text-slate-900 tracking-tight">
-                              {isStatsBooting ? (
-                                <Skeleton className="h-8 w-20 rounded-full bg-slate-200/80" />
-                              ) : (
-                                stat.value
-                              )}
-                            </div>
+                          <div className="shrink-0 flex size-10 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-900 group-hover:text-indigo-200 transition-colors duration-300">
+                            <stat.icon className="size-5" />
                           </div>
                         </div>
+
+                        <div className="mt-auto">
+                          <div className="text-4xl font-bold text-slate-900 tracking-tighter tabular-nums">
+                            {isStatsBooting ? (
+                              <Skeleton className="h-10 w-28 rounded-lg bg-slate-200/80" />
+                            ) : (
+                              stat.value
+                            )}
+                          </div>
+                        </div>
+
                         <div
-                          className={`mt-6 h-[3px] rounded-full bg-gradient-to-r ${stat.accent} bg-[length:300%_100%] animate-[gradient-flow_6s_ease_infinite] opacity-40`}
+                          className={`absolute bottom-0 left-0 right-0 h-[4px] bg-gradient-to-r ${stat.accent} bg-[length:300%_100%] animate-[gradient-flow_6s_ease_infinite] opacity-60 group-hover:opacity-100 transition-opacity duration-300`}
                         />
                       </div>
                     ))}

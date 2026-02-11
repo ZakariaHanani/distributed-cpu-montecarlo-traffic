@@ -17,7 +17,7 @@ type TeamMember = {
   };
 };
 
-const team: TeamMember[] = [
+const TEAM_MEMBERS: TeamMember[] = [
   {
     name: "Mohamed Ouijjane",
     role: "Full-Stack Contributor (Frontend + Coordination)",
@@ -59,7 +59,7 @@ const team: TeamMember[] = [
     role: "Backend Developer",
     bio: "API foundations, simulation job lifecycle, and system integration support.",
     avatar: "AK",
-    avatarSrc: undefined,
+    avatarSrc: "/images/team/ayoub-karkouri.jpeg",
     tag: {
       label: "Backend",
       className:
@@ -135,7 +135,7 @@ function TeamAvatar({
   );
 }
 
-export function Team() {
+export const Team = () => {
   const rootRef = useRef<HTMLElement>(null);
   const hasAnimatedRef = useRef(false);
 
@@ -264,7 +264,7 @@ export function Team() {
                 aria-hidden={copyIndex === 1}
                 className="flex flex-nowrap gap-6 pr-6"
               >
-                {team.map((member) => (
+                {TEAM_MEMBERS.map((member) => (
                   <div
                     key={`${member.name}-${copyIndex}`}
                     className="shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]"
@@ -281,9 +281,6 @@ export function Team() {
                           ].join(" ")}
                         >
                           {member.tag.label}
-                        </span>
-                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-300">
-                          v0.1
                         </span>
                       </div>
 
@@ -400,4 +397,6 @@ export function Team() {
       `}</style>
     </section>
   );
-}
+};
+
+export default Team;
