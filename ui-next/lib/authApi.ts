@@ -1,3 +1,55 @@
+export type SimulationStatus =
+  | "CREATED"
+  | "PENDING"
+  | "RUNNING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED";
+
+export type SimulationListItem = {
+  id: number;
+  jobId: string;
+  status: SimulationStatus;
+  gridSize: number;
+  numberOfCars: number;
+  iterations: number;
+  weather: string;
+  trafficLightsEnabled: boolean;
+  seed: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SimulationResultData = {
+  totalJamsDetected: number | null;
+  averageSpeed: number | null;
+  minSpeedObserved: number | null;
+  maxSpeedObserved: number | null;
+  accidentProbability: number | null;
+  congestionJson: string | null;
+  metricsJson: string | null;
+  executionTimeMs: number | null;
+  resultJson: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+export type SimulationDetail = {
+  id: number;
+  userId: number | null;
+  jobId: string;
+  status: SimulationStatus;
+  gridSize: number;
+  numberOfCars: number;
+  iterations: number;
+  weather: string;
+  trafficLightsEnabled: boolean;
+  seed: number;
+  createdAt: string;
+  updatedAt: string;
+  result: SimulationResultData | null;
+};
+
 export type SignupPayload = {
   firstName: string;
   lastName: string;
@@ -323,6 +375,8 @@ export type UserStats = {
   avgExecutionMs: number;
   successRate: number;
   lastRunAt: string | null;
+  pendingSimulations: number;
+  failedSimulations: number;
 };
 
 export async function getMe(): Promise<UserMe> {
@@ -420,5 +474,19 @@ export async function getMyStats(): Promise<UserStats> {
 export async function deleteHistory(): Promise<{ message: string }> {
   return authedRequestJson<{ message: string }>("/api/users/me/history", {
     method: "DELETE",
+  });
+}
+
+export async function getMySimulations(): Promise<SimulationListItem[]> {
+  return authedRequestJson<SimulationListItem[]>("/api/simulations/my", {
+    method: "GET",
+  });
+}
+
+export async function getSimulationDetail(
+  id: number
+): Promise<SimulationDetail> {
+  return authedRequestJson<SimulationDetail>(`/api/simulations/${id}`, {
+    method: "GET",
   });
 }

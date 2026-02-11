@@ -1,5 +1,8 @@
 package com.trafficjam1.authservice.user;
 
+import com.trafficjam1.authservice.simulation.SimulationEntity;
+import com.trafficjam1.authservice.simulation.SimulationRepository;
+import com.trafficjam1.authservice.simulation.SimulationStatus;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -7,7 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -15,10 +21,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final SimulationRepository simulationRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserController(UserRepository userRepository, SimulationRepository simulationRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.simulationRepository = simulationRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -79,7 +87,39 @@ public class UserController {
     public ResponseEntity<?> getStats() {
         User user = getCurrentUserOrNull();
         if (user == null) return ResponseEntity.status(404).build();
-        return ResponseEntity.ok(new UserStatsResponse(0, 0, 0.0, null));
+
+        List<SimulationEntity> sims = simulationRepository.findAllByUser_IdOrderByCreatedAtDesc(user.getId());
+
+        int totalSimulations = sims.size();
+        int completed = 0;
+        int failed = 0;
+        int pending = 0;
+        long totalExecutionTime = 0;
+        Instant lastRunAt = sims.isEmpty() ? null : sims.get(0).getCreatedAt();
+
+        for (SimulationEntity sim : sims) {
+            if (sim.getStatus() == SimulationStatus.COMPLETED) {
+                completed++;
+                Duration duration = Duration.between(sim.getCreatedAt(), sim.getUpdatedAt());
+                totalExecutionTime += duration.toMillis();
+            } else if (sim.getStatus() == SimulationStatus.FAILED) {
+                failed++;
+            } else {
+                pending++;
+            }
+        }
+
+        double successRate = totalSimulations == 0 ? 0.0 : (double) completed / totalSimulations;
+        long avgExecutionMs = completed == 0 ? 0 : totalExecutionTime / completed;
+
+        return ResponseEntity.ok(new UserStatsResponse(
+                totalSimulations,
+                avgExecutionMs,
+                successRate,
+                lastRunAt,
+                pending,
+                failed
+        ));
     }
 
     @DeleteMapping("/history")

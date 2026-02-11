@@ -11,6 +11,7 @@ echo [master.bat] Using Java: %JAVA_CMD%
 
 set "CP=%ROOT_DIR%\common\target\classes;%ROOT_DIR%\master\target\classes"
 echo [master.bat] Using classpath: %CP%
+dir "%ROOT_DIR%\common\target\classes"
 
 "%JAVA_CMD%" -cp "%CP%" com.grid.master.MasterApp
 
