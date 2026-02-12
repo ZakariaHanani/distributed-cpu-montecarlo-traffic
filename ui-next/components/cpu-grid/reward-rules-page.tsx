@@ -280,7 +280,7 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
   };
 
   const handleGetStarted = () => {
-    router.push("/become-worker");
+    router.push("/eligibility");
   };
 
   return (
