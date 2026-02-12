@@ -38,6 +38,7 @@ import {
 } from "@/components/simulations/simulation-progress-modal";
 import { getToken, isAuthenticated } from "@/lib/authApi";
 import { Navigation } from "@/components/cpu-grid/navigation";
+import { DemoDisclaimer } from "@/components/cpu-grid/demo-disclaimer";
 
 type Weather = "SUNNY" | "RAINY" | "FOGGY";
 
@@ -619,6 +620,7 @@ export default function NewSimulationPage() {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start lg:items-stretch justify-center lg:justify-between">
           {/* Configuration Panel */}
           <div className="w-full lg:w-1/2 lg:max-w-md space-y-8">
+            <DemoDisclaimer className="mb-2" />
             {/* Grid Size */}
             <div className="space-y-3">
               <Label
