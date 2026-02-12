@@ -1,13 +1,9 @@
 "use client";
 
 import { Github, Linkedin, Twitter, Youtube, ArrowUpRight } from "lucide-react";
-import type { ViewType } from "@/app/page";
+import Link from "next/link";
 
-interface FooterProps {
-  setCurrentView: (view: ViewType) => void;
-}
-
-export function Footer({ setCurrentView }: FooterProps) {
+export function Footer() {
   const quickLinks = [
     { label: "Home", href: "#" },
     { label: "Docs", href: "#" },
@@ -117,24 +113,24 @@ export function Footer({ setCurrentView }: FooterProps) {
         <div className="py-8 border-t border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Legal Links */}
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <button
-              onClick={() => setCurrentView("privacy")}
+            <Link
+              href="/legal/privacy"
               className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-sm"
             >
               Privacy Policy
-            </button>
-            <button
-              onClick={() => setCurrentView("terms")}
+            </Link>
+            <Link
+              href="/legal/terms"
               className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-sm"
             >
               Terms of Service
-            </button>
-            <button
-              onClick={() => setCurrentView("cookies")}
+            </Link>
+            <Link
+              href="/legal/cookies"
               className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors text-sm"
             >
               Cookie Policy
-            </button>
+            </Link>
           </div>
 
           {/* Copyright */}

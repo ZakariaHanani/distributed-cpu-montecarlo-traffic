@@ -68,20 +68,34 @@ function CpuRoadLogo({ className }: { className?: string }) {
 }
 
 interface NavigationProps {
-  currentView: ViewType;
-  setCurrentView: (view: ViewType) => void;
+  currentView?: ViewType;
+  setCurrentView?: (view: ViewType) => void;
   isVisible?: boolean;
 }
 
+import { usePathname, useRouter } from "next/navigation";
+
 export function Navigation({
-  currentView,
-  setCurrentView,
+  currentView: propView,
   isVisible = true,
 }: NavigationProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const { isAuthed } = useAuth();
-  const isAuthView = currentView === "login" || currentView === "signup";
+  
+  // Use pathname to determine view if propView is not specific
+  const currentView = propView || (pathname === "/" ? "home" : pathname.slice(1) as ViewType);
+  const isAuthView = pathname === "/login" || pathname === "/signup";
+
+  useEffect(() => {
+    // Set active link based on pathname
+    if (pathname === "/") setActiveLink("Home");
+    else if (pathname === "/simulations") setActiveLink("Simulations");
+    else if (pathname === "/become-worker") setActiveLink("Workers");
+    else if (pathname === "/team") setActiveLink("Team");
+  }, [pathname]);
 
   useEffect(() => {
     const threshold = 12;
@@ -92,33 +106,34 @@ export function Navigation({
   }, []);
 
   const navLinks = [
-    { label: "Home", href: "#home", action: "scroll" as const },
-    { label: "Simulations", href: "#simulations", action: "scroll" as const },
-    { label: "Workers", href: "#workers", action: "flow" as const },
-    { label: "Architecture", href: "#architecture", action: "scroll" as const },
-    { label: "Team", href: "#team", action: "scroll" as const },
+    { label: "Home", href: "/", action: "link" as const },
+    { label: "Simulations", href: "/simulations", action: "link" as const },
+    { label: "Workers", href: "/become-worker", action: "link" as const },
+    { label: "Architecture", href: "/#architecture", action: "scroll" as const },
+    { label: "Team", href: "/team", action: "link" as const },
   ];
 
   const scrollTo = (href: string) => {
-    const element = document.querySelector(href);
+    const id = href.split("#")[1];
+    const element = document.getElementById(id);
     element?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleNavClick = (
     href: string,
     label: string,
-    action: "scroll" | "flow"
+    action: "scroll" | "link"
   ) => {
     setActiveLink(label);
 
-    if (action === "flow") {
-      setCurrentView("become_worker");
+    if (action === "link") {
+      router.push(href);
       return;
     }
 
-    if (currentView !== "home") {
-      setCurrentView("home");
-      setTimeout(() => scrollTo(href), 50);
+    if (pathname !== "/") {
+      router.push("/");
+      setTimeout(() => scrollTo(href), 100);
       return;
     }
 
@@ -157,7 +172,7 @@ export function Navigation({
         <div className={innerClassName}>
           <div className="flex-1 flex items-center justify-start min-w-0">
             <button
-              onClick={() => setCurrentView("home")}
+              onClick={() => router.push("/")}
               className="flex items-center gap-3 group shrink-0 whitespace-nowrap"
             >
               <div className="relative">
@@ -254,7 +269,7 @@ export function Navigation({
                           <DropdownMenuItem
                             onSelect={(event) => {
                               event.preventDefault();
-                              handleNavClick(link.href, link.label, "scroll");
+                              handleNavClick("/#simulations", link.label, "scroll");
                             }}
                             className="cursor-pointer rounded-lg"
                           >
@@ -318,7 +333,7 @@ export function Navigation({
                   <DropdownMenuItem
                     onSelect={(event) => {
                       event.preventDefault();
-                      handleNavClick("#simulations", "Simulations", "scroll");
+                      handleNavClick("/#simulations", "Simulations", "scroll");
                     }}
                     className="cursor-pointer rounded-lg"
                   >
@@ -341,12 +356,12 @@ export function Navigation({
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-2 lg:gap-3 shrink-0 whitespace-nowrap">
-            {isAuthed && <ProfileMenu setCurrentView={setCurrentView} />}
+            {isAuthed && <ProfileMenu />}
 
             {!isAuthed && (
               <>
                 <button
-                  onClick={() => setCurrentView("login")}
+                  onClick={() => router.push("/login")}
                   className="
                     relative whitespace-nowrap
                     px-3 sm:px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300
@@ -362,7 +377,7 @@ export function Navigation({
                 </button>
 
                 <button
-                  onClick={() => setCurrentView("signup")}
+                  onClick={() => router.push("/signup")}
                   className="
                     relative whitespace-nowrap
                     px-4 sm:px-5 py-2 text-sm font-semibold text-white
