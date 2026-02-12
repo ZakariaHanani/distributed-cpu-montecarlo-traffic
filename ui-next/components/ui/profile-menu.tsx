@@ -15,7 +15,6 @@ import {
   Workflow,
 } from "lucide-react";
 
-import type { ViewType } from "@/app/page";
 import { useAuth } from "@/hooks/useAuth";
 import {
   clearAuthMeta,
@@ -24,11 +23,10 @@ import {
   getRoleFromToken,
 } from "@/lib/authApi";
 
-type ProfileMenuProps = {
-  setCurrentView: (view: ViewType) => void;
-};
+import { useRouter } from "next/navigation";
 
-export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
+export function ProfileMenu() {
+  const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { token, name } = useAuth();
@@ -100,35 +98,35 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
   }, [isOpen, isPresent]);
 
   const handleVisitProfile = () => {
-    setCurrentView(isAdmin ? "admin_profile" : "profile");
+    router.push(isAdmin ? "/admin/profile" : "/profile");
     close();
   };
 
   const handleManageWorkers = () => {
     if (!isAdmin) {
       toast("Admin access required");
-      setCurrentView("home");
+      router.push("/");
       close();
       return;
     }
-    setCurrentView("admin_workers");
+    router.push("/admin/workers");
     close();
   };
 
   const handleSystemLogs = () => {
     if (!isAdmin) {
       toast("Admin access required");
-      setCurrentView("home");
+      router.push("/");
       close();
       return;
     }
-    setCurrentView("admin_audit");
+    router.push("/admin/audit");
     close();
   };
 
   const handleMySimulations = () => {
     if (isAdmin) return;
-    setCurrentView("simulations");
+    router.push("/simulations");
     close();
   };
 
@@ -144,7 +142,7 @@ export function ProfileMenu({ setCurrentView }: ProfileMenuProps) {
     clearDisplayName();
     window.dispatchEvent(new Event("auth:changed"));
     toast("Signed out");
-    setCurrentView("home");
+    router.push("/");
     close();
   };
 

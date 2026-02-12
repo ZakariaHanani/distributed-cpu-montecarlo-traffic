@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -48,13 +47,12 @@ import {
   type UserStats,
 } from "@/lib/authApi";
 
-type ProfilePageProps = {
-  setCurrentView: (view: ViewType) => void;
-};
+import { useRouter } from "next/navigation";
 
 type ProfileTabKey = "profile" | "stats" | "security" | "data";
 
-export function ProfilePage({ setCurrentView }: ProfilePageProps) {
+export function ProfilePage() {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [isAllowed, setIsAllowed] = useState(false);
@@ -101,7 +99,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
   useEffect(() => {
     const token = getToken();
     if (!token) {
-      setCurrentView("login");
+      router.push("/login");
       toast("Please sign in");
       return;
     }
@@ -149,7 +147,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
           clearAuthMeta();
           clearDisplayName();
           window.dispatchEvent(new Event("auth:changed"));
-          setCurrentView("login");
+          router.push("/login");
           toast("Session expired. Please sign in again.");
           return;
         }
@@ -164,7 +162,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
     return () => {
       cancelled = true;
     };
-  }, [setCurrentView]);
+  }, [router]);
 
   useLayoutEffect(() => {
     if (!isAllowed || !rootRef.current) return;
@@ -212,7 +210,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
     clearAuthMeta();
     clearDisplayName();
     window.dispatchEvent(new Event("auth:changed"));
-    setCurrentView("login");
+    router.push("/login");
     toast("Session expired. Please sign in again.");
   };
 
@@ -335,6 +333,8 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
               avgExecutionMs: 0,
               successRate: 0,
               lastRunAt: null,
+              pendingSimulations: 0,
+              failedSimulations: 0,
             }
           : prev
       );
@@ -370,7 +370,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
       setDeleteAccountPhrase("");
       setDeleteAccountPassword("");
       setDeleteAccountConfirmed(false);
-      setCurrentView("login");
+      router.push("/login");
       toast("Account deleted");
     } catch (err) {
       handleApiError(err, "Failed to delete account");
@@ -511,7 +511,7 @@ export function ProfilePage({ setCurrentView }: ProfilePageProps) {
               setActiveTab("security");
               return;
             }
-            setCurrentView("home");
+            router.push("/");
           }}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
           data-profile-animate

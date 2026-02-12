@@ -24,11 +24,14 @@ import {
 } from "@/lib/authApi";
 import { useAuth } from "@/hooks/useAuth";
 
+import { useRouter } from "next/navigation";
+
 type MySimulationsPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const { token } = useAuth();
   const [isAllowed, setIsAllowed] = useState(false);
@@ -66,11 +69,11 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
     const tokenRole = token ? getRoleFromToken(token) : null;
     if (!token) {
       toast("Please sign in");
-      setCurrentView("login");
+      router.push("/login");
       return;
     }
     if (tokenRole === "ADMIN") {
-      setCurrentView("home");
+      router.push("/");
       return;
     }
     setIsAllowed(true);
@@ -94,7 +97,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
           clearAuthMeta();
           clearDisplayName();
           window.dispatchEvent(new Event("auth:changed"));
-          setCurrentView("login");
+          router.push("/login");
           toast("Session expired. Please sign in again.");
           return;
         }
@@ -298,7 +301,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
         clearAuthMeta();
         clearDisplayName();
         window.dispatchEvent(new Event("auth:changed"));
-        setCurrentView("login");
+        router.push("/login");
         toast("Session expired. Please sign in again.");
         return;
       }
@@ -388,7 +391,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
     >
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
-          onClick={() => setCurrentView("home")}
+          onClick={() => router.push("/")}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
           data-sim-animate
         >

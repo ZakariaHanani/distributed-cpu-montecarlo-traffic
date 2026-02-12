@@ -19,10 +19,11 @@ import {
 import { toast } from "sonner";
 
 import type { ViewType } from "@/app/page";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type RewardRulesPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type EarnCard = {
@@ -42,6 +43,7 @@ type TierCard = {
 };
 
 export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const openEarnTooltipRef = useRef<HTMLDivElement | null>(null);
   const [openEarnTooltip, setOpenEarnTooltip] = useState<string | null>(null);
@@ -274,20 +276,11 @@ export function RewardRulesPage({ setCurrentView }: RewardRulesPageProps) {
   }, [isExampleReady, exampleSeed]);
 
   const handleBack = () => {
-    setCurrentView("become_worker");
+    router.push("/become-worker");
   };
 
   const handleGetStarted = () => {
-    setCurrentView("become_worker");
-    window.setTimeout(() => {
-      const target = document.querySelector("#getting-started");
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.scrollBy({ top: -80, left: 0, behavior: "auto" });
-        return;
-      }
-      toast("Getting started — coming soon");
-    }, 120);
+    router.push("/become-worker");
   };
 
   return (

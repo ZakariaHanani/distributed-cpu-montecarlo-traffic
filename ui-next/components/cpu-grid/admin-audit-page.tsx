@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { ArrowLeft, Search, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 
+import { useRouter } from "next/navigation";
 import type { ViewType } from "@/app/page";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +19,7 @@ import {
 import { getRoleFromToken, getToken } from "@/lib/authApi";
 
 type AdminAuditPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type AuditType = "AUTH" | "WORKER" | "SECURITY";
@@ -136,6 +137,7 @@ function statusTone(status: AuditStatus) {
 }
 
 export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [isAllowed, setIsAllowed] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
@@ -183,12 +185,12 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
     const role = token ? getRoleFromToken(token) : null;
     if (!token) {
       toast("Please sign in");
-      setCurrentView("login");
+      router.push("/login");
       return;
     }
     if (role !== "ADMIN") {
       toast("Not authorized");
-      setCurrentView("home");
+      router.push("/");
       return;
     }
     setIsAllowed(true);
@@ -230,7 +232,7 @@ export function AdminAuditPage({ setCurrentView }: AdminAuditPageProps) {
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
           type="button"
-          onClick={() => setCurrentView("home")}
+          onClick={() => router.push("/")}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
           data-audit-animate
         >

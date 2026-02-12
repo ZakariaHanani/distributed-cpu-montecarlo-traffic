@@ -3,13 +3,8 @@
 import { ArrowRight, Cpu, Globe, Server, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import type { ViewType } from "@/app/page";
 
-type HeroProps = {
-  setCurrentView: (view: ViewType) => void;
-};
-
-export function Hero({ setCurrentView }: HeroProps) {
+export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-32 pb-20 overflow-hidden">
       {/* Background gradient orbs */}
@@ -61,7 +56,7 @@ export function Hero({ setCurrentView }: HeroProps) {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => setCurrentView("become_worker")}
+            asChild
             className="
                 h-14 rounded-full px-8 text-lg
                 bg-white/60 dark:bg-[rgb(var(--glass)/var(--glass-alpha))] backdrop-blur-xl
@@ -73,8 +68,10 @@ export function Hero({ setCurrentView }: HeroProps) {
                 hover:shadow-[0_22px_70px_-44px_rgba(99,102,241,0.40)]
               "
           >
-            <Server className="mr-2 w-5 h-5 text-indigo-600" />
-            Join the Worker Network
+            <Link href="/become-worker">
+              <Server className="mr-2 w-5 h-5 text-indigo-600" />
+              Join the Worker Network
+            </Link>
           </Button>
         </div>
 

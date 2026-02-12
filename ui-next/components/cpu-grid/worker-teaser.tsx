@@ -3,15 +3,12 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Cpu, ShieldCheck, Sparkles } from "lucide-react";
-
-import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 
-type WorkerTeaserProps = {
-  setCurrentView: (view: ViewType) => void;
-};
+import { useRouter } from "next/navigation";
 
-export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
+export function WorkerTeaser() {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const hasAnimatedRef = useRef(false);
 
@@ -212,7 +209,7 @@ export function WorkerTeaser({ setCurrentView }: WorkerTeaserProps) {
             <div className="mt-8 flex justify-center" data-worker-teaser="cta">
               <Button
                 type="button"
-                onClick={() => setCurrentView("become_worker")}
+                onClick={() => router.push("/become-worker")}
                 className="
                   relative h-12 rounded-full px-8 text-white
                   bg-[linear-gradient(90deg,rgba(15,23,42,0.98),rgba(79,70,229,0.95),rgba(139,92,246,0.95),rgba(15,23,42,0.98))]
