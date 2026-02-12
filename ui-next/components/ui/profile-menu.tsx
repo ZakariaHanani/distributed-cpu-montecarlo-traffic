@@ -130,12 +130,6 @@ export function ProfileMenu() {
     close();
   };
 
-  const handleExportResults = () => {
-    if (isAdmin) return;
-    toast("Export coming soon");
-    close();
-  };
-
   const handleSignOut = () => {
     clearToken();
     clearAuthMeta();
@@ -313,29 +307,6 @@ export function ProfileMenu() {
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-300 leading-tight">
                     Runs, durations, results
-                  </span>
-                </span>
-              </button>
-
-              <button
-                type="button"
-                role="menuitem"
-                onClick={handleExportResults}
-                className="
-                  w-full flex items-center gap-3 px-3 py-3 rounded-[1.1rem]
-                  text-left text-sm font-medium text-slate-800 dark:text-slate-200
-                  transition-colors hover:bg-slate-900/5 dark:hover:bg-white/10
-                "
-              >
-                <span className="flex size-9 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-700 ring-1 ring-emerald-500/15">
-                  <FileDown className="size-4" />
-                </span>
-                <span className="flex flex-col">
-                  <span className="text-sm font-medium text-slate-900 dark:text-slate-100 leading-tight">
-                    Export results
-                  </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-300 leading-tight">
-                    CSV / PDF (coming soon)
                   </span>
                 </span>
               </button>

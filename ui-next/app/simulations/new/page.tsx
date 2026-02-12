@@ -915,18 +915,12 @@ export default function NewSimulationPage() {
       {showResults && finalResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-full max-w-2xl mx-4 bg-white dark:bg-[rgb(var(--glass)/0.9)] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                 Monte Carlo Results
               </h3>
-              <button
-                onClick={() => setShowResults(false)}
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100"
-              >
-                Close
-              </button>
             </div>
-            <div className="px-6 py-5 space-y-4">
+            <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
                   <div className="text-sm text-slate-500 dark:text-slate-300">
@@ -1004,12 +998,19 @@ export default function NewSimulationPage() {
                 </div>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center gap-3">
               <Button
+                variant="outline"
                 onClick={() => setShowResults(false)}
-                className="rounded-xl"
+                className="w-full sm:flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200"
               >
                 Close
+              </Button>
+              <Button
+                onClick={() => router.push("/simulations")}
+                className="w-full sm:flex-[2] h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 shadow-lg shadow-indigo-500/10 transition-all duration-200"
+              >
+                View My Simulations
               </Button>
             </div>
           </div>

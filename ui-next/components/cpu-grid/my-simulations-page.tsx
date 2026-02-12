@@ -416,7 +416,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={handleComingSoon}
+                onClick={() => router.push("/simulations/new")}
                 className="
                   h-11 rounded-full px-5
                   bg-white/70 dark:bg-white/5 border-white/60 dark:border-white/10
@@ -472,7 +472,7 @@ export function MySimulationsPage({ setCurrentView }: MySimulationsPageProps) {
 
                     <button
                       type="button"
-                      onClick={handleComingSoon}
+                      onClick={() => router.push("/simulations/new")}
                       className="
                         group relative mt-7 inline-flex h-12 items-center justify-center gap-2
                         rounded-full px-7 text-sm font-semibold text-slate-900 dark:text-slate-100

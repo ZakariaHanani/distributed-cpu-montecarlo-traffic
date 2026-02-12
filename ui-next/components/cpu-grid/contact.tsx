@@ -111,7 +111,44 @@ export function Contact() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    toast("Message queued (UI demo). We’ll connect backend soon.");
+    
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const subject = formData.get("subject") as string;
+    const message = formData.get("message") as string;
+
+    if (!name) {
+      toast.error("Please enter your full name.");
+      return;
+    }
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+    if (!category) {
+      toast.error("Please select a role or category.");
+      return;
+    }
+    if (!message) {
+      toast.error("Please enter your message.");
+      return;
+    }
+
+    const mailtoSubject = encodeURIComponent(subject || `Contact from ${name}`);
+    const bodyContent = `Name: ${name}\nEmail: ${email}\nRole: ${category}\n\nMessage:\n${message}`;
+    const mailtoBody = encodeURIComponent(bodyContent);
+    
+    const mailtoUrl = `mailto:mohamed.ouadra.84@edu.uiz.ac.ma?subject=${mailtoSubject}&body=${mailtoBody}`;
+    
+    // Open the user's default email client
+    window.location.href = mailtoUrl;
+    
+    // Optional: Reset form fields
+    event.currentTarget.reset();
+    setCategory("");
+    
+    toast.success("Opening your email client...");
   };
 
   return (
@@ -165,9 +202,12 @@ export function Contact() {
                     <div className="text-sm text-slate-500 dark:text-slate-300">
                       Email
                     </div>
-                    <div className="font-medium text-slate-900 dark:text-slate-100">
-                      cpugrid.team@university.edu
-                    </div>
+                    <a 
+                      href="mailto:mohamed.ouadra.84@edu.uiz.ac.ma"
+                      className="font-medium text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors"
+                    >
+                      mohamed.ouadra.84@edu.uiz.ac.ma
+                    </a>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">
                       Best for demos, collaborations, and support.
                     </div>
@@ -232,23 +272,24 @@ export function Contact() {
                       Follow development & issues
                     </div>
                     <div className="mt-3">
-                      <button
-                        type="button"
-                        disabled
-                        aria-label="CPU Grid Repository link coming soon"
-                        title="Link coming soon"
+                      <a
+                        href="https://github.com/ZakariaHanani/distributed-cpu-montecarlo-traffic"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="CPU Grid Repository"
                         className="
                           inline-flex items-center gap-2
                           rounded-xl border border-slate-200/70
                           dark:border-white/10
                           bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] px-4 py-2
                           text-sm font-semibold text-slate-700 dark:text-slate-200
-                          opacity-70 cursor-not-allowed
+                          hover:bg-slate-900 dark:hover:bg-white/10 hover:text-white dark:hover:text-slate-100
+                          transition-all duration-300 shadow-sm
                         "
                       >
                         <Github className="h-4 w-4" />
-                        CPU Grid Repository (coming soon)
-                      </button>
+                        CPU Grid Repository
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -280,7 +321,9 @@ export function Contact() {
                   </label>
                   <Input
                     id="contact-name"
+                    name="name"
                     placeholder="Full name"
+                    noValidate
                     className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
                 </div>
@@ -291,8 +334,10 @@ export function Contact() {
                   </label>
                   <Input
                     id="contact-email"
+                    name="email"
                     type="email"
                     placeholder="Email"
+                    noValidate
                     className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
                 </div>
@@ -324,6 +369,7 @@ export function Contact() {
                   </label>
                   <Input
                     id="contact-subject"
+                    name="subject"
                     placeholder="Subject"
                     className="h-12 rounded-xl border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:border-indigo-500/40"
                   />
@@ -335,6 +381,7 @@ export function Contact() {
                   </label>
                   <textarea
                     id="contact-message"
+                    name="message"
                     placeholder="Message"
                     rows={5}
                     className="w-full resize-none rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-[rgb(var(--glass)/0.55)] p-4 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500/40"
@@ -342,7 +389,10 @@ export function Contact() {
                 </div>
 
                 <div data-contact="field" className="pt-1">
-                  <Button className="h-12 w-full rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 font-medium text-white shadow-[0_18px_40px_-28px_rgba(99,102,241,0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-[1px] hover:shadow-[0_22px_50px_-30px_rgba(99,102,241,0.60)] active:translate-y-0 active:shadow-[0_14px_36px_-28px_rgba(99,102,241,0.45)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                  <Button 
+                    type="submit"
+                    className="h-12 w-full rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 font-medium text-white shadow-[0_18px_40px_-28px_rgba(99,102,241,0.55)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-[1px] hover:shadow-[0_22px_50px_-30px_rgba(99,102,241,0.60)] active:translate-y-0 active:shadow-[0_14px_36px_-28px_rgba(99,102,241,0.45)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  >
                     <Send className="mr-2 h-4 w-4" />
                     Send Message
                   </Button>

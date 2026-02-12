@@ -1,22 +1,22 @@
 "use client";
 
-import { Github, Linkedin, Twitter, Youtube, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {
+  const projectLink = "https://github.com/ZakariaHanani/distributed-cpu-montecarlo-traffic";
+  
   const quickLinks = [
-    { label: "Home", href: "#" },
-    { label: "Docs", href: "#" },
-    { label: "FAQ", href: "#" },
-    { label: "GitHub", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "Home", href: "/" },
+    { label: "Team", href: "/team" },
+    { label: "GitHub", href: projectLink },
+    { label: "Become Worker", href: "/become-worker" },
   ];
 
   const socialLinks = [
-    { icon: Github, label: "GitHub", href: "#" },
-    { icon: Linkedin, label: "LinkedIn", href: "#" },
-    { icon: Twitter, label: "X/Twitter", href: "#" },
-    { icon: Youtube, label: "YouTube", href: "#" },
+    { icon: Github, label: "GitHub", href: projectLink },
+    { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/mohamed-ouadra/" },
+    { icon: Mail, label: "Email", href: "mailto:mohamed.ouadra.84@edu.uiz.ac.ma" },
   ];
 
   return (
@@ -57,10 +57,15 @@ export function Footer() {
               Distributed systems university project dedicated to advancing
               traffic simulation through high-performance Monte Carlo methods.
             </p>
-            <div className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-300 font-medium hover:text-indigo-700 dark:hover:text-indigo-200 cursor-pointer group">
+            <a 
+              href={projectLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-300 font-medium hover:text-indigo-700 dark:hover:text-indigo-200 cursor-pointer group"
+            >
               View on GitHub
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
+            </a>
           </div>
 
           {/* Middle: Quick Links */}
@@ -72,12 +77,23 @@ export function Footer() {
               <ul className="space-y-4">
                 {quickLinks.map((link, i) => (
                   <li key={i}>
-                    <a
-                      href={link.href}
-                      className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
-                    >
-                      {link.label}
-                    </a>
+                    {link.href.startsWith("http") ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -96,6 +112,8 @@ export function Footer() {
                     key={i}
                     href={social.href}
                     aria-label={social.label}
+                    target={social.href.startsWith("http") ? "_blank" : undefined}
+                    rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-300 hover:bg-slate-900 dark:hover:bg-white/10 hover:text-white dark:hover:text-slate-100 transition-all duration-300"
                   >
                     <social.icon className="w-5 h-5" />

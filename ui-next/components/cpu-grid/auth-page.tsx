@@ -178,13 +178,7 @@ export function AuthPage({ mode }: AuthPageProps) {
   };
 
   const startOAuth = (provider: "google" | "github") => {
-    hideToast();
-    showToast({
-      type: "success",
-      title: "Coming Soon",
-      message: `${provider.charAt(0).toUpperCase() + provider.slice(1)} authentication is not yet available.`,
-    });
-    // window.location.href = `${authBaseUrl}/oauth2/authorization/${provider}`;
+    // Toast disabled - only showing hover tooltip now
   };
 
   useEffect(() => {
@@ -445,26 +439,43 @@ export function AuthPage({ mode }: AuthPageProps) {
           </p>
 
           <div className="grid grid-cols-2 gap-4 mb-8">
-            <Button
-              variant="outline"
-              className="h-12 rounded-xl bg-transparent"
-              type="button"
-              onClick={() => startOAuth("github")}
-              disabled={isSubmitting}
-            >
-              <Github className="w-5 h-5 mr-2" />
-              GitHub
-            </Button>
-            <Button
-              variant="outline"
-              className="h-12 rounded-xl bg-transparent"
-              type="button"
-              onClick={() => startOAuth("google")}
-              disabled={isSubmitting}
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Google
-            </Button>
+            <div className="relative group">
+              <Button
+                variant="outline"
+                className="w-full h-12 rounded-xl bg-transparent transition-all duration-300 group-hover:border-indigo-500/50"
+                type="button"
+                onClick={() => startOAuth("github")}
+                disabled={isSubmitting}
+              >
+                <Github className="w-5 h-5 mr-2" />
+                GitHub
+              </Button>
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                <div className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-white/10 dark:border-black/10">
+                  Coming Soon
+                </div>
+                <div className="w-2 h-2 bg-slate-900 dark:bg-slate-100 rotate-45 mx-auto -mt-1" />
+              </div>
+            </div>
+
+            <div className="relative group">
+              <Button
+                variant="outline"
+                className="w-full h-12 rounded-xl bg-transparent transition-all duration-300 group-hover:border-indigo-500/50"
+                type="button"
+                onClick={() => startOAuth("google")}
+                disabled={isSubmitting}
+              >
+                <Mail className="w-5 h-5 mr-2" />
+                Google
+              </Button>
+              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                <div className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap border border-white/10 dark:border-black/10">
+                  Coming Soon
+                </div>
+                <div className="w-2 h-2 bg-slate-900 dark:bg-slate-100 rotate-45 mx-auto -mt-1" />
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-4 mb-6">
