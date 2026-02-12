@@ -20,13 +20,14 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 type EligibilityPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type EligibilityStatus =
@@ -107,6 +108,7 @@ const recommendations = [
 ];
 
 export function EligibilityPage({ setCurrentView }: EligibilityPageProps) {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [safetyToggles, setSafetyToggles] = useState<Record<string, boolean>>({
     sandboxed: true,
@@ -166,7 +168,7 @@ export function EligibilityPage({ setCurrentView }: EligibilityPageProps) {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     } else {
-      setCurrentView("become_worker");
+      router.push("/become-worker");
     }
   };
 
@@ -214,7 +216,7 @@ export function EligibilityPage({ setCurrentView }: EligibilityPageProps) {
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => setCurrentView("become_worker")}
+            onClick={() => router.push("/become-worker")}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors"
           >
             <ArrowLeft className="size-4" />

@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { useRouter } from "next/navigation";
 import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
 type BecomeWorkerPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type SectionId = "why-workers" | "rewards" | "safety" | "how-it-works";
@@ -56,6 +57,7 @@ type SectionId = "why-workers" | "rewards" | "safety" | "how-it-works";
 const NAVBAR_OFFSET_PX = 80;
 
 export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [activeFlowStep, setActiveFlowStep] = useState(0);
   const [activeSummaryItem, setActiveSummaryItem] = useState<SectionId | null>(
@@ -323,7 +325,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
         {/* Back button */}
         <button
           type="button"
-          onClick={() => setCurrentView("home")}
+          onClick={() => router.push("/")}
           className="group inline-flex items-center gap-2 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 mb-10"
           data-section
         >
@@ -1004,7 +1006,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                 <div className="mt-6 space-y-3">
                   <Button
                     type="button"
-                    onClick={() => setCurrentView("eligibility")}
+                    onClick={() => router.push("/eligibility")}
                     className="w-full h-12 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/25"
                   >
                     <Sparkles className="size-4 mr-2" />
@@ -1119,7 +1121,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                 <div className="mt-6 space-y-3">
                   <Button
                     type="button"
-                    onClick={() => setCurrentView("eligibility")}
+                    onClick={() => router.push("/eligibility")}
                     className="w-full h-11 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/25"
                   >
                     Get Started
@@ -1127,7 +1129,7 @@ export function BecomeWorkerPage({ setCurrentView }: BecomeWorkerPageProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setCurrentView("reward_rules")}
+                    onClick={() => router.push("/reward-rules")}
                     className="w-full h-11 rounded-full bg-slate-900 border border-slate-900 text-white transition-all duration-300 hover:-translate-y-1 hover:bg-slate-800"
                   >
                     View Reward Rules

@@ -11,5 +11,9 @@ public interface SimulationRepository extends JpaRepository<SimulationEntity, Lo
     long countByUser_Id(Long userId);
     long countByUser_IdAndStatus(Long userId, SimulationStatus status);
     Optional<SimulationEntity> findTopByUser_IdOrderByCreatedAtDesc(Long userId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    void deleteByUser_Id(Long userId);
 }
 

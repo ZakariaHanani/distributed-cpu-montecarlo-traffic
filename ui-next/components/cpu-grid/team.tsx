@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Github, GitPullRequest, Linkedin, Twitter } from "lucide-react";
+import { Github, GitPullRequest, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
 
 type TeamMember = {
@@ -14,6 +14,11 @@ type TeamMember = {
   tag: {
     label: string;
     className: string;
+  };
+  social: {
+    github: string;
+    linkedin: string;
+    email: string;
   };
 };
 
@@ -29,17 +34,27 @@ const TEAM_MEMBERS: TeamMember[] = [
       className:
         "bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/25",
     },
+    social: {
+      github: "https://github.com/MohamedOuijjane",
+      linkedin: "https://www.linkedin.com/in/mohamedouijjane/",
+      email: "mailto:ouijjane22@gmail.com",
+    },
   },
   {
     name: "Zakaria Hanani",
     role: "Backend Developer",
     bio: "Distributed services, orchestration endpoints, and core backend implementation for the compute mesh.",
     avatar: "ZH",
-    avatarSrc: undefined,
+    avatarSrc: "/images/team/zakaria-hanani.jpeg",
     tag: {
       label: "Backend",
       className:
         "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/25",
+    },
+    social: {
+      github: "https://github.com/ZakariaHanani",
+      linkedin: "https://linkedin.com/in/zakaria-hanani",
+      email: "mailto:zakarhanani@gmail.com",
     },
   },
   {
@@ -53,6 +68,11 @@ const TEAM_MEMBERS: TeamMember[] = [
       className:
         "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/25",
     },
+    social: {
+      github: "https://github.com/Alihalla",
+      linkedin: "https://www.linkedin.com/in/ali-halla-41a444310/",
+      email: "mailto:hallaali841@gmail.com",
+    },
   },
   {
     name: "Ayoub Karkouri",
@@ -64,6 +84,11 @@ const TEAM_MEMBERS: TeamMember[] = [
       label: "Backend",
       className:
         "bg-violet-500/10 text-violet-700 ring-1 ring-violet-500/15 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/25",
+    },
+    social: {
+      github: "https://github.com/ARKOURI856",
+      linkedin: "https://www.linkedin.com/in/ayoubkarkouri/",
+      email: "mailto:ayoubkarkouri20@gmail.com",
     },
   },
   {
@@ -77,17 +102,27 @@ const TEAM_MEMBERS: TeamMember[] = [
       className:
         "bg-rose-500/10 text-rose-700 ring-1 ring-rose-500/15 dark:bg-rose-500/15 dark:text-rose-200 dark:ring-rose-500/25",
     },
+    social: {
+      github: "https://github.com/ahmed-la14",
+      linkedin: "https://www.linkedin.com/in/ahmed-lahmaine-28ab7527b/",
+      email: "mailto:ahmedlahmain@gmail.com",
+    },
   },
   {
     name: "Hmad Ait Lahmouss",
     role: "Architecture & Conception",
     bio: "System design, UML/sequence flows, and distributed architecture documentation.",
     avatar: "HL",
-    avatarSrc: undefined,
+    avatarSrc: "/images/team/hmad-aitlahmous.jpeg",
     tag: {
       label: "Architecture",
       className:
         "bg-slate-900/5 text-slate-700 ring-1 ring-slate-900/10 dark:bg-white/10 dark:text-slate-200 dark:ring-white/10",
+    },
+    social: {
+      github: "https://github.com/hmad-ait-lahmous",
+      linkedin: "https://www.linkedin.com/in/hmad-ait-lahmous/",
+      email: "mailto:aitlahmous.hmad@gmail.com",
     },
   },
   {
@@ -95,11 +130,16 @@ const TEAM_MEMBERS: TeamMember[] = [
     role: "Frontend Developer",
     bio: "UI components, animations, and user flows for simulations, worker onboarding, and dashboards.",
     avatar: "MO",
-    avatarSrc: "/images/team/mohamed-ouadra.jpeg",
+    avatarSrc: "/images/team/mohamed-ouadra.JPG",
     tag: {
       label: "Frontend",
       className:
         "bg-indigo-500/10 text-indigo-700 ring-1 ring-indigo-500/15 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/25",
+    },
+    social: {
+      github: "https://github.com/MohamedOuadra",
+      linkedin: "https://www.linkedin.com/in/mohamed-ouadra/",
+      email: "mailto:mohamed.oudra3@gmail.com",
     },
   },
 ];
@@ -305,27 +345,46 @@ export const Team = () => {
 
                       <div className="flex items-center justify-center gap-3">
                         {[
-                          { Icon: Github, label: "GitHub", primary: true },
-                          { Icon: Linkedin, label: "LinkedIn", primary: false },
-                          { Icon: Twitter, label: "X/Twitter", primary: false },
-                        ].map(({ Icon, label, primary }) => (
-                          <button
+                          {
+                            Icon: Github,
+                            label: "GitHub",
+                            primary: true,
+                            href: member.social.github,
+                          },
+                          {
+                            Icon: Linkedin,
+                            label: "LinkedIn",
+                            primary: false,
+                            href: member.social.linkedin,
+                          },
+                          {
+                            Icon: Mail,
+                            label: "Email",
+                            primary: false,
+                            href: member.social.email,
+                          },
+                        ].map(({ Icon, label, primary, href }) => (
+                          <a
                             key={label}
-                            type="button"
-                            disabled
-                            aria-label={`${label} link coming soon`}
-                            title="Link coming soon"
+                            href={href}
+                            target={label === "Email" ? undefined : "_blank"}
+                            rel={
+                              label === "Email"
+                                ? undefined
+                                : "noopener noreferrer"
+                            }
+                            aria-label={label}
                             className={[
                               "w-9 h-9 rounded-full flex items-center justify-center transition-all",
                               primary
                                 ? "bg-indigo-500/10 text-indigo-600 ring-1 ring-indigo-500/15"
                                 : "bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-400 ring-1 ring-slate-900/10 dark:ring-white/10",
-                              "opacity-50 cursor-not-allowed",
+                              "hover:bg-indigo-500 hover:text-white hover:ring-indigo-500 hover:scale-110",
                               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/60",
                             ].join(" ")}
                           >
                             <Icon className="w-4 h-4" />
-                          </button>
+                          </a>
                         ))}
                       </div>
                     </div>

@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   description:
     "A distributed Monte Carlo traffic simulation platform for high-performance computing research.",
   generator: "v0.app",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 export default function RootLayout({

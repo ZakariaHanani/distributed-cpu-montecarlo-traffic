@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { formatDistanceToNowStrict } from "date-fns";
 
+import { useRouter } from "next/navigation";
 import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ import {
 import { getRoleFromToken, getToken } from "@/lib/authApi";
 
 type AdminWorkersPageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type WorkerStatus = "AVAILABLE" | "BUSY" | "OFFLINE";
@@ -90,6 +91,7 @@ function statusTone(status: WorkerStatus) {
 }
 
 export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
+  const router = useRouter();
   const [isAllowed, setIsAllowed] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
 
@@ -149,7 +151,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
     const tokenRole = token ? getRoleFromToken(token) : null;
     if (!token || tokenRole !== "ADMIN") {
       toast("Admin access required");
-      setCurrentView("home");
+      router.push("/");
       return;
     }
     setIsAllowed(true);
@@ -324,7 +326,7 @@ export function AdminWorkersPage({ setCurrentView }: AdminWorkersPageProps) {
     <div className="min-h-screen bg-white dark:bg-[rgb(var(--bg))] pt-24">
       <div className="max-w-7xl mx-auto px-6 py-10">
         <button
-          onClick={() => setCurrentView("home")}
+          onClick={() => router.push("/")}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
         >
           <ArrowLeft className="w-4 h-4" />

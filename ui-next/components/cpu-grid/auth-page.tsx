@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { ViewType } from "@/app/page";
 import { AuthHeroPanel } from "@/components/cpu-grid/AuthHeroPanel";
 import {
   decodeJwtPayload,
@@ -35,9 +34,10 @@ import {
   forgot,
 } from "@/lib/authApi";
 
+import { useRouter } from "next/navigation";
+
 interface AuthPageProps {
   mode: "login" | "signup";
-  setCurrentView: (view: ViewType) => void;
 }
 
 type ToastType = "error" | "success";
@@ -53,7 +53,8 @@ type ToastState = ToastPayload & {
   isOpen: boolean;
 };
 
-export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
+export function AuthPage({ mode }: AuthPageProps) {
+  const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
   const redirectTimeoutRef = useRef<number | null>(null);
   const toastTimeoutRef = useRef<number | null>(null);
@@ -178,7 +179,12 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
 
   const startOAuth = (provider: "google" | "github") => {
     hideToast();
-    window.location.href = `${authBaseUrl}/oauth2/authorization/${provider}`;
+    showToast({
+      type: "success",
+      title: "Coming Soon",
+      message: `${provider.charAt(0).toUpperCase() + provider.slice(1)} authentication is not yet available.`,
+    });
+    // window.location.href = `${authBaseUrl}/oauth2/authorization/${provider}`;
   };
 
   useEffect(() => {
@@ -265,7 +271,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
         });
         redirectTimeoutRef.current = window.setTimeout(() => {
           if (mustChange) {
-            setCurrentView(role === "ADMIN" ? "admin_profile" : "profile");
+            router.push(role === "ADMIN" ? "/admin/profile" : "/profile");
             return;
           }
           const url = new URL(window.location.href);
@@ -422,7 +428,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
       <div className="w-full md:w-1/2 flex flex-col justify-center px-8 lg:px-16 py-12">
         <div className="max-w-md mx-auto w-full">
           <button
-            onClick={() => setCurrentView("home")}
+            onClick={() => router.push("/")}
             className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-12"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -749,7 +755,7 @@ export function AuthPage({ mode, setCurrentView }: AuthPageProps) {
                 setFlow("auth");
                 setPassword("");
                 setConfirmPassword("");
-                setCurrentView(isLogin ? "signup" : "login");
+                router.push(isLogin ? "/signup" : "/login");
               }}
               className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200 font-medium"
             >

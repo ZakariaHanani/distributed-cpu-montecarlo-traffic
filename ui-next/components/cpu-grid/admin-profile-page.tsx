@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+import { useRouter } from "next/navigation";
 import type { ViewType } from "@/app/page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,7 +68,7 @@ import {
 } from "@/lib/authApi";
 
 type AdminProfilePageProps = {
-  setCurrentView: (view: ViewType) => void;
+  setCurrentView?: (view: ViewType) => void;
 };
 
 type AdminTabKey = "info" | "security" | "admins" | "danger";
@@ -101,6 +102,7 @@ function initialsFromName(firstName: string, lastName: string) {
 }
 
 export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
+  const router = useRouter();
   const [isAllowed, setIsAllowed] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTabKey>("info");
   const [mustChangePassword, setMustChangePassword] = useState(false);
@@ -145,7 +147,7 @@ export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
     clearAuthMeta();
     clearDisplayName();
     window.dispatchEvent(new Event("auth:changed"));
-    setCurrentView("login");
+    router.push("/login");
     toast("Session expired. Please sign in again.", { duration: 6000 });
   };
 
@@ -164,12 +166,12 @@ export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
     const tokenRole = token ? getRoleFromToken(token) : null;
     if (!token) {
       toast("Please sign in");
-      setCurrentView("login");
+      router.push("/login");
       return;
     }
     if (tokenRole !== "ADMIN") {
       toast("Admin access required");
-      setCurrentView("home");
+      router.push("/");
       return;
     }
     setIsAllowed(true);
@@ -189,7 +191,7 @@ export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
         if (cancelled) return;
         if (me.role !== "ADMIN") {
           toast("Admin access required");
-          setCurrentView("home");
+          router.push("/");
           return;
         }
         setFirstName(me.firstName ?? "");
@@ -507,7 +509,7 @@ export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
         setDangerPhrase("");
         setDangerPassword("");
         setIsDangerOpen(false);
-        setCurrentView("login");
+        router.push("/login");
         toast("Account deleted", { duration: 6000 });
       })
       .catch((err) => handleApiError(err, "Couldn’t delete account"))
@@ -526,7 +528,7 @@ export function AdminProfilePage({ setCurrentView }: AdminProfilePageProps) {
               setActiveTab("security");
               return;
             }
-            setCurrentView("home");
+            router.push("/");
           }}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-10"
         >

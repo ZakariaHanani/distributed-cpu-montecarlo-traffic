@@ -1,24 +1,17 @@
-import { redirect } from "next/navigation";
+"use client";
 
-type LoginPageProps = {
-  searchParams?: Record<string, string | string[] | undefined>;
-};
+import { AuthPage } from "@/components/cpu-grid/auth-page";
+import { NoiseOverlay } from "@/components/cpu-grid/noise-overlay";
+import { AmbientLight } from "@/components/cpu-grid/ambient-light";
+import { WebGLBackground } from "@/components/cpu-grid/webgl-background";
 
-export default function LoginPage({ searchParams }: LoginPageProps) {
-  const error =
-    typeof searchParams?.error === "string" ? searchParams.error : undefined;
-  const next =
-    typeof searchParams?.next === "string" ? searchParams.next : undefined;
-  const returnTo =
-    typeof searchParams?.returnTo === "string"
-      ? searchParams.returnTo
-      : undefined;
-
-  const params = new URLSearchParams();
-  params.set("view", "login");
-  if (error) params.set("error", error);
-  if (next) params.set("next", next);
-  if (returnTo) params.set("returnTo", returnTo);
-
-  redirect("/?" + params.toString());
+export default function LoginRoute() {
+  return (
+    <main className="relative min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
+      <NoiseOverlay />
+      <AmbientLight />
+      <WebGLBackground />
+      <AuthPage mode="login" />
+    </main>
+  );
 }

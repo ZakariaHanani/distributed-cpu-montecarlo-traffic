@@ -36,25 +36,23 @@
 ehthumbs.db
 Thumbs.db
 
-<<<<<<< HEAD
-*.iml
-/.idea/
-target/
-=======
-# -------------------------------------
-#IDE Files
-# -------------------------------------
+# IDE Files
 .idea/
 .vscode/
-# -------------------------------------
-#Maven/Java
-# -------------------------------------
+*.iml
+
+# Maven/Java
 /target/
 /bin/
+
 # Next.js
 ui-next/node_modules/
 ui-next/.next/
 ui-next/.env.local
 ui-next/$null
 ui-next/tsconfig.tsbuildinfo
->>>>>>> fa64ae810088e3cb8732f9786e5bc590684d6bb4
+
+# Databases
+auth-service/data/
+*.mv.db
+

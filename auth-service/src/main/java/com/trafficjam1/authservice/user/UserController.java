@@ -2,6 +2,7 @@ package com.trafficjam1.authservice.user;
 
 import com.trafficjam1.authservice.simulation.SimulationEntity;
 import com.trafficjam1.authservice.simulation.SimulationRepository;
+import com.trafficjam1.authservice.simulation.SimulationResultRepository;
 import com.trafficjam1.authservice.simulation.SimulationStatus;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,13 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final SimulationRepository simulationRepository;
+    private final SimulationResultRepository simulationResultRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository, SimulationRepository simulationRepository, PasswordEncoder passwordEncoder) {
+    public UserController(UserRepository userRepository, SimulationRepository simulationRepository, SimulationResultRepository simulationResultRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.simulationRepository = simulationRepository;
+        this.simulationResultRepository = simulationResultRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -123,9 +126,14 @@ public class UserController {
     }
 
     @DeleteMapping("/history")
+    @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<?> deleteHistory() {
         User user = getCurrentUserOrNull();
         if (user == null) return ResponseEntity.status(404).build();
+        
+        simulationResultRepository.deleteByUserId(user.getId());
+        simulationRepository.deleteByUser_Id(user.getId());
+        
         return ResponseEntity.ok(Map.of("message", "History deleted"));
     }
 

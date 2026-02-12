@@ -1,11 +1,10 @@
 "use client"
 
 import { ArrowLeft, Cpu } from "lucide-react"
-import type { ViewType } from "@/app/page"
+import { useRouter } from "next/navigation"
 
 interface LegalPageProps {
   type: "privacy" | "terms" | "cookies"
-  setCurrentView: (view: ViewType) => void
 }
 
 const legalContent = {
@@ -104,7 +103,8 @@ const legalContent = {
   },
 }
 
-export function LegalPage({ type, setCurrentView }: LegalPageProps) {
+export function LegalPage({ type }: LegalPageProps) {
+  const router = useRouter()
   const content = legalContent[type]
   const navItems = [
     { key: "privacy" as const, label: "Privacy Policy" },
@@ -117,7 +117,7 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Back Button */}
         <button
-          onClick={() => setCurrentView("home")}
+          onClick={() => router.push("/")}
           className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-300 dark:hover:text-slate-100 transition-colors mb-12"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -140,7 +140,7 @@ export function LegalPage({ type, setCurrentView }: LegalPageProps) {
               {navItems.map((item) => (
                 <button
                   key={item.key}
-                  onClick={() => setCurrentView(item.key)}
+                  onClick={() => router.push(`/legal/${item.key}`)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
                     type === item.key
                       ? "bg-slate-900 text-white dark:bg-white/10"
