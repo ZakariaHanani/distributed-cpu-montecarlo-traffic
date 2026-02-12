@@ -1,21 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { MySimulationsPage } from "@/components/cpu-grid/my-simulations-page";
+import { Navigation } from "@/components/cpu-grid/navigation";
+import { NoiseOverlay } from "@/components/cpu-grid/noise-overlay";
+import { AmbientLight } from "@/components/cpu-grid/ambient-light";
+import { WebGLBackground } from "@/components/cpu-grid/webgl-background";
 
-export default function SimulationsRedirect() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to home page with simulations view active
-    router.replace("/?view=simulations");
-  }, [router]);
-
+export default function SimulationsRoute() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[rgb(var(--bg))]">
-      <div className="animate-pulse text-slate-500 dark:text-slate-400 font-medium">
-        Redirecting to your simulations...
-      </div>
-    </div>
+    <main className="relative min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
+      <NoiseOverlay />
+      <AmbientLight />
+      <WebGLBackground />
+      <Navigation currentView="simulations" />
+      <MySimulationsPage />
+    </main>
   );
 }

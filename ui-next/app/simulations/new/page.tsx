@@ -37,6 +37,7 @@ import {
   type SimulationProgressWorker,
 } from "@/components/simulations/simulation-progress-modal";
 import { getToken, isAuthenticated } from "@/lib/authApi";
+import { Navigation } from "@/components/cpu-grid/navigation";
 
 type Weather = "SUNNY" | "RAINY" | "FOGGY";
 
@@ -547,6 +548,7 @@ export default function NewSimulationPage() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--fg))]">
+      <Navigation />
       <Dialog open={showAuthModal} onOpenChange={setShowAuthModal}>
         <DialogContent
           overlayClassName="bg-black/35 backdrop-blur-xl"
@@ -595,7 +597,7 @@ export default function NewSimulationPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         {/* Header */}
         <div className="mb-8 lg:mb-12 text-center lg:text-left">
           <Link
