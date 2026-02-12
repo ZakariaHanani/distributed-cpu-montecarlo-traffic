@@ -221,9 +221,29 @@ export function SimulationProgressModal({
 
         {/* Success Animation */}
         {isCompleted && (
-          <div className="flex items-center justify-center gap-2 py-2 text-emerald-600 animate-pulse">
-            <CheckCircle2 className="w-5 h-5" />
-            <span className="font-medium">Preparing results...</span>
+          <div className="flex flex-col items-center gap-4 py-2">
+            <div className="flex items-center justify-center gap-2 text-emerald-600 animate-pulse">
+              <CheckCircle2 className="w-5 h-5" />
+              <span className="font-medium">Preparing results...</span>
+            </div>
+            <div className="w-full flex flex-col sm:flex-row items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="w-full sm:flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200"
+              >
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  onOpenChange(false);
+                  window.location.href = "/simulations";
+                }}
+                className="w-full sm:flex-[2] h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-white/10 dark:hover:bg-white/15 dark:text-slate-100 shadow-lg shadow-indigo-500/10 transition-all duration-200"
+              >
+                View My Simulations
+              </Button>
+            </div>
           </div>
         )}
       </DialogContent>
