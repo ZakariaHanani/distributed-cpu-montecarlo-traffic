@@ -42,7 +42,7 @@ Thumbs.db
 *.iml
 
 # Maven/Java
-/target/
+target/
 /bin/
 
 # Next.js
