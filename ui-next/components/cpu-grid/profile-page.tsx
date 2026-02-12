@@ -834,7 +834,7 @@ export function ProfilePage() {
                     </div>
                     <Button
                       variant="ghost"
-                      onClick={() => toast("Coming soon")}
+                      onClick={() => router.push("/simulations")}
                       className="h-11 rounded-xl border border-white/60 bg-white/60 backdrop-blur-2xl text-slate-900 hover:bg-white/80 dark:border-white/10 dark:bg-white/10 dark:text-slate-100 dark:hover:bg-white/15"
                     >
                       View simulations
